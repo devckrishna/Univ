@@ -1,0 +1,6 @@
+- npm install prisma
+- npm install @prisma/client
+
+- npx prisma db push // to push current schema to the database
+- npx prisma studio // to see visual representation of the database
+- npx prisma generate // to update prisma client about the schema change whenever we make any change to the schema
