@@ -4,7 +4,7 @@ const Home = async () => {
   const user = await db.user.findMany();
   console.log(user);
 
-  return <div>Hello World</div>;
+  return <main className="h-full w-full"></main>;
 };
 
 export default Home;
