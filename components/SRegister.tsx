@@ -1,7 +1,24 @@
-'use client';
+"use client";
 import React, { useState } from "react";
-import { AutoComplete, Button, Cascader, Checkbox, Col, Form, Input, InputNumber, Row, Select, Upload, message } from 'antd';
-import { UploadOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import {
+  AutoComplete,
+  Button,
+  Cascader,
+  Checkbox,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Select,
+  Upload,
+  message,
+} from "antd";
+import {
+  UploadOutlined,
+  PlusOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 // import { useNavigate } from "react-router-dom";
 // import { useSelector, useDispatch } from 'react-redux'
@@ -56,26 +73,26 @@ const inivals: FormState = {
 function SRegister() {
   const [formstate, setformstate] = useState<FormState>(inivals);
   const [fileList, setFileList] = useState<any[]>([]);
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
-    const router = useRouter();
-    const [form] = Form.useForm();
+  //   const navigate = useNavigate();
+  //   const dispatch = useDispatch();
+  const router = useRouter();
+  const [form] = Form.useForm();
 
   const onGenderChange = (value: string) => {
     switch (value) {
-      case 'male':
+      case "male":
         form.setFieldsValue({
-          note: 'Hi, man!',
+          note: "Hi, man!",
         });
         break;
-      case 'female':
+      case "female":
         form.setFieldsValue({
-          note: 'Hi, lady!',
+          note: "Hi, lady!",
         });
         break;
-      case 'other':
+      case "other":
         form.setFieldsValue({
-          note: 'Hi there!',
+          note: "Hi there!",
         });
         break;
       default:
@@ -110,27 +127,32 @@ function SRegister() {
     // const data = await res.json();
     // dispatch(setuniversityvalue({email:formstate.email,university_name:formstate.name}));
     router.push("/dashboard");
-  }
+  };
 
   const handleChange = (evt: any) => {
     const { name, value } = evt.target;
     setformstate({ ...formstate, [name]: value });
-  }
+  };
 
   const onFinish = (values: FormState) => {
-    console.log('Received values of form: ', values);
+    console.log("Received values of form: ", values);
     setformstate(values);
     handleSubmit();
   };
 
   return (
     <>
-      <Form {...formItemLayout} form={form} name="register" onFinish={onFinish}
+      <Form
+        {...formItemLayout}
+        form={form}
+        name="register"
+        onFinish={onFinish}
         style={{
-          width: '100%'
+          width: "100%",
         }}
-        scrollToFirstError>
-        <Row style={{ width: '100%' }}>
+        scrollToFirstError
+      >
+        <Row style={{ width: "100%" }}>
           <Col span={12}>
             <Form.Item
               name="name"
@@ -138,79 +160,100 @@ function SRegister() {
               rules={[
                 {
                   required: true,
-                  message: 'Please input the Name!',
+                  message: "Please input the Name!",
                   whitespace: true,
                 },
               ]}
             >
               <Input name="name" onChange={handleChange} />
             </Form.Item>
-            <Form.Item name="email" label="E-mail"
+            <Form.Item
+              name="email"
+              label="E-mail"
               rules={[
                 {
-                  type: 'email',
-                  message: 'The input is not valid E-mail!',
+                  type: "email",
+                  message: "The input is not valid E-mail!",
                 },
                 {
                   required: true,
-                  message: 'Please input your E-mail!',
+                  message: "Please input your E-mail!",
                 },
               ]}
             >
               <Input name="email" onChange={handleChange} />
             </Form.Item>
-            <Form.Item name="password" label="Password"
+            <Form.Item
+              name="password"
+              label="Password"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!',
+                  message: "Please input your password!",
                 },
               ]}
               hasFeedback
             >
               <Input.Password name="password" onChange={handleChange} />
             </Form.Item>
-            <Form.Item name="confirm" label="Confirm Password" dependencies={['password']} hasFeedback
+            <Form.Item
+              name="confirm"
+              label="Confirm Password"
+              dependencies={["password"]}
+              hasFeedback
               rules={[
                 {
                   required: true,
-                  message: 'Please confirm your password!',
+                  message: "Please confirm your password!",
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
+                    if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error('The new password that you entered do not match!'));
+                    return Promise.reject(
+                      new Error(
+                        "The new password that you entered do not match!"
+                      )
+                    );
                   },
                 }),
               ]}
             >
               <Input.Password />
             </Form.Item>
-            <Form.Item name="gender" label="Gender"
+            <Form.Item
+              name="gender"
+              label="Gender"
               rules={[
                 {
                   required: true,
                 },
-              ]}>
-              <Select placeholder="Select a option and change input text above" onChange={onGenderChange} allowClear>
+              ]}
+            >
+              <Select
+                placeholder="Select a option and change input text above"
+                onChange={onGenderChange}
+                allowClear
+              >
                 <Option value="Male">Male</Option>
                 <Option value="Female">Female</Option>
                 <Option value="Other">Other</Option>
               </Select>
             </Form.Item>
-            <Form.Item name="country" label="Country"
+            <Form.Item
+              name="country"
+              label="Country"
               rules={[
                 {
                   required: true,
-                  message: 'Please select your Country!',
+                  message: "Please select your Country!",
                 },
               ]}
             >
               <Input name="country" onChange={handleChange} />
             </Form.Item>
-            {window.innerWidth < 992 && <Form.Item
+            {/* {window.innerWidth < 992 && <Form.Item
               name="description"
               label="Description"
               rules={[
@@ -221,7 +264,7 @@ function SRegister() {
             >
               <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
             </Form.Item>
-            }
+            } */}
             {/* {window.innerWidth < 992 && <Form.Item name="image" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
               <Upload
                 action={null}
@@ -248,16 +291,28 @@ function SRegister() {
               label="Description"
               rules={[
                 {
-                  message: 'Please input Intro',
+                  message: "Please input Intro",
                 },
               ]}
             >
-              <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
+              <Input.TextArea
+                name="description"
+                onChange={handleChange}
+                showCount
+                maxLength={300}
+              />
             </Form.Item>
-            <Form.Item name="image" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+            <Form.Item
+              name="image"
+              label="Upload"
+              valuePropName="fileList"
+              getValueFromEvent={normFile}
+            >
               <Upload
                 // action={null}
-                beforeUpload={() => { return false; }}
+                beforeUpload={() => {
+                  return false;
+                }}
                 listType="picture"
                 fileList={fileList}
                 maxCount={3}
@@ -266,15 +321,15 @@ function SRegister() {
               </Upload>
             </Form.Item>
             <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">Register</Button>
+              <Button type="primary" htmlType="submit">
+                Register
+              </Button>
             </Form.Item>
           </Col>
         </Row>
       </Form>
     </>
-  )
+  );
 }
 
 export default SRegister;
-
-
