@@ -10,8 +10,90 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model User {
-  id    String @id @default(uuid())
-  name  String
-  email String
+model Mentor {
+  id           String          @id @default(uuid())
+  name         String
+  email        String
+  password     String
+  description  String
+  country      String
+  university   String
+  image        String
+  gender       String
+  rating       Float
+  bookings     Booking[]
+  feedbacks    Feedback[]
+  availability MentorBooking[]
+}
+
+model Student {
+  id          String     @id @default(uuid())
+  name        String
+  email       String
+  password    String
+  description String
+  country     String
+  image       String
+  gender      String
+  bookings    Booking[]
+  feedbacks   Feedback[]
+}
+
+model Booking {
+  id         String  @id @default(uuid())
+  date       String
+  student    Student @relation(fields: [student_id], references: [id])
+  student_id String
+  mentor     Mentor  @relation(fields: [mentor_id], references: [id])
+  mentor_id  String
+  duration   Int
+  start_time String
+  end_time   String
+}
+
+model MentorBooking {
+  id         String @id @default(uuid())
+  date       String
+  mentor     Mentor @relation(fields: [mentor_id], references: [id])
+  mentor_id  String
+  duration   Int
+  start_time String
+  end_time   String
+}
+
+model Feedback {
+  id         String  @id @default(uuid())
+  student    Student @relation(fields: [student_id], references: [id])
+  student_id String
+  mentor     Mentor  @relation(fields: [mentor_id], references: [id])
+  mentor_id  String
+
+  date        String
+  rating      Float
+  description String
+  created_at  DateTime @default(now())
+}
+
+model University {
+  id               String   @id @default(uuid())
+  name             String
+  email            String
+  password         String
+  description      String
+  images           String[]
+  bachelor_courses String[]
+  masters_courses  String[]
+  address          String
+  website          String
+  posts            Post[]
+}
+
+model Post {
+  id            String     @id @default(uuid())
+  title         String
+  images        String[]
+  description   String
+  created_at    DateTime   @default(now())
+  university    University @relation(fields: [university_id], references: [id])
+  university_id String
 }
