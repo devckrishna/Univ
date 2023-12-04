@@ -11,18 +11,19 @@ datasource db {
 }
 
 model Mentor {
-  id          String     @id @default(uuid())
-  name        String
-  email       String
-  password    String
-  description String
-  country     String
-  university  String
-  image       String
-  gender      String
-  Rating      Float
-  bookings    Booking[]
-  feedbacks   Feedback[]
+  id           String          @id @default(uuid())
+  name         String
+  email        String
+  password     String
+  description  String
+  country      String
+  university   String
+  image        String
+  gender       String
+  rating       Float
+  bookings     Booking[]
+  feedbacks    Feedback[]
+  availability MentorBooking[]
 }
 
 model Student {
@@ -44,6 +45,16 @@ model Booking {
   student    Student @relation(fields: [student_id], references: [id])
   student_id String
   mentor     Mentor  @relation(fields: [mentor_id], references: [id])
+  mentor_id  String
+  duration   Int
+  start_time String
+  end_time   String
+}
+
+model MentorBooking {
+  id         String @id @default(uuid())
+  date       String
+  mentor     Mentor @relation(fields: [mentor_id], references: [id])
   mentor_id  String
   duration   Int
   start_time String
