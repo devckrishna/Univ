@@ -1,7 +1,24 @@
 "use client";
 import React, { useState } from "react";
-import { AutoComplete, Button, Cascader, Checkbox, Col, Form, Input, InputNumber, Row, Select, Upload, message } from 'antd';
-import { UploadOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import {
+  AutoComplete,
+  Button,
+  Cascader,
+  Checkbox,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Select,
+  Upload,
+  message,
+} from "antd";
+import {
+  UploadOutlined,
+  PlusOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 // import { useSelector, useDispatch } from 'react-redux';
 // import { setcredentials } from "../slices/AuthSlice";
@@ -44,15 +61,15 @@ let inivals = {
   country: "",
   university: "",
   gender: "",
-}
+};
 
-const MRegister:  React.FC = () => {
+const MRegister: React.FC = () => {
   let [formstate, setformstate] = useState(inivals);
   let [fileList, setFileList] = useState([]);
   const router = useRouter();
-//   const auth = useSelector((state: any) => state.auth);
-//   const navigate = useNavigate();
-//   const dispatch = useDispatch();
+  //   const auth = useSelector((state: any) => state.auth);
+  //   const navigate = useNavigate();
+  //   const dispatch = useDispatch();
   const [form] = Form.useForm();
 
   const onGenderChange = (value: string) => {
@@ -67,12 +84,12 @@ const MRegister:  React.FC = () => {
 
   const handleSubmit = async (values: any) => {
     await setformstate(values);
-    console.log('formstate values are :', formstate);
+    console.log("formstate values are :", formstate);
     console.log("image is : ", values.image);
-    console.log("gender is :", typeof (values.gender), " ", values.gender);
+    console.log("gender is :", typeof values.gender, " ", values.gender);
 
-    const res = await fetch('http://localhost:3000/api/v1/mentor/register', {
-      method: 'POST',
+    const res = await fetch("http://localhost:3000/api/v1/mentor/register", {
+      method: "POST",
       body: JSON.stringify({
         name: formstate.name,
         email: formstate.email,
@@ -81,11 +98,11 @@ const MRegister:  React.FC = () => {
         description: formstate.description,
         gender: values.gender,
         university: formstate.university,
-        country: formstate.country
+        country: formstate.country,
       }),
       headers: {
-        'Content-Type': 'application/json',
-      }
+        "Content-Type": "application/json",
+      },
     });
 
     const data = await res.json();
@@ -93,26 +110,31 @@ const MRegister:  React.FC = () => {
     // dispatch(setcredentials({ type: "Mentor", credentials: data }));
     // console.log("current state is : ", auth);
     router.push(`/mentor/${data._id}`);
-  }
+  };
 
   const handleChange = (evt: any) => {
     const { name, value } = evt.target;
     setformstate({ ...formstate, [name]: value });
-  }
+  };
 
   const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
+    console.log("Received values of form: ", values);
     handleSubmit(values);
   };
 
   return (
     <>
-      <Form {...formItemLayout} form={form} name="register" onFinish={onFinish}
+      <Form
+        {...formItemLayout}
+        form={form}
+        name="register"
+        onFinish={onFinish}
         style={{
-          width: '100%'
+          width: "100%",
         }}
-        scrollToFirstError>
-        <Row style={{ width: '100%' }}>
+        scrollToFirstError
+      >
+        <Row style={{ width: "100%" }}>
           <Col span={12}>
             <Form.Item
               name="name"
@@ -120,50 +142,62 @@ const MRegister:  React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input the Name!',
+                  message: "Please input the Name!",
                   whitespace: true,
                 },
               ]}
             >
               <Input name="name" onChange={handleChange} />
             </Form.Item>
-            <Form.Item name="email" label="E-mail"
+            <Form.Item
+              name="email"
+              label="E-mail"
               rules={[
                 {
-                  type: 'email',
-                  message: 'The input is not valid E-mail!',
+                  type: "email",
+                  message: "The input is not valid E-mail!",
                 },
                 {
                   required: true,
-                  message: 'Please input your E-mail!',
+                  message: "Please input your E-mail!",
                 },
               ]}
             >
               <Input name="email" onChange={handleChange} />
             </Form.Item>
-            <Form.Item name="password" label="Password"
+            <Form.Item
+              name="password"
+              label="Password"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!',
+                  message: "Please input your password!",
                 },
               ]}
               hasFeedback
             >
               <Input.Password name="password" onChange={handleChange} />
             </Form.Item>
-            <Form.Item name="confirm" label="Confirm Password" dependencies={['password']} hasFeedback
+            <Form.Item
+              name="confirm"
+              label="Confirm Password"
+              dependencies={["password"]}
+              hasFeedback
               rules={[
                 {
                   required: true,
-                  message: 'Please confirm your password!',
+                  message: "Please confirm your password!",
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
+                    if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error('The new password that you entered do not match!'));
+                    return Promise.reject(
+                      new Error(
+                        "The new password that you entered do not match!"
+                      )
+                    );
                   },
                 }),
               ]}
@@ -176,7 +210,7 @@ const MRegister:  React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please select your University!',
+                  message: "Please select your University!",
                 },
               ]}
             >
@@ -188,25 +222,32 @@ const MRegister:  React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please select your Country!',
+                  message: "Please select your Country!",
                 },
               ]}
             >
               <Input name="country" onChange={handleChange} />
             </Form.Item>
-            <Form.Item name="gender" label="Gender"
+            <Form.Item
+              name="gender"
+              label="Gender"
               rules={[
                 {
                   required: true,
                 },
-              ]}>
-              <Select placeholder="Select a option" onChange={onGenderChange} allowClear>
+              ]}
+            >
+              <Select
+                placeholder="Select a option"
+                onChange={onGenderChange}
+                allowClear
+              >
                 <Option value="Male">Male</Option>
                 <Option value="Female">Female</Option>
                 <Option value="Other">Other</Option>
               </Select>
             </Form.Item>
-            {window.innerWidth < 992 && <Form.Item
+            {/* {window.innerWidth < 992 && <Form.Item
               name="description"
               label="Description"
               rules={[
@@ -217,7 +258,7 @@ const MRegister:  React.FC = () => {
             >
               <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
             </Form.Item>
-            }
+            } */}
             {/* {window.innerWidth < 992 && <Form.Item name="image" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
               <Upload
                 // action={null}
@@ -246,39 +287,51 @@ const MRegister:  React.FC = () => {
               label="Description"
               rules={[
                 {
-                  message: 'Please input Intro',
+                  message: "Please input Intro",
                 },
               ]}
             >
-              <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
+              <Input.TextArea
+                name="description"
+                onChange={handleChange}
+                showCount
+                maxLength={300}
+              />
             </Form.Item>
-            <Form.Item name="images" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
-                    <Upload
-                        // action={null}
-                        beforeUpload={()=>{return false;}}
-                        listType="picture-card"
-                        fileList={fileList}
-                        maxCount={1}
-                        // onChange={handleFileChange}
-                        multiple
-                        >
-                        <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                        </div>
-                    </Upload>
+            <Form.Item
+              name="images"
+              label="Upload"
+              valuePropName="fileList"
+              getValueFromEvent={normFile}
+            >
+              <Upload
+                // action={null}
+                beforeUpload={() => {
+                  return false;
+                }}
+                listType="picture-card"
+                fileList={fileList}
+                maxCount={1}
+                // onChange={handleFileChange}
+                multiple
+              >
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              </Upload>
             </Form.Item>
-            
+
             <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">Register</Button>
+              <Button type="primary" htmlType="submit">
+                Register
+              </Button>
             </Form.Item>
           </Col>
         </Row>
       </Form>
     </>
-  )
-}
+  );
+};
 
 export default MRegister;
-
-
