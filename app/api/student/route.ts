@@ -25,6 +25,8 @@ export async function POST(req: Request) {
         country,
         image,
         gender,
+        // bookings:{[] as Array},
+        // feedbacks:[] as Array
       },
     });
     return NextResponse.json({ message: "Created Student", data: newStudent });

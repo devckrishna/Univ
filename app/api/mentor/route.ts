@@ -24,6 +24,7 @@ export async function POST(req: Request) {
       image,
       gender,
       rating,
+      // rate
     } = await req.json();
     const newMentor = await db.mentor.create({
       data: {
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
         image,
         gender,
         rating,
+        // rate
       },
     });
     return NextResponse.json({ message: "Created Mentor", data: newMentor });
