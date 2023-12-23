@@ -2,11 +2,9 @@
 import React, { useState } from "react";
 import {AutoComplete,Button,Cascader,Checkbox,Col,Form,Input,InputNumber,Row,Select,Upload,message} from 'antd';
 import { UploadOutlined ,PlusOutlined,LoadingOutlined } from '@ant-design/icons';
-// import { useNavigate } from "react-router-dom";
 import { useRouter } from "next/navigation";
-// import { useSelector, useDispatch } from 'react-redux';
-// import { setcredentials } from "../slices/AuthSlice";
-  
+import { reset,setcredentials } from "@/redux/features/AuthSlice";
+import { useAppDispatch,useAppSelector } from "@/redux/hooks";
   
   const { Option } = Select;
   const normFile = (e:any) => {
@@ -44,15 +42,14 @@ import { useRouter } from "next/navigation";
     masters_courses:"",
     address:"",
     website:""
-}
+  }
 
 const URegister:  React.FC = () => {
     let [formstate,setformstate] = useState(inivals);
     let [fileList,setFileList] = useState([]);
     const router = useRouter();
-    // const auth = useSelector((state)=>state.auth);
-    // const navigate = useNavigate();
-    // const dispatch = useDispatch();
+    const currstate = useAppSelector((state)=>state);
+    const dispatch = useAppDispatch();
     const [form] = Form.useForm();
     
     // function getBase64(img, callback) {
@@ -61,30 +58,57 @@ const URegister:  React.FC = () => {
     //     reader.readAsDataURL(img);
     //   }
 
-    const handleSubmit = async() => {
-        // e.preventDefault();
-        console.log(formstate.images);
-        const res = await fetch('http://localhost:3000/api/v1/univ/register',{
+    const imageUpload = async(file:any) => {
+        const formData = new FormData();
+        formData.append('file',file);
+        formData.append('upload_preset','uni_connect_assets');
+        const image = await fetch(`https://api.cloudinary.com/v1_1/dxzc7smaf/image/upload`,{
+                method: 'POST',
+                body: formData,
+            }).then(r => r.json());
+        return image.secure_url;
+    }
+
+
+    const handleSubmit = async(values:any) => {
+        
+       
+        let arr = [];
+        for(let i=0;i<values.images.length;i++){
+            let url = await imageUpload(values.images[i].originFileObj);
+            arr.push(url);
+        }
+
+        console.log('images are : ', arr);
+
+        const res = await fetch('http://localhost:3000/api/university',{
             method:'POST',
             body:JSON.stringify({
-                name:formstate.name,
-                email:formstate.email,
-                password:formstate.password,
-                images:formstate.images,
-                description:formstate.description,
-                bachelor_courses:formstate.bachelor_courses,
-                masters_courses:formstate.masters_courses,
-                address:formstate.address,
-                website:formstate.website
-            }),
+                    name:values.name,
+                    email:values.email,
+                    password:values.password,
+                    images:arr,
+                    description:values.description,
+                    bachelor_courses:values.bachelor_courses,
+                    masters_courses:values.masters_courses,
+                    address:values.address,
+                    website:values.website
+                }),
             headers: {
                 'Content-Type': 'application/json',
               }
         });
+
         const data = await res.json();
-        console.log("data got is :", data);
-        // dispatch(setcredentials({type:"University",credentials:data}));
-        router.push(`/dashboard/${data._id}`);
+        dispatch(reset());
+        const new_univ = {
+            credentials:data,
+            type:'university'
+        }
+        dispatch(setcredentials(new_univ));
+        console.log("curr authslice state is : ",currstate);
+
+        // router.push(`/dashboard/${data._id}`);
     }
 
     const handleChange = (evt:any) =>{
@@ -115,7 +139,7 @@ const URegister:  React.FC = () => {
         console.log('Received values of form: ', values);
         setformstate(values);
         console.log('formstate values are :',formstate);
-        handleSubmit();
+        handleSubmit(values);
     };
 
     return (
@@ -293,6 +317,7 @@ const URegister:  React.FC = () => {
                                                             listType="picture-card"
                                                             fileList={fileList}
                                                             maxCount={3}
+                                                            name="file"
                                                             // onChange={handleFileChange}
                                                             multiple
                                                             >

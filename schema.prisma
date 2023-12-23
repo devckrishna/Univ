@@ -13,7 +13,7 @@ datasource db {
 model Mentor {
   id           String          @id @default(uuid())
   name         String
-  email        String
+  email        String          @unique
   password     String
   description  String
   country      String
@@ -29,7 +29,7 @@ model Mentor {
 model Student {
   id          String     @id @default(uuid())
   name        String
-  email       String
+  email       String     @unique
   password    String
   description String
   country     String
