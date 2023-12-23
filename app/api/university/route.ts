@@ -1,4 +1,5 @@
 import { db } from "@/utils/db";
+import cloudinary from "@/cloudinaryConfig";
 import { NextResponse,NextRequest } from "next/server";
 
 // export async function GET(req: Request) {
@@ -26,6 +27,16 @@ export async function POST(req: NextRequest) {
       website,
       // rate
     } = await req.json();
+    // console.log('images at backend are : ', images);
+    // const imageUrls = [];
+
+    // for (const image of images) {
+    //   const result = await cloudinary.uploader.upload(image.path, {
+    //     // upload_preset: 'your_upload_preset',
+    //   });
+    //   imageUrls.push(result.secure_url);
+    // }
+
     const newuniversity = await db.university.create({
       data: {
         name,
