@@ -1,6 +1,7 @@
 import { db } from "@/utils/db";
 import cloudinary from "@/cloudinaryConfig";
 import { NextResponse,NextRequest } from "next/server";
+import bcrypt from "bcrypt";
 
 // export async function GET(req: Request) {
 //   try {
@@ -27,6 +28,7 @@ export async function POST(req: NextRequest) {
       website,
       // rate
     } = await req.json();
+
     // console.log('images at backend are : ', images);
     // const imageUrls = [];
 
@@ -36,12 +38,13 @@ export async function POST(req: NextRequest) {
     //   });
     //   imageUrls.push(result.secure_url);
     // }
+    const hashedPassword = await bcrypt.hash(password,10);
 
     const newuniversity = await db.university.create({
       data: {
         name,
         email,
-        password,
+        password:hashedPassword,
         description,
         images,
         bachelor_courses,

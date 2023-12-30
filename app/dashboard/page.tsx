@@ -1,37 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Row,
-  Col,
-  Button,
-  Divider,
-  Space,
-  Card,
-  Avatar,
-  Pagination,
-  ConfigProvider,
-  Dropdown,
-  Input,
-  Popover,
-  theme,
-} from "antd";
-import {
-  CaretDownFilled,
-  DoubleRightOutlined,
-  GithubFilled,
-  InfoCircleFilled,
-  LogoutOutlined,
-  PlusCircleFilled,
-  QuestionCircleFilled,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  PageContainer,
-  ProCard,
-  ProConfigProvider,
-  ProLayout,
-  SettingDrawer,
-} from "@ant-design/pro-components";
+  Row,Col,Button,Divider,Space,Card,Avatar,Pagination,ConfigProvider,Dropdown,Input,Popover,theme,Carousel,} from "antd";
+import {CaretDownFilled,DoubleRightOutlined,GithubFilled,InfoCircleFilled,LogoutOutlined,PlusCircleFilled,QuestionCircleFilled,SearchOutlined,} from "@ant-design/icons";
+import {PageContainer,ProCard,ProConfigProvider,ProLayout,SettingDrawer,} from "@ant-design/pro-components";
 import Link from "next/link";
 import Verticalcard from "@/components/VerticalCard";
 import Sidecard from "@/components/SideCard";
@@ -41,6 +13,15 @@ function Dashboard() {
   const headingStyle = {
     color: "black !important",
     textAlign: "left !important",
+  };
+    
+  const contentStyle: React.CSSProperties = {
+    margin: 0,
+    height: '400px',
+    color: '#fff',
+    lineHeight: '160px',
+    textAlign: 'center',
+    background: '#364d79',
   };
   let [posts, setposts] = useState([]);
   const [settings, setSetting] = useState({
@@ -59,19 +40,24 @@ function Dashboard() {
     fetchPosts();
   }, []);
 
+  const onChange = (currentSlide: number) => {
+    console.log(currentSlide);
+  };
+
   return (
     <>
       {/* <Navbar /> */}
       <ProLayout
-        prefixCls="my-prefix"
+        // prefixCls="my-prefix"
         token={
           {
             // colorBgMenuItemSelected: 'white',
-            //   bgLayout: 'white',
+              // bgLayout: 'white',
           }
         }
         title="UnivConnect"
         layout="top"
+        style={{padding:'0px !important', margin:'0px !important'}}
         //   collapsed={true}
         //   colorBgHeader={"black"}
         avatarProps={{
@@ -102,74 +88,88 @@ function Dashboard() {
           },
         }}
       >
-        <PageContainer content="">
-          <div>
-            <div style={{ margin: "20px" }}>
-              <Divider orientation="center">
-                <h2>Most Recent Blogs</h2>
-              </Divider>
-              <Row gutter={[48, 48]}>
-                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
-                  <Verticalcard />
-                </Col>
+      {/* </ProLayout> */}
 
-                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
-                  <Space direction="vertical" size="large">
-                    <Row>
-                      <Sidecard />
-                    </Row>
-                    <Row>
-                      <Sidecard />
-                    </Row>
-                  </Space>
+        {/* <PageContainer content=""> */}
+            <Row>
+                <Col span={24}>
+                    <Carousel afterChange={onChange} autoplay={true}>
+                        <div>
+                          <h3 style={contentStyle}>1</h3>
+                        </div>
+                        <div>
+                          <h3 style={contentStyle}>2</h3>
+                        </div>
+                        <div>
+                          <h3 style={contentStyle}>3</h3>
+                        </div>
+                        <div>
+                          <h3 style={contentStyle}>4</h3>
+                        </div>
+                    </Carousel>
+
                 </Col>
-              </Row>
+            </Row>
+
+            <div style={{ marginLeft: "3%", marginRight: '3%', marginBottom:'3%'}}>
+                {/* <div style={{ margin: "20px" }}> */}
+                  <Divider orientation="center">
+                    <h2 style={{color:'black !important'}}>Most Recent Blogs</h2>
+                  </Divider>
+
+                  <Row gutter={[48, 48]}>
+
+                    <Col xs={{ span: 24 }} lg={{ span: 12 }}>
+                        <Row gutter={[0,8]}>
+                          <Col xs={{span:24}} ><Sidecard /></Col> 
+                          <Col xs={{span:24}} ><Sidecard /></Col> 
+                        </Row>  
+                    </Col>
+
+                    <Col xs={{ span: 24 }} lg={{ span: 12 }} style={{height:'100% !important'}}>
+                      <Sidecard />
+                    </Col>
+
+                  </Row>
             </div>
 
-            <div style={{ margin: "20px" }}>
-              {/* <Row> */}
-              <Divider orientation="center">
-                <h2>See All Posts</h2>
-              </Divider>
-              <Row gutter={[48, 48]}>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-              </Row>
-
-              {/* <Row gutter={[16,16]}>
-                                        <Col xs={{span:24}} lg={{span:8}}><Verticalcard /></Col>
-                                        <Col xs={{span:24}} lg={{span:8}}><Verticalcard /></Col>
-                                        <Col xs={{span:24}} lg={{span:8}}><Verticalcard /></Col>
-                                </Row> */}
-              <Row>
-                {" "}
-                <Pagination
-                  defaultCurrent={1}
-                  total={50}
-                  showLessItems={true}
-                />{" "}
-              </Row>
-
-              {/* </Row> */}
+            <div style={{ marginLeft: "3%", marginRight: '3%', marginBottom:'3%'}}>
+                  {/* <Row> */}
+                      <Divider orientation="center">
+                        <h2>See All Posts</h2>
+                      </Divider>
+                      <Row gutter={[48, 48]}>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
+                          <Verticalcard />
+                        </Col>
+                      </Row>      
             </div>
-          </div>
-        </PageContainer>
+
+        {/* </PageContainer> */}
       </ProLayout>
     </>
   );

@@ -19,7 +19,7 @@ model Mentor {
   country      String
   university   String
   image        String
-  gender       String
+  gender       String       
   rating       Float
   bookings     Booking[]
   feedbacks    Feedback[]

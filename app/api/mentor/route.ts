@@ -1,5 +1,6 @@
 import { db } from "@/utils/db";
 import { NextResponse } from "next/server";
+import axios from 'axios';
 
 export async function GET(req: Request) {
   try {
@@ -26,6 +27,8 @@ export async function POST(req: Request) {
       rating,
       // rate
     } = await req.json();
+    // const x = await CreateZoomMeeting(name);
+
     const newMentor = await db.mentor.create({
       data: {
         name,
@@ -37,9 +40,12 @@ export async function POST(req: Request) {
         image,
         gender,
         rating,
-        // rate
+        // room_link: x
+        //rate
       },
     });
+
+
     return NextResponse.json({ message: "Created Mentor", data: newMentor });
   } catch (err) {
     // console.log(err);
