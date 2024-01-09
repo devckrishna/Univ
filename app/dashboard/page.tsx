@@ -31,9 +31,9 @@ function Dashboard() {
   });
 
   async function fetchPosts() {
-    // const res = await fetch('/api/v1/posts');
-    // const data = res.json();
-    // setposts(posts);
+    const res = await fetch('http://localhost:3000/api/posts');
+    const data = await res.json();
+    setposts(data);
   }
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function Dashboard() {
   }, []);
 
   const onChange = (currentSlide: number) => {
-    console.log(currentSlide);
+    // console.log(currentSlide);
   };
 
   return (

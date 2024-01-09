@@ -6,13 +6,20 @@ import Link from "next/link";
 // import { Link } from "react-router-dom";
 import {Typography} from "antd";
 import { db } from "@/utils/db";
+import { conversionMomentValue } from "@ant-design/pro-components";
 
 const { Title } = Typography;
 const style: React.CSSProperties = { display:'flex', flexDirection:'column',  justifyContent: 'center', alignItems: 'center' };
 
-const Home:  React.FC = async () => {
+const Home:  React.FC = () => {
   // const user = await db.user.findMany();
   // console.log(user);
+
+  const checking = async() => {
+        const response = await fetch("http://localhost:3000/api/addSlot");
+        const data = await response.json();
+        console.log(data);
+  }
 
   return (
     <div style={{height:'100vh'}}>
@@ -32,6 +39,9 @@ const Home:  React.FC = async () => {
                                     </Button>
                                     <Button type="primary" block icon={<UserAddOutlined />}>
                                         <Link href={"/mentee"}>Student</Link>
+                                    </Button>
+                                    <Button onClick={checking}>
+                                        check krrhe;
                                     </Button>
                                 </Space>
                             {/* </div> */}

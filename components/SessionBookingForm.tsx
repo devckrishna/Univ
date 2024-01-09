@@ -16,6 +16,8 @@ import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import { Row,Col } from 'antd';
 import { useAppSelector } from '@/redux/hooks';
 import Script from 'next/script'
+// import { google } from 'googleapis';
+import { redirect } from 'next/navigation';
 
 
 const SessionBookingForm:  React.FC = () =>  {
@@ -33,7 +35,7 @@ const SessionBookingForm:  React.FC = () =>  {
     console.log(currstate);
     let hrduration = 0;
     if(duration)hrduration = duration/60;
-    const key = process.env.key_id;
+    const key = 'rzp_test_qeUsKBb8MbtMkc';
     console.log(key);
 
     const data = await fetch("http://localhost:3000/api/razorpay",{
@@ -43,9 +45,9 @@ const SessionBookingForm:  React.FC = () =>  {
                         currency: 'INR',
                         slot:slot,
                         date: value,
-                        payeeName: currstate.authReducer.credentials?.username,
-                        payeeEmail: currstate.authReducer.credentials?.email,
-                        payeeId: currstate.authReducer.credentials?.id
+                        payeeName: currstate.auth.credentials?.username,
+                        payeeEmail: currstate.auth.credentials?.email,
+                        payeeId: currstate.auth.credentials?.id
                       }),
                       headers: {
                           'Content-Type': 'application/json',
@@ -82,7 +84,43 @@ const SessionBookingForm:  React.FC = () =>  {
                 console.log("response verify==",res)
         
                 if(res?.message=="success"){
-                  console.log("redirected.......")
+                  console.log("redirected.......");
+                  console.log("add a new slot");
+                  
+                                    
+                  // const auth = new google.auth.OAuth2(
+                  //   process.env.GOOGLE_CLIENT_ID,
+                  //   process.env.GOOGLE_CLIENT_SECRET,
+                  //   process.env.GOOGLE_REDIRECT_URI
+                  // );
+                                    
+                  // const scopes = [
+                  //   'https://www.googleapis.com/auth/calendar'
+                  // ];
+
+                  // const url = auth.generateAuthUrl({
+                  //   // 'online' (default) or 'offline' (gets refresh_token)
+                  //   access_type: 'offline',
+                  //   // If you only need one scope you can pass it as a string
+                  //   scope: scopes
+                  // });
+
+                  // redirect(url);
+
+                  // const response  = await fetch("http://localhost:3000/api/addslot",{
+                  //   method:'POST',
+                  //   body: JSON.stringify({
+                  //     menteeEmail: currstate.auth.credentials?.email,
+                  //     mentorEmail: 'xyz@gmail.com',
+                  //     slot:slot,
+                  //     duration:duration,
+                  //   })
+                  // })
+                  
+                  // const d = response.json();
+                  // throw new Error();
+                  // if(d.message== "Slot failed")
+
                   // router.push("/paymentsuccess?paymentid="+response.razorpay_payment_id)
                 }
         
@@ -96,16 +134,17 @@ const SessionBookingForm:  React.FC = () =>  {
           name: "Chirag Jindal",
           email: "chirag@gmail.com",
         },
-        callback_url:  `http://localhost:3000/mentee/${currstate.authReducer.credentials?.id}`
+        callback_url:  `http://localhost:3000/mentee/${currstate.auth.credentials?.id}`
       };
 
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
       paymentObject.on("payment.failed", function (response:any) {
         alert("Payment failed. Please try again. Contact support for help");
+        return ;
       });
 
-        return "";
+        // return "";
   }
 
   const onChange = (value: number) => {

@@ -16,7 +16,7 @@ import bcrypt from "bcrypt";
 
 export async function POST(req: NextRequest) {
   try {
-    const {
+    let {
       name,
       email,
       password,
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       // rate
     } = await req.json();
 
-    // console.log('images at backend are : ', images);
+    console.log('images at backend are : ', images);
     // const imageUrls = [];
 
     // for (const image of images) {
@@ -38,7 +38,11 @@ export async function POST(req: NextRequest) {
     //   });
     //   imageUrls.push(result.secure_url);
     // }
+
     const hashedPassword = await bcrypt.hash(password,10);
+    // console.log(hashedPassword);
+    bachelor_courses = bachelor_courses.split(",");
+    masters_courses = masters_courses.split(",")
 
     const newuniversity = await db.university.create({
       data: {
@@ -50,13 +54,13 @@ export async function POST(req: NextRequest) {
         bachelor_courses,
         masters_courses,
         address,
-        website
-        // rate
+        website,
+        // posts
       },
     });
-    return NextResponse.json({ message: "Created Mentor", data: newuniversity });
+    return NextResponse.json({ message: "Created University", data: newuniversity });
   } catch (err) {
-    // console.log(err);
+    console.log(err);
     return NextResponse.json({
       message: "Error creating mentor {POST: api/university}",
       error: err,

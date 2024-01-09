@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 // import { useNavigate } from "react-router-dom";
 import { useRouter } from "next/navigation";
-// import { useSelector, useDispatch } from 'react-redux'
-// import { setuniversityvalue } from "../slices/UnivSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { reset,setcredentials } from "@/redux/features/AuthSlice";
 
 const inivals = {
   name:"",
@@ -26,18 +26,21 @@ const ULogin:  React.FC = () =>{
     };
 
     let [formstate,setformstate] = useState(inivals);
-    // const router = useRouter();
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+    const currstate = useAppSelector((state) => state);
     // const navigate = useNavigate();
     // const dispatch = useDispatch();
 
     const loginHandler = async() =>{
+
       console.log(formstate);
-      const res = await fetch('/api/v1/univ/login', {
+      const res = await fetch('http://localhost:3000/api/university/login', {
           method: 'POST',
           body: JSON.stringify({
             email: formstate.email ,
             password:formstate.password,
-            name:formstate.name
+            // name:formstate.name
           }),
           headers: {
           'Content-Type': 'application/json',
@@ -45,8 +48,21 @@ const ULogin:  React.FC = () =>{
       });
   
       const data = await res.json();
-      // dispatch(setuniversityvalue({email:formstate.email,university_name:formstate.name}));
-    //   router.push("/dashboard");
+      console.log("data from database is : ",data);
+      if(data.data){
+          dispatch(reset());
+          const new_univ = {
+              credentials:data.data,
+              type:'university'
+          }
+          console.log("print new univ",new_univ);
+          dispatch(setcredentials(new_univ));
+          console.log("curr authslice state is : ",currstate);
+          router.push(`/dashboard`);
+      }else {
+        router.push('/');
+      }
+
     }
 
     const handleChange = (evt:any) =>{
@@ -60,12 +76,16 @@ const ULogin:  React.FC = () =>{
         loginHandler();
     };
 
+    useEffect(()=>{
+      if(currstate.auth.credentials)router.push(`/university/${currstate.auth.credentials.id}`);
+    });
+
     return (
         <>
             <Form {...formItemLayout} name="normal_login" className="login-form"
                 onFinish={onFinish}
                 >
-                <Form.Item name="name"
+                {/* <Form.Item name="name"
                     rules={[
                       {
                           required: true,
@@ -74,7 +94,7 @@ const ULogin:  React.FC = () =>{
                     ]}
                 >
                     <Input prefix={<UserOutlined className="site-form-item-icon" />} name="name" placeholder="University Name" onChange={handleChange} />
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item name="email"
                     rules={[

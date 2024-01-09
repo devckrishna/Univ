@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {AutoComplete,Button,Cascader,Checkbox,Col,Form,Input,InputNumber,Row,Select,Upload,message} from 'antd';
 import { UploadOutlined ,PlusOutlined,LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from "next/navigation";
@@ -100,15 +100,17 @@ const URegister:  React.FC = () => {
         });
 
         const data = await res.json();
+        console.log("data from database is : ",data);
         dispatch(reset());
         const new_univ = {
-            credentials:data,
+            credentials:data.data,
             type:'university'
         }
+        console.log("print new univ",new_univ);
         dispatch(setcredentials(new_univ));
         console.log("curr authslice state is : ",currstate);
-
-        // router.push(`/dashboard/${data._id}`);
+        
+        router.push(`/dashboard`);
     }
 
     const handleChange = (evt:any) =>{
@@ -117,6 +119,10 @@ const URegister:  React.FC = () => {
         // console.log(name + "  " + value);
         setformstate({...formstate,[name]: value});
     }
+
+    useEffect(()=>{
+        if(currstate.auth.credentials)router.push(`/university/${currstate.auth.credentials.id}`);
+      });
 
     // const handleFileChange = async (info) => {
     //     // console.log(info.file.status)

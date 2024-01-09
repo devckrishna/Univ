@@ -5,7 +5,6 @@ import Link from "next/link";
 // import { Link } from "react-router-dom";
 import {Typography} from "antd";
 import img from '../../public/img7.jpg';
-// import { db } from "@/utils/db";
 
 const { Title } = Typography;
 const style: React.CSSProperties = { display:'flex', flexDirection:'column',  justifyContent: 'center', alignItems: 'center' };

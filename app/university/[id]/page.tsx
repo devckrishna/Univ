@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -49,6 +49,8 @@ import {
   MenuItem,
 } from "@mui/material";
 import Feedbacks from "@/components/Feedbacks";
+import { useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
 // import Bookings from "../subcomponents/Bookings";
 // import Feedbacks from "../subcomponents/Feedbacks";
 
@@ -94,14 +96,18 @@ const contentStyle: React.CSSProperties = {
   background: "#364d79",
 };
 
-const UnivProfile: React.FC = async () => {
+const UnivProfile: React.FC = () => {
+  const currstate = useAppSelector(state=>state);
+  const router = useRouter();
   const [responsive, setResponsive] = useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
   const handleOpenNavMenu = (event: any) => {
     setAnchorElNav(event.currentTarget);
   };
   const handleOpenUserMenu = (event: any) => {
+    console.log("entered in handle")
     setAnchorElUser(event.currentTarget);
   };
 
@@ -112,6 +118,13 @@ const UnivProfile: React.FC = async () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  // useEffect(()=>{
+  //   if(!currstate.auth.credentials){
+  //     router.push(`/`);
+  //   }
+  // })
+
   return (
     <>
       <AppBar position="static" color="transparent">
@@ -176,6 +189,7 @@ const UnivProfile: React.FC = async () => {
                 ))}
               </Menu>
             </Box>
+
           </Toolbar>
         </Container>
       </AppBar>
@@ -247,12 +261,11 @@ const UnivProfile: React.FC = async () => {
                 </Divider>
                 <Stack spacing={2} direction="column">
                   <Button variant="contained">Edit Personal Information</Button>
-                  <Button variant="contained">
-                    <Link href={`/university/createPost`}>
-                      {" "}
-                      Create New Post{" "}
-                    </Link>
-                  </Button>
+                    <Button variant="contained">                    
+                      <Link href={`/university/${currstate.auth.credentials?.id}/createPost`}>
+                          Create New Post
+                      </Link>
+                    </Button>
                 </Stack>
               </div>
             </Col>

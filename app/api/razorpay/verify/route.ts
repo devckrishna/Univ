@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
             .digest("hex");
         const isAuthentic = expectedSignature === razorpay_signature;
 
-        if(isAuthentic){
+        if(!isAuthentic){
             // new payment schema 
             
             // instance.transfers.create({
@@ -29,8 +29,9 @@ export async function POST(req: NextRequest) {
             //   }, function(err, transfer) {
             //     console.log(transfer);
             //   });
-
-
+            
+            return NextResponse.json({message:'Payment Failed !'});
         }
+
         return NextResponse.json({message:'Payment received successfully !'})
     }

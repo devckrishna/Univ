@@ -4,6 +4,7 @@ import React,{useState} from 'react';
 import {AutoComplete,Button,Cascader,Checkbox,Col,Form,Input,InputNumber,Row,Select,Upload,message} from 'antd';
 import { UploadOutlined ,PlusOutlined,LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
+import img from '../../../../public/img7.jpg';
 // import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
@@ -44,18 +45,19 @@ const { Option } = Select;
     website:""
 }
 
-const CreatePost:  React.FC = async () => {
+const CreatePost:  React.FC = () => {
     
     // let location = useLocation();
     // console.log(location);
-    const backgroundImageUrl = `${process.env.PUBLIC_URL}/img1.jfif`;
+    // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img1.jfif`;
     const backgroundStyle = {
-       backgroundImage: `url(${backgroundImageUrl})`,
+       backgroundImage: `url(${img.src})`,
        backgroundSize: 'cover',
        backgroundPosition: 'center',
        width: '100%',
        height: '100%'
     }
+    // console.log(backgroundImageUrl);
 
     let [formstate,setformstate] = useState(inivals);
     let [fileList,setFileList] = useState([]);
