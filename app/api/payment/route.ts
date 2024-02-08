@@ -1,39 +1,63 @@
 import { db } from "@/utils/db";
-import Razorpay from 'razorpay';
-import {v4 as uuidv4 } from 'uuid';
-import crypto from "crypto";
+// import Razorpay from 'razorpay';
+// import {v4 as uuidv4 } from 'uuid';
+// import crypto from "crypto";
+import Stripe from 'stripe';
 import { NextResponse, NextRequest } from "next/server";
 
-const instance = new Razorpay({
-    key_id: process.env.RAZORPAY_API_KEY as string,
-    key_secret: process.env.RAZORPAY_API_SECRET as string,
-  });
+const key = process.env.STRIPE_SECRET_KEY || "";
+
+const stripe = new Stripe(key, {
+  apiVersion: "2023-10-16",
+});
 
 export async function POST(req: NextRequest) {
 
-    const {amount,currency,slot,date,payeeName,payeeEmail,id} = await req.json();
-
-    const payment_capture = 1;
-    // const amount = 1 * 100 // amount in paisa. In our case it's INR 1
-    // const currency = "INR";
-    const options = {
-        amount: amount*100,
-        currency,
-        receipt: uuidv4() as string,
-        payment_capture,
-        notes: {
-            // These notes will be added to your transaction. So you can search it within their dashboard.
-            // Also, it's included in webhooks as well. So you can automate it.
-            slot:slot,
-            date: date,
-            MenteeName: payeeName,
-            MenteeEmail: payeeEmail,
-            MenteeId: id
+    const body = await req.json();
+    try {
+        if (body.length > 0) {
+          const session = await stripe.checkout.sessions.create({
+            submit_type: "pay",
+            mode: "payment",
+            payment_method_types: ["card"],
+            billing_address_collection: "auto",
+            shipping_options: [],
+            invoice_creation: {
+              enabled: true,
+            },
+            line_items: body.map((item: any) => {
+              return {
+                price_data: {
+                  currency: "inr",
+                  product_data: {
+                    name: item.name,
+                  },
+                  unit_amount: item.amount * 100,
+                },
+                quantity: 1,
+                adjustable_quantity: {
+                  enabled: false,
+                  minimum: 1,
+                  maximum: 10,
+                },
+              };
+            }),
+            phone_number_collection: {
+              enabled: false,
+            },
+    
+            success_url: `https://univ-connect2-0.vercel.app/`,
+            cancel_url: `http://localhost:3000/mentor/${body[0]['id']}/bookSession`,
+          });
+          return NextResponse.json({ session });
+        } else {
+          return NextResponse.json({ message: "No Data Found" });
         }
-    };
-
-   const order = await instance.orders.create(options);
-   return NextResponse.json({ msg: "success",order });
+      } catch (err: any) {
+        console.log(err);
+        return NextResponse.json(err.message);
+      }
+   
 }
 
 // export async function POST(req: NextRequest) {

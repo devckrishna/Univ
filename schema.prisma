@@ -14,12 +14,12 @@ model Mentor {
   id           String          @id @default(uuid())
   name         String
   email        String          @unique
-  password     String
   description  String
   country      String
   university   String
   image        String
-  gender       String       
+  gender       String
+  rate         Int       
   rating       Float
   bookings     Booking[]
   feedbacks    Feedback[]
@@ -30,7 +30,6 @@ model Student {
   id          String     @id @default(uuid())
   name        String
   email       String     @unique
-  password    String
   description String
   country     String
   image       String
@@ -55,7 +54,7 @@ model MentorBooking {
   id         String @id @default(uuid())
   date       String
   mentor     Mentor @relation(fields: [mentor_id], references: [id])
-  mentor_id  String
+  mentor_id  String 
   duration   Int
   start_time String
   end_time   String

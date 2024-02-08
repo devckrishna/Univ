@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ClerkProvider } from '@clerk/nextjs'
 import { Providers } from '@/redux/provider'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
@@ -18,13 +19,15 @@ export default function RootLayout({
 }) {
   return (
     <>
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          {children}
-        </Providers>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <Providers>
+            {children}
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
     <Script src="https://checkout.razorpay.com/v1/checkout.js" />
     </>
   )

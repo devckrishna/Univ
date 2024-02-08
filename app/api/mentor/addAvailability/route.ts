@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
       duration,
       start_time,
       end_time,
-      // rate
     } = await req.json();
 
     const mentor = await db.mentor.findUnique({
@@ -33,6 +32,7 @@ export async function POST(req: NextRequest) {
     if(!mentor){
         return NextResponse.json({
             message: "Invalid credentials ! Unable to update slots",
+            statusCode:401
           });
     }
 
@@ -56,8 +56,7 @@ export async function POST(req: NextRequest) {
         }
     })
 
-
-    return NextResponse.json({ message: "Availability slots updated !",data:newslot});
+    return NextResponse.json({ message: "Availability slots updated !",data:newslot,statusCode:200});
   } catch (err) {
     // console.log(err);
     return NextResponse.json({

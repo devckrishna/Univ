@@ -1,150 +1,74 @@
 'use client'
 import * as React from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import Card from '@mui/joy/Card';
-import Button from "@mui/joy/Button";
-// import { CardContent } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Typography from '@mui/joy/Typography';
-import CardContent from '@mui/joy/CardContent';
-import CardOverflow from '@mui/joy/CardOverflow';
 import { Select } from 'antd';
-import Option from '@mui/joy/Option';
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Row,Col } from 'antd';
 import { useAppSelector } from '@/redux/hooks';
-import Script from 'next/script'
-// import { google } from 'googleapis';
+import { Calendar } from "@/components/ui/calendar"
 import { redirect } from 'next/navigation';
+import getStipePromise from '@/lib/stripe';
+import { Button } from './ui/button';
+import { useUser } from '@clerk/nextjs';
+import { CardHeader,Card,CardDescription,CardContent } from './ui/card';
+import { db } from '@/utils/db';
 
 
-const SessionBookingForm:  React.FC = () =>  {
-  const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
+const SessionBookingForm = () =>  {
+  const [date, setDate] = React.useState<Date>()
   const [duration,setduration] = React.useState<number | null>(null);
   const [slot,setSlot] = React.useState<String | null> (null);  
-  const currstate = useAppSelector((state)=>state);
-  
-  
+  // const currstate = useAppSelector((state)=>state);
+  const user = useUser();
+
   const makePayment = async() => {
     
     console.log(duration)
     console.log(slot);
-    console.log(value);
-    console.log(currstate);
+    console.log(date?.toDateString());
+    const slots = slot?.split('-');
+    // console.log(currstate);
     let hrduration = 0;
     if(duration)hrduration = duration/60;
-    const key = 'rzp_test_qeUsKBb8MbtMkc';
-    console.log(key);
+    
+    const stripe = await getStipePromise();
 
-    const data = await fetch("http://localhost:3000/api/razorpay",{
+    const response = await fetch("http://localhost:3000/api/payment",{
                   method:'POST',
-                      body:JSON.stringify({
-                        amount: hrduration*700,
-                        currency: 'INR',
-                        slot:slot,
-                        date: value,
-                        payeeName: currstate.auth.credentials?.username,
-                        payeeEmail: currstate.auth.credentials?.email,
-                        payeeId: currstate.auth.credentials?.id
-                      }),
-                      headers: {
-                          'Content-Type': 'application/json',
-                        }
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body:JSON.stringify([{
+                    name:'session',
+                    id:'a1234',
+                    amount: hrduration*700,
+                    currency: 'INR',
+                    slot:slot,
+                    date: date?.toDateString(),
+                    // payeeName: currstate.auth.credentials?.username,
+                    // payeeEmail: currstate.auth.credentials?.email,
+                    // payeeId: currstate.auth.credentials?.id
+                  }])
         });
-    const {order} = await data.json();
-    console.log(order);
-    const options = {
-        key: "rzp_test_qeUsKBb8MbtMkc",
-        name: "Uni Connect Session",
-        currency: 'INR',
-        amount: order.amount,
-        order_id: order.id,
-        description: "Understanding RazorPay Integration",
-        // image: logoBase64,
+    const data = await response.json();
+    console.log(data);
+    if (data.session) {
+      stripe?.redirectToCheckout({ sessionId: data.session.id });
+    }
 
-        handler: async function (response:any) {
-          //       // if (response.length==0) return <Loading/>;
-                console.log(response);
-        
-                const data = await  fetch("http://localhost:3000/api/razorpay/verify", {
-                  method: "POST",
-                  // headers: {
-                  //   // Authorization: 'YOUR_AUTH_HERE'
-                  // },
-                  body: JSON.stringify({
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_signature: response.razorpay_signature,
-                  }),
-                });
-        
-                const res = await data.json();
-                console.log("response verify==",res)
-        
-                if(res?.message=="success"){
-                  console.log("redirected.......");
-                  console.log("add a new slot");
-                  
-                                    
-                  // const auth = new google.auth.OAuth2(
-                  //   process.env.GOOGLE_CLIENT_ID,
-                  //   process.env.GOOGLE_CLIENT_SECRET,
-                  //   process.env.GOOGLE_REDIRECT_URI
-                  // );
-                                    
-                  // const scopes = [
-                  //   'https://www.googleapis.com/auth/calendar'
-                  // ];
+    const res = await fetch('/api/addbooking',{
+      method:"POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({
+        student_email: 'user?.emailAddresses[0].emailAddress',
+        mentor_id:'1234a',
+        date:date?.toDateString(),
+        duration:hrduration,
+        start_time: slots?slots[0]:'21',
+        end_time:slots?slots[1]:'23'
+      })
+    });
 
-                  // const url = auth.generateAuthUrl({
-                  //   // 'online' (default) or 'offline' (gets refresh_token)
-                  //   access_type: 'offline',
-                  //   // If you only need one scope you can pass it as a string
-                  //   scope: scopes
-                  // });
-
-                  // redirect(url);
-
-                  // const response  = await fetch("http://localhost:3000/api/addslot",{
-                  //   method:'POST',
-                  //   body: JSON.stringify({
-                  //     menteeEmail: currstate.auth.credentials?.email,
-                  //     mentorEmail: 'xyz@gmail.com',
-                  //     slot:slot,
-                  //     duration:duration,
-                  //   })
-                  // })
-                  
-                  // const d = response.json();
-                  // throw new Error();
-                  // if(d.message== "Slot failed")
-
-                  // router.push("/paymentsuccess?paymentid="+response.razorpay_payment_id)
-                }
-        
-                // Validate payment at server - using webhooks is a better idea.
-                // alert(response.razorpay_payment_id);
-                // alert(response.razorpay_order_id);
-                // alert(response.razorpay_signature);
-        },
-        
-        prefill: {
-          name: "Chirag Jindal",
-          email: "chirag@gmail.com",
-        },
-        callback_url:  `http://localhost:3000/mentee/${currstate.auth.credentials?.id}`
-      };
-
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-      paymentObject.on("payment.failed", function (response:any) {
-        alert("Payment failed. Please try again. Contact support for help");
-        return ;
-      });
-
-        // return "";
   }
 
   const onChange = (value: number) => {
@@ -156,24 +80,27 @@ const SessionBookingForm:  React.FC = () =>  {
     setSlot(value);
     console.log(`selected ${value}`);
   }
+
+  const onChange3 = (value:any) => {
+    console.log(value);
+    setDate(value);
+    console.log(date);
+  }
+
     return (
         <>
-            <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-            <Card
-                sx={{
-                    width: '90%',
-                    // maxWidth: '100%',
-                    boxShadow: 'lg',
-                }}
-                >
-                <CardContent sx={{ alignItems: 'center', textAlign: 'center' }}>
-                    <Typography level="title-md">Pick a date</Typography>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateCalendar value={value} onChange={(newValue) => setValue(newValue)} />
-                    </LocalizationProvider>
-                    <Typography level="title-md">Pick a time</Typography>
-                    {/* <Row>
-                      <Col> */}
+            <Card className='w-9/10 shadow-lg'>
+                <CardContent className='flex flex-col items-center text-center'>
+                  <h4 className="scroll-m-20 text-xl font-semibold tracking-tight m-4">Pick a date</h4>
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={onChange3}
+                            className="rounded-md border shadow"
+                          />
+
+                  <h4 className="scroll-m-20 text-xl font-semibold tracking-tight m-4">Pick a time</h4>
+                    
                           <Select
                               showSearch
                               placeholder="Select duration"
@@ -199,12 +126,9 @@ const SessionBookingForm:  React.FC = () =>  {
                                   label: '120 mins',
                                 }
                               ]}
-                              style={{width:180}}
+                              style={{width:180,margin:'10px'}}
                             />
                           
-                      {/* </Col>
-                      <Col> */}
-
                         <Select
                               showSearch
                               placeholder="Pick a Slot  "
@@ -236,28 +160,27 @@ const SessionBookingForm:  React.FC = () =>  {
                               ]}
                               style={{width:180}}
                             />
-
-                      {/* </Col>
-                    </Row> */}
-
+                </CardContent>
+                
+                <CardContent className='flex flex-col items-center text-center'>
+                    <Button
+                    disabled={slot==null || duration==null || date==undefined} 
+                    onClick={() => makePayment()}
+                    >Pay now !</Button>
+                        
+                        <Card className='mt-2 w-full'>
+                          <CardContent className='flex flex-row pt-4 p-4'>
+                              <div className='w-4/5 flex items-center justify-start'>
+                                  <Typography><strong>This is a rare find.</strong> Josephine's time<br></br>
+                                  on Uni-Connect is usually booked.</Typography>
+                              </div>
+                              <div className='w-1/5 flex items-center justify-end'>
+                                  <img src="https://topmate.io/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon-service-diamond.79e0878f.svg&w=48&q=75"/>
+                              </div>
+                          </CardContent>
+                        </Card>
                 </CardContent>
 
-                <Button onClick={makePayment}>Pay now !</Button>
-                
-                <CardOverflow variant="soft" sx={{backgroundColor:'white'}}>
-                    {/* <Divider inset="context" /> */}
-                    <Card sx={{marginBottom:'35px'}}>
-                      <CardContent orientation="horizontal">
-                          <div style={{width:'82%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <Typography><strong>This is a rare find.</strong> Josephine's time<br></br>
-                              on Uni-Connect is usually booked.</Typography>
-                          </div>
-                          <div style={{width:'18%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <img src="https://topmate.io/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon-service-diamond.79e0878f.svg&w=48&q=75"/>
-                          </div>
-                      </CardContent>
-                    </Card>
-                </CardOverflow>
             </Card>
         </>
     )

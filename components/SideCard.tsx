@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 // import { ProCard } from '@ant-design/pro-components';
 // import Link from 'next/link';
@@ -9,15 +10,34 @@ import CardContent from '@mui/joy/CardContent';
 import Typography from '@mui/joy/Typography';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
 import img8 from '../public/img8.jpg'
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
+// import { CardHeader } from './ui/card';
+// import { Card } from './ui/card';
 
 const Sidecard:  React.FC = () => {
 
-    const func = () => redirect('/dashboard/:id');
+    const router = useRouter();
+    const func = () => router.push('/');
 
     // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
     return (
         <>
+            {/* <div className="rounded-xl relative min-h-[100px] h-full">
+                
+                <div className="absolute w-full h-full bg-black/50 rounded-xl text-white">
+                    <p className="font-bold text-2xl px-2 pt-4">text</p>
+                    <p className="px-2">subtitle</p>
+                    <button className="border rounded-xl px-5 py-1 border-white bg-white text-black hover:bg-black/50 hover:text-white border-none mx-2 absolute bottom-4">
+                        order
+                    </button>
+                </div>
+                    <img
+                    className="h-full w-full object-cover rounded-xl"
+                    src="https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320"
+                    alt="/"
+                    />
+            </div> */}
+
             <Card sx={{ minHeight: '250px', height:'100%'}}>
                 <CardCover 
                 // sx={{
@@ -53,6 +73,7 @@ const Sidecard:  React.FC = () => {
                     </Typography>
                 </CardContent>
             </Card>
+
 
         </>
     )

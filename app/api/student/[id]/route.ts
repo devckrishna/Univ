@@ -32,7 +32,6 @@ export async function PUT(
       data: {
         name,
         email,
-        password,
         description,
         country,
         image,

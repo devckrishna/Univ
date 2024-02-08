@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from "react";
 import {
   Row,Col,Button,Divider,Space,Card,Avatar,Pagination,ConfigProvider,Dropdown,Input,Popover,theme,Carousel,} from "antd";
-import {CaretDownFilled,DoubleRightOutlined,GithubFilled,InfoCircleFilled,LogoutOutlined,PlusCircleFilled,QuestionCircleFilled,SearchOutlined,} from "@ant-design/icons";
-import {PageContainer,ProCard,ProConfigProvider,ProLayout,SettingDrawer,} from "@ant-design/pro-components";
+// import {CaretDownFilled,DoubleRightOutlined,GithubFilled,InfoCircleFilled,LogoutOutlined,PlusCircleFilled,QuestionCircleFilled,SearchOutlined,} from "@ant-design/icons";
+// import {PageContainer,ProCard,ProConfigProvider,ProLayout,SettingDrawer,} from "@ant-design/pro-components";
 import Link from "next/link";
 import Verticalcard from "@/components/VerticalCard";
 import Sidecard from "@/components/SideCard";
+import { useAuth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
+import Navbar from "@/components/Navbar";
 
 function Dashboard() {
   // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
@@ -29,6 +32,12 @@ function Dashboard() {
     layout: "mix",
     splitMenus: true,
   });
+  const { userId,
+    sessionId,
+    getToken,
+    isLoaded,
+    isSignedIn,
+    signOut} = useAuth();
 
   async function fetchPosts() {
     const res = await fetch('http://localhost:3000/api/posts');
@@ -37,6 +46,8 @@ function Dashboard() {
   }
 
   useEffect(() => {
+    console.log(userId)
+    if(!userId)redirect("/onboarding");
     fetchPosts();
   }, []);
 
@@ -46,50 +57,7 @@ function Dashboard() {
 
   return (
     <>
-      {/* <Navbar /> */}
-      <ProLayout
-        // prefixCls="my-prefix"
-        token={
-          {
-            // colorBgMenuItemSelected: 'white',
-              // bgLayout: 'white',
-          }
-        }
-        title="UnivConnect"
-        layout="top"
-        style={{padding:'0px !important', margin:'0px !important'}}
-        //   collapsed={true}
-        //   colorBgHeader={"black"}
-        avatarProps={{
-          src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
-          size: "small",
-          title: "",
-          render: (props, dom) => {
-            return (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: "Go to Profile",
-                      icon: <InfoCircleFilled />,
-                      label: "Profile",
-                    },
-                    {
-                      key: "logout",
-                      icon: <LogoutOutlined />,
-                      label: "Logout",
-                    },
-                  ],
-                }}
-              >
-                {dom}
-              </Dropdown>
-            );
-          },
-        }}
-      >
-      {/* </ProLayout> */}
-
+        <Navbar />
         {/* <PageContainer content=""> */}
             <Row>
                 <Col span={24}>
@@ -113,9 +81,11 @@ function Dashboard() {
 
             <div style={{ marginLeft: "3%", marginRight: '3%', marginBottom:'3%'}}>
                 {/* <div style={{ margin: "20px" }}> */}
-                  <Divider orientation="center">
-                    <h2 style={{color:'black !important'}}>Most Recent Blogs</h2>
-                  </Divider>
+                  <div className="my-6">
+                    <Divider orientation="center">
+                      <h2 className="scroll-m-20 pb-2 text-3xl font-bold tracking-tight first:mt-0">Most Recent Blogs</h2>
+                    </Divider>
+                  </div>
 
                   <Row gutter={[48, 48]}>
 
@@ -126,7 +96,7 @@ function Dashboard() {
                         </Row>  
                     </Col>
 
-                    <Col xs={{ span: 24 }} lg={{ span: 12 }} style={{height:'100% !important'}}>
+                    <Col xs={{ span: 24 }} lg={{ span: 12 }}>
                       <Sidecard />
                     </Col>
 
@@ -136,7 +106,7 @@ function Dashboard() {
             <div style={{ marginLeft: "3%", marginRight: '3%', marginBottom:'3%'}}>
                   {/* <Row> */}
                       <Divider orientation="center">
-                        <h2>See All Posts</h2>
+                        <h2 className="scroll-m-20 pb-2 text-3xl font-bold tracking-tight first:mt-0">All Posts</h2>
                       </Divider>
                       <Row gutter={[48, 48]}>
                         <Col xs={{ span: 24 }} lg={{ span: 8 }}>
@@ -170,7 +140,7 @@ function Dashboard() {
             </div>
 
         {/* </PageContainer> */}
-      </ProLayout>
+      
     </>
   );
 }

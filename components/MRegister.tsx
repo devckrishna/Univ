@@ -20,6 +20,7 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 // import { useSelector, useDispatch } from 'react-redux';
 // import { setcredentials } from "../slices/AuthSlice";
 // import { setuniversityvalue } from "../slices/UnivSlice";
@@ -71,6 +72,7 @@ const MRegister: React.FC = () => {
   //   const navigate = useNavigate();
   //   const dispatch = useDispatch();
   const [form] = Form.useForm();
+  const {user} = useUser();
 
   const onGenderChange = (value: string) => {
     console.log("current gender value is : ", value);
@@ -83,22 +85,25 @@ const MRegister: React.FC = () => {
   }
 
   const handleSubmit = async (values: any) => {
-    await setformstate(values);
-    console.log("formstate values are :", formstate);
-    console.log("image is : ", values.image);
-    console.log("gender is :", typeof values.gender, " ", values.gender);
 
-    const res = await fetch("http://localhost:3000/api/v1/mentor/register", {
+    setformstate(values);
+    // console.log("formstate values are :", formstate);
+    // console.log("gender is :", typeof values.gender, " ", values.gender);
+    const email = user?.emailAddresses[0].emailAddress;
+    console.log(email);
+    console.log(user);
+
+    const res = await fetch("http://localhost:3000/api/mentor", {
       method: "POST",
       body: JSON.stringify({
-        name: formstate.name,
-        email: formstate.email,
-        password: formstate.password,
-        image: values.image,
-        description: formstate.description,
+        name: values.name,
+        email: email,
+        image: user?.imageUrl,
+        description: values.description,
         gender: values.gender,
-        university: formstate.university,
-        country: formstate.country,
+        university: values.university,
+        country: values.country,
+        rate:values.rate
       }),
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +114,7 @@ const MRegister: React.FC = () => {
     console.log("data got is :", data);
     // dispatch(setcredentials({ type: "Mentor", credentials: data }));
     // console.log("current state is : ", auth);
-    router.push(`/mentor/${data._id}`);
+    router.push(`/mentor/${data.data.id}`);
   };
 
   const handleChange = (evt: any) => {
@@ -135,198 +140,101 @@ const MRegister: React.FC = () => {
         scrollToFirstError
       >
         <Row style={{ width: "100%" }}>
-          <Col span={12}>
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the Name!",
-                  whitespace: true,
-                },
-              ]}
-            >
-              <Input name="name" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  type: "email",
-                  message: "The input is not valid E-mail!",
-                },
-                {
-                  required: true,
-                  message: "Please input your E-mail!",
-                },
-              ]}
-            >
-              <Input name="email" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input.Password name="password" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="confirm"
-              label="Confirm Password"
-              dependencies={["password"]}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "The new password that you entered do not match!"
-                      )
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
-              name="university"
-              label="University"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select your University!",
-                },
-              ]}
-            >
-              <Input name="university" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="country"
-              label="Country"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select your Country!",
-                },
-              ]}
-            >
-              <Input name="country" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="gender"
-              label="Gender"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Select
-                placeholder="Select a option"
-                onChange={onGenderChange}
-                allowClear
-              >
-                <Option value="Male">Male</Option>
-                <Option value="Female">Female</Option>
-                <Option value="Other">Other</Option>
-              </Select>
-            </Form.Item>
-            {/* {window.innerWidth < 992 && <Form.Item
-              name="description"
-              label="Description"
-              rules={[
-                {
-                  message: 'Please input Intro',
-                },
-              ]}
-            >
-              <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
-            </Form.Item>
-            } */}
-            {/* {window.innerWidth < 992 && <Form.Item name="image" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
-              <Upload
-                // action={null}
-                beforeUpload={() => { return false; }}
-                listType="picture"
-                fileList={fileList}
-                maxCount={1}
-                multiple
-              >
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              </Upload>
-            </Form.Item>
-            }
-            {window.innerWidth < 992 && <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">Register</Button>
-            </Form.Item>
-            } */}
-          </Col>
-
-          <Col span={8}>
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[
-                {
-                  message: "Please input Intro",
-                },
-              ]}
-            >
-              <Input.TextArea
-                name="description"
-                onChange={handleChange}
-                showCount
-                maxLength={300}
-              />
-            </Form.Item>
-            <Form.Item
-              name="images"
-              label="Upload"
-              valuePropName="fileList"
-              getValueFromEvent={normFile}
-            >
-              <Upload
-                // action={null}
-                beforeUpload={() => {
-                  return false;
-                }}
-                listType="picture-card"
-                fileList={fileList}
-                maxCount={1}
-                // onChange={handleFileChange}
-                multiple
-              >
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              </Upload>
-            </Form.Item>
-
-            <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">
-                Register
-              </Button>
-            </Form.Item>
+          <Col span={15}>
+                  <Form.Item
+                    name="name"
+                    label="Name"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the Name!",
+                        whitespace: true,
+                      },
+                    ]}
+                  >
+                    <Input name="name" onChange={handleChange} />
+                  </Form.Item>
+                  <Form.Item
+                    name="rate"
+                    label="Hourly Price(INR)"
+                    rules={[
+                      {
+                        type: "number",
+                        min: 0,
+                        // message: "The input is not valid price!",
+                      },
+                      {
+                        required: true,
+                        message: "Please input your hourly price!",
+                      },
+                    ]}
+                  >
+                    <InputNumber />
+                  </Form.Item>
+                  <Form.Item
+                    name="university"
+                    label="University"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please select your University!",
+                      },
+                    ]}
+                  >
+                    <Input name="university" onChange={handleChange} />
+                  </Form.Item>
+                  <Form.Item
+                    name="country"
+                    label="Country"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please select your Country!",
+                      },
+                    ]}
+                  >
+                    <Input name="country" onChange={handleChange} />
+                  </Form.Item>
+                  <Form.Item
+                    name="gender"
+                    label="Gender"
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Select a option"
+                      onChange={onGenderChange}
+                      allowClear
+                    >
+                      <Option value="Male">Male</Option>
+                      <Option value="Female">Female</Option>
+                      <Option value="Other">Other</Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name="description"
+                    label="Description"
+                    rules={[
+                      {
+                        message: "Please input Intro",
+                      },
+                    ]}
+                  >
+                    <Input.TextArea
+                      name="description"
+                      onChange={handleChange}
+                      showCount
+                      maxLength={500}
+                    />
+                  </Form.Item>
+                  <Form.Item {...tailFormItemLayout}>
+                    <Button type="primary" htmlType="submit">
+                      Register
+                    </Button>
+                  </Form.Item>
           </Col>
         </Row>
       </Form>

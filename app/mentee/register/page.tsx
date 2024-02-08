@@ -4,6 +4,7 @@ import {Row,Col} from 'antd';
 // import MRegister from "../subcomponents/MRegister";
 import SRegister from "@/components/SRegister";
 import img9 from '../../../public/img4.jpg';
+import { useUser } from "@clerk/nextjs";
 
 const MentorAuthForm:  React.FC = () => {
 
