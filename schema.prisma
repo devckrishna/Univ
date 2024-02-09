@@ -48,6 +48,7 @@ model Booking {
   duration   Int
   start_time String
   end_time   String
+  amount     Int
 }
 
 model MentorBooking {

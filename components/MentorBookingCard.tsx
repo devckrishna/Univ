@@ -5,9 +5,9 @@ import Chip from '@mui/joy/Chip';
 import Box from '@mui/joy/Box';
 // import Card from '@mui/joy/Card';
 // import CardContent from '@mui/joy/CardContent';
-import CardOverflow from '@mui/joy/CardOverflow';
-import CardActions from '@mui/joy/CardActions';
-import IconButton from '@mui/joy/IconButton';
+// import CardOverflow from '@mui/joy/CardOverflow';
+// import CardActions from '@mui/joy/CardActions';
+// import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import Divider from '@mui/joy/Divider';
 import { CardHeader,Card,CardDescription,CardContent } from './ui/card';
@@ -53,7 +53,21 @@ const data = [
   }
 ];
 
-const MentorBookingCard:  React.FC = () =>  {
+
+type Props = {
+  id: string;
+  country: string;
+  description: string;
+  email: string;
+  gender: string;
+  image: string;
+  name: string;
+  university: string;
+  rating: Number,
+  rate: Number
+};
+
+const MentorBookingCard = (props:Props) =>  {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -67,7 +81,7 @@ const MentorBookingCard:  React.FC = () =>  {
                 <div className='flex flex-col items-center bg-blue-400 p-3'>
                     {/* <Avatar src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg" sx={{ '--Avatar-size': '6rem' }} /> */}
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg" />
+                      <AvatarImage src={props.image} />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                     <Chip
@@ -81,9 +95,9 @@ const MentorBookingCard:  React.FC = () =>  {
                             borderColor: 'background.surface',
                         }}
                       >
-                      4.5 / 5
+                      {props.rating.toString()} / 5
                     </Chip>
-                    <Typography level="title-lg">Josephine Blanton</Typography>
+                    <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">{props.name}</h4>
                 {/* </CardOverflow> */}
                 </div>
 
@@ -91,13 +105,13 @@ const MentorBookingCard:  React.FC = () =>  {
                     <CardHeader className='flex flex-row px-0 py-2'>
                         <div className='w-2/5 flex justify-items-center items-center p-0 m-0'>
                           <div className='pl-10'>
-                            <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Hourly Rate : Rs 700</span>
+                            <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Hourly Rate : Rs {props.rate.toString()}</span>
                           </div>
                         </div>
                         <Divider orientation="vertical" />
                         <div className='w-3/5 flex items-center justify-items-center'>
                           <div style={{paddingLeft:'80px'}}>
-                            <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">Harvard University</h4>
+                            <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">{props.university}</h4>
                           </div>
                         </div>
                     </CardHeader>
@@ -105,8 +119,7 @@ const MentorBookingCard:  React.FC = () =>  {
                 
                 <CardContent className='text-center'>
                     <p className="leading-5 [&:not(:first-child)]:mt-6">
-                        Hello, this is my bio and I am a PRO member of MUI. I am a developer and I
-                        love to code. Nostrud minim occaecat culpa veniam nostrud. Adipisicing sit ex in eu ullamco et cillum eu.Anim ipsum occaecat reprehenderit voluptate. Quis eiusmod elit non incididunt consectetur aliqua aliqua excepteur tempor do in voluptate laboris. Id ut eiusmod eiusmod esse aliqua enim sunt eiusmod laboris ea incididunt tempor excepteur laborum.
+                        {props.description}
                     </p>
                 </CardContent>
                 <CardContent className='text-center p-4 pt-0'>
@@ -115,13 +128,6 @@ const MentorBookingCard:  React.FC = () =>  {
 
                 <div className="flex space-x-4 px-3 pb-6 overflow-x-auto overflow-hidden no-scrollbar">
                   {data.map((item)=>(<Feedback />))}
-                  {/* <div className="w-44 shrink-0 bg-blue-500 rounded-md h-44">TEST</div>
-                  <div className="w-44 shrink-0 bg-blue-500 rounded-md h-44">TEST</div>
-                  <div className="w-44 shrink-0 bg-blue-500 rounded-md h-44">TEST</div>
-                  <div className="w-44 shrink-0 bg-blue-500 rounded-md h-44">TEST</div>
-                  <div className="w-44 shrink-0 bg-blue-500 rounded-md h-44">TEST</div>
-                  <div className="w-44 shrink-0 bg-blue-500 rounded-md h-44">TEST</div>
-                  <div className="w-44 shrink-0 bg-blue-500 rounded-md h-44">TEST</div> */}
                 </div>
 
 

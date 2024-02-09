@@ -10,12 +10,17 @@ export async function POST(req: Request) {
       },
     });
 
-    const bookings = await db.booking.findMany({
+    const slots = await db.mentorBooking.findMany({
       where: {
         mentor_id: user?.id,
       },
     });
-    return NextResponse.json({data:bookings});
+
+    const d = new Date();
+    const hrs = d.getHours();
+    const day = d.getDate();
+    const filteredSlots = slots.filter((b) => (  ( new Date(b.date)>d ) || (new Date(b.date)==d && parseInt(b.start_time)>hrs) ) );
+    return NextResponse.json({data:filteredSlots});
   } catch (err) {
     return NextResponse.json({
       message: "Error finding the user {GET: api/user/mentor/getslot}" + err,

@@ -45,9 +45,16 @@ export async function POST(req: NextRequest) {
             phone_number_collection: {
               enabled: false,
             },
-    
-            success_url: `https://univ-connect2-0.vercel.app/`,
-            cancel_url: `http://localhost:3000/mentor/${body[0]['id']}/bookSession`,
+            metadata:{
+              'duration':body[0]['duration'],
+              'mentorEmail':body[0]['mentorEmail'],
+              'start_time':body[0]['start_time'],
+              'end_time':body[0]['end_time'],
+              'session_date':body[0]['date'],
+              'amount':body[0]['amount']
+            },
+            success_url: `http://localhost:3000/mentor/${body[0]['id']}/bookSession?success=true&date=${body[0]["date"]}&start_time=${body[0]["start_time"]}&end_time=${body[0]["end_time"]}&duration=${body[0]["duration"]}&amount=${body[0]["amount"]}`,
+            cancel_url: `http://localhost:3000/mentor/${body[0]['id']}/bookSession?success=false`,
           });
           return NextResponse.json({ session });
         } else {

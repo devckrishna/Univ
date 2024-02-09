@@ -1,7 +1,7 @@
 'use client';
 import React,{useEffect, useState} from "react";
 import {Row,Col,Space,Card,ConfigProvider,Dropdown,Input,Popover,theme,Descriptions,DatePicker,Flex,Avatar,Select,Form, Pagination, PaginationProps} from 'antd';
-import { PageContainer,ProCard,ProConfigProvider,ProLayout,SettingDrawer,StatisticCard } from '@ant-design/pro-components';
+import { PageContainer} from '@ant-design/pro-components';
 import RcResizeObserver from 'rc-resize-observer';
 import Link from "next/link";
 import AppBar from '@mui/material/AppBar';
@@ -44,6 +44,7 @@ const AllMentors:  React.FC = () => {
         const data = await axios.get("/api/mentor");
         console.log(data.data.data);
         setMentors(data.data.data);
+
         if((currPage-1)+5<=mentors.length)setDisplayMentors(mentors.slice(currPage-1,currPage+5));
         else setDisplayMentors(mentors.slice(currPage-1));
 
@@ -77,8 +78,6 @@ const AllMentors:  React.FC = () => {
                             {mentors.length>5 && <Pagination defaultCurrent={1} defaultPageSize={5} current={currPage} onChange={onChange} total={mentors.length} />}
                         </PageContainer>
                     </div>
-
-
                 </>
             )
     }

@@ -4,7 +4,7 @@ import Typography from '@mui/joy/Typography';
 import { Select } from 'antd';
 import { useAppSelector } from '@/redux/hooks';
 import { Calendar } from "@/components/ui/calendar"
-import { redirect } from 'next/navigation';
+import { redirect, useSearchParams } from 'next/navigation';
 import getStipePromise from '@/lib/stripe';
 import { Button } from './ui/button';
 import { useUser } from '@clerk/nextjs';
@@ -12,11 +12,25 @@ import { CardHeader,Card,CardDescription,CardContent } from './ui/card';
 import { db } from '@/utils/db';
 
 
-const SessionBookingForm = () =>  {
+type Props = {
+  id: string;
+  country: string;
+  description: string;
+  email: string;
+  gender: string;
+  image: string;
+  name: string;
+  university: string;
+  rating: Number,
+  rate: Number
+};
+
+const SessionBookingForm = (props:Props) =>  {
+  const searchParams = useSearchParams();
+  // console.log("searchparams are: ",searchParams);
   const [date, setDate] = React.useState<Date>()
   const [duration,setduration] = React.useState<number | null>(null);
   const [slot,setSlot] = React.useState<String | null> (null);  
-  // const currstate = useAppSelector((state)=>state);
   const user = useUser();
 
   const makePayment = async() => {
@@ -38,11 +52,13 @@ const SessionBookingForm = () =>  {
                   },
                   body:JSON.stringify([{
                     name:'session',
-                    id:'a1234',
+                    id:props.id,
+                    duration:hrduration,
                     amount: hrduration*700,
-                    currency: 'INR',
-                    slot:slot,
+                    start_time:slots?slots[0]:'21',
+                    end_time:slots?slots[1]:'23',
                     date: date?.toDateString(),
+                    mentorEmail: props.email
                     // payeeName: currstate.auth.credentials?.username,
                     // payeeEmail: currstate.auth.credentials?.email,
                     // payeeId: currstate.auth.credentials?.id
@@ -53,21 +69,6 @@ const SessionBookingForm = () =>  {
     if (data.session) {
       stripe?.redirectToCheckout({ sessionId: data.session.id });
     }
-
-    const res = await fetch('/api/addbooking',{
-      method:"POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body:JSON.stringify({
-        student_email: 'user?.emailAddresses[0].emailAddress',
-        mentor_id:'1234a',
-        date:date?.toDateString(),
-        duration:hrduration,
-        start_time: slots?slots[0]:'21',
-        end_time:slots?slots[1]:'23'
-      })
-    });
 
   }
 
@@ -84,8 +85,17 @@ const SessionBookingForm = () =>  {
   const onChange3 = (value:any) => {
     console.log(value);
     setDate(value);
+    // data.filter(aad ki date == d.date)
     console.log(date);
   }
+
+  // 30 mins 12 -12:30
+//   backend 
+// ḍatabase
+
+// 120 12-14
+// set <start_time>
+
 
     return (
         <>
@@ -100,7 +110,7 @@ const SessionBookingForm = () =>  {
                           />
 
                   <h4 className="scroll-m-20 text-xl font-semibold tracking-tight m-4">Pick a time</h4>
-                    
+                          {/* date : [ {2,"12:30-14"},{1,"12-13"},{4,"14-18"}] */}
                           <Select
                               showSearch
                               placeholder="Select duration"

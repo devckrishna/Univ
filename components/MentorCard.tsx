@@ -10,6 +10,7 @@ import * as React from 'react';
 import { AspectRatio } from './ui/aspect-ratio';
 import Image from 'next/image';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
 // const theme = createTheme();
 // theme.spacing(2); // `${8 * 2}px` = '16px'
@@ -32,7 +33,7 @@ const MentorCard = (props:Props) =>  {
   return (
         <div className="bg-white">
 
-            <div className="mx-auto mt-10 max-w-2xl rounded-3xl ring-1 bg-white ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
+            <div className="mx-auto mt-5 max-w-2xl rounded-3xl ring-1 bg-white ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
                     <div className="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
                         <img src={props.image} alt="Image" className="rounded-md object-cover h-full" />    
                     </div>
@@ -92,7 +93,9 @@ const MentorCard = (props:Props) =>  {
                                 </dl>
                             </div>
                         </div>
-                        <Button className='w-full'>Hey ! Let's Connect</Button>
+                        <Link href={`/mentor/${props.id}/bookSession`}>
+                            <Button className='w-full'>Hey ! Let's Connect</Button>
+                        </Link>
                     </div>
 
             </div>

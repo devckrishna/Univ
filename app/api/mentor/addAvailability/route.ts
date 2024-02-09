@@ -65,3 +65,32 @@ export async function POST(req: NextRequest) {
     });
   }
 }
+
+
+export async function DELETE(req:NextRequest){
+  try {
+    const {
+      date,
+      mentor_id,
+      duration,
+      start_time,
+      end_time,
+    } = await req.json();
+
+    await db.mentorBooking.deleteMany({
+      where:{
+        date:date,
+        mentor_id:mentor_id,
+        duration:duration,
+        start_time:start_time,
+        end_time:end_time
+      }
+    })
+
+  }catch(err){
+    return NextResponse.json({
+      message: "Error updating mentor slots {POST: api/mentor/:id/addSlots}",
+      error: err,
+    });
+  }
+}
