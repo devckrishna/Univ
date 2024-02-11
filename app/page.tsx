@@ -1,14 +1,13 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import {Row,Col,Button, Divider,Space} from 'antd';
+import {Row,Col, Divider,Space} from 'antd';
 import { UserAddOutlined, SolutionOutlined,BankFilled } from '@ant-design/icons';
 import Link from "next/link";
 import {Typography} from "antd";
-import { db } from "@/utils/db";
 import QueueAnim from 'rc-queue-anim';
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-// import { UserButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
 const { Title } = Typography;
 const style: React.CSSProperties = { display:'flex', flexDirection:'column',  justifyContent: 'center', alignItems: 'center' };
@@ -41,13 +40,13 @@ const Home:  React.FC = () => {
                                             
                                                 <Divider plain>Enter As</Divider>
                                                 <Space direction="vertical" wrap>
-                                                    <Button type="primary" block icon={<BankFilled />} >
+                                                    <Button className="w-96">
                                                         <Link href={"/university"}>University</Link>
                                                     </Button>
-                                                    <Button type="primary" block icon={<SolutionOutlined />}>
+                                                    <Button className="w-96">
                                                         <Link href={"/mentor"}>Mentor</Link>
                                                     </Button>
-                                                    <Button type="primary" block icon={<UserAddOutlined />}>
+                                                    <Button className="w-96">
                                                         <Link href={"/mentee"}>Student</Link>
                                                     </Button>
                                                     <UserButton afterSignOutUrl="/"/>

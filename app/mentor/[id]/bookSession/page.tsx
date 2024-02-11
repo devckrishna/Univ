@@ -43,6 +43,16 @@ type MentorObj = {
   rate: Number
 };
 
+
+type booking = {
+  id:string,
+  date:string,
+  start_time:string,
+  end_time:string,
+  duration:Number,
+  mentor_id:string
+}
+
 // mentor id
 const BookSessionPage = ({ params }: { params: { id: string } }) => {
   const searchParams = useSearchParams();
@@ -50,7 +60,7 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   let [hr, sethr] = useState(2);
   const [isLoading, setIsLoading] = useState(true);
-  const [bookings,setBookings] = useState<string[]>([]);
+  const [bookings,setBookings] = useState<booking[]>([]);
   const [mentorDetails, setMentorDetails]  = useState<MentorObj>({
     id: "",
     country: "",
@@ -80,10 +90,12 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   }
 
   const getslots = async() => {
+    // console.log("slot lene aaye hain bc")
     const data = await axios.post("/api/mentor/getslots",{
       email:mentorDetails.email
     });
-    setBookings(data.data);
+    console.log("slots data ",data);
+    setBookings(data.data.data);
   }
 
   const handleSuccessfull = async(email:string,date:string,start_time:string,end_time:string,duration:number,amount:number) => {
@@ -161,7 +173,7 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
                         <Col xs={{ span: 0}} lg={{ span: 2}}></Col>
                         <Col xs={{ span: 24}} lg={{ span: 10}}><MentorBookingCard {...mentorDetails} /></Col>
                         <Col xs={{span:0}} lg={{span:1}}></Col>
-                        <Col xs={{ span: 24}} lg={{ span: 8}}><SessionBookingForm {...mentorDetails} /></Col>
+                        <Col xs={{ span: 24}} lg={{ span: 8}}><SessionBookingForm mentorDetails={mentorDetails} slots={bookings} /></Col>
                         <Col xs={{ span: 0}} lg={{ span: 2}}></Col>
                     </Row>
                 </PageContainer>

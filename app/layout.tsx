@@ -28,7 +28,7 @@ export default function RootLayout({
         </body>
       </html>
     </ClerkProvider>
-    <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+    
     </>
   )
 }
