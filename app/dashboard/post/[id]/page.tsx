@@ -1,5 +1,5 @@
 'use client'
-import { ProLayout } from "@ant-design/pro-components";
+// import { ProLayout } from "@ant-design/pro-components";
 import { Col, Dropdown, Row } from "antd";
 import {InfoCircleFilled,LogoutOutlined} from "@ant-design/icons";
 import PostCard from "@/components/Post";
@@ -20,11 +20,11 @@ function Post(){
 
     return (
         <>
-                <Navbar />
+                <Navbar profile="/"/>
                 <Row style={{padding:'0px !important'}}>
-                    <Col xs={{ span: 2 }} lg={{ span: 4 }}></Col>
-                    <Col xs={{ span: 20 }} lg={{ span: 16 }}><PostCard /></Col>
-                    <Col xs={{ span: 2 }} lg={{ span: 4 }}></Col>
+                    <Col xs={{ span: 1 }} lg={{ span: 4 }}></Col>
+                    <Col xs={{ span: 22 }} lg={{ span: 16 }} className="p-8 my-4" style={{border:'1px solid rgba(209, 213, 219,1)'}}><PostCard /></Col>
+                    <Col xs={{ span: 1 }} lg={{ span: 4 }}></Col>
                 </Row>
         </>
     )

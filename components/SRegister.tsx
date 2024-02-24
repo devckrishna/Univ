@@ -1,26 +1,16 @@
 "use client";
 import React, { useState } from "react";
 import {
-  AutoComplete,
-  Button,
-  Cascader,
-  Checkbox,
   Col,
   Form,
   Input,
   InputNumber,
   Row,
   Select,
-  Upload,
-  message,
 } from "antd";
-import {
-  UploadOutlined,
-  PlusOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { Button } from "./ui/button";
 // import { useNavigate } from "react-router-dom";
 // import { useSelector, useDispatch } from 'react-redux'
 
@@ -71,7 +61,7 @@ const inivals: FormState = {
   gender: "",
 };
 
-const SRegister: React.FC = () => {
+const SRegister = () => {
   const [formstate, setformstate] = useState<FormState>(inivals);
   const [fileList, setFileList] = useState<any[]>([]);
   //   const navigate = useNavigate();
@@ -155,9 +145,8 @@ const SRegister: React.FC = () => {
             width: "100%",
           }}
           scrollToFirstError
+          layout="vertical"
         >
-          <Row style={{ width: "100%" }}>
-            <Col span={15}>
               <Form.Item
                 name="name"
                 label="Name"
@@ -222,13 +211,8 @@ const SRegister: React.FC = () => {
               </Form.Item>
               
               <Form.Item {...tailFormItemLayout}>
-                <Button type="primary" htmlType="submit">
-                  Register
-                </Button>
+                <Button>Register</Button>
               </Form.Item>
-            </Col>
-            
-          </Row>
       </Form>
     </>
   );

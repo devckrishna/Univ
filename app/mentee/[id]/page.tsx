@@ -1,56 +1,20 @@
 'use client';
-import React, { useEffect } from "react";
-import {Row,Col,Space,Card,ConfigProvider,Dropdown,Input,Popover,theme,Descriptions,Flex,Avatar,Image,Carousel } from 'antd';
-import { PageContainer,ProCard,ProConfigProvider,ProLayout,SettingDrawer,StatisticCard } from '@ant-design/pro-components';
+import React, { useEffect, useState } from "react";
+import {Row,Col,Space,Descriptions,Image, Divider} from 'antd';
 import { RotateLeftOutlined,
     RotateRightOutlined,
     SwapOutlined,
     ZoomInOutlined,
     ZoomOutOutlined } from '@ant-design/icons';
-import RcResizeObserver from 'rc-resize-observer';
 import Link from "next/link";
-import { Divider,Stack,Paper,AppBar,Box,Toolbar,IconButton,Typography,Menu,Container,Tooltip,MenuItem  } from '@mui/material';
-import Bookings from "@/components/Bookings";
 import Feedbacks from "@/components/Feedbacks";
 import axios from "axios";
 import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
+import Navbar from "@/components/Navbar";
+import MenteeBookings from "@/components/MenteeBooking";
 
-const { Statistic } = StatisticCard;
-const settings = ['Go to Profile','Dashboard', 'Logout'];
-const items = [
-    {
-      key: '1',
-      label: 'Name',
-      children: 'Cloud Database',
-      span:3
-    },
-    {
-      key: '2',
-      label: 'Email',
-      children: 'Prepaid',
-      span:3
-    },
-    {
-      key: '3',
-      label: 'Country',
-      children: 'YES',
-      span:3
-    },
-    {
-      key: '4',
-      label: 'University',
-      children: '2018-04-24 18:00:00',
-      span:3
-    },
-    {
-      key: '5',
-      label: 'Gender',
-      children: '2019-04-24 18:00:00',
-      span: 3,
-    },
-  ];
-  type MenteeObj = {
+type MenteeObj = {
     id: string;
     country: string;
     description: string;
@@ -58,19 +22,24 @@ const items = [
     gender: string;
     image: string;
     name: string;
-  };
-  const contentStyle = {
-    height: '260px',
-    color: '#fff',
-    lineHeight: '260px',
-    textAlign: 'center',
-    background: '#364d79',
-  };
+};
+
+
+type BookingInterface = {
+  id:string,
+  date:string,
+  start_time:string,
+  end_time:string,
+  duration:Number,
+  student_id:string,
+  mentor_id:string,
+  amount:Number
+}
+
+
 const StudentProfile = ({ params }: { params: { id: string } }) =>{
-    const [responsive, setResponsive] = React.useState(false);
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const [isLoading, setIsLoading] = React.useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [bookings,setBookings] = useState<BookingInterface[]>([]);
     const [menteeDetails, setMenteeDetails]  = React.useState<MenteeObj>({
       id: "",
       country: "",
@@ -80,20 +49,6 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
       image: "",
       name: ""
     });
-    const handleOpenNavMenu = (event:any) => {
-        setAnchorElNav(event.currentTarget);
-    };
-    const handleOpenUserMenu = (event:any) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
 
     const getdetails = async() => {
       console.log("hehehhe");
@@ -103,10 +58,19 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
       console.log("mentee details ",menteeDetails);
       setIsLoading(false);
     }
-    
+
+    const getBookings = async() => {
+      const data = await axios.post("/api/student/getBookings",{
+        email:menteeDetails.email
+      });
+      setBookings(data.data.data);
+    }
+      
     useEffect(()=>{
       getdetails();
+      getBookings();
       console.log("current mentor details are",menteeDetails);
+      console.log("upcoming sessions are ",bookings);
     },[])
 
     if(isLoading){
@@ -114,74 +78,13 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
     }else{
     return (
         <>
-            <AppBar position="static" color="transparent">
-                <Container maxWidth="xl">
-                    <Toolbar disableGutters>
-                    {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                        mr: 2,
-                        display: {md: 'flex' },
-                        fontFamily: 'monospace',
-                        fontWeight: 700,
-                        letterSpacing: '.3rem',
-                        color: 'inherit',
-                        textDecoration: 'none',
-                        }}
-                    >
-                        UnivConnect
-                    </Typography>
-
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}> 
-                    </Box>
-
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                    </Box>
-
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                            <Avatar alt="Remy Sharp" src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg" />
-                        </IconButton>
-                        </Tooltip>
-                        <Menu
-                        sx={{ mt: '45px' }}
-                        id="menu-appbar"
-                        anchorEl={anchorElUser}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        open={Boolean(anchorElUser)}
-                        onClose={handleCloseUserMenu}
-                        >
-                        {settings.map((setting) => (
-                            <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                            <Typography textAlign="center">{setting}</Typography>
-                            </MenuItem>
-                        ))}
-                        </Menu>
-                    </Box>
-
-                    </Toolbar>
-                </Container>
-            </AppBar>
-
+            <Navbar profile={`/mentee/${menteeDetails.id}`}/>
             <div
               style={{
                 background: '#F5F7FA',
               }}
             >
-            <PageContainer >
+            <div className="p-8">
                   <Row gutter={[48,48]}>
                     
                       <Col xs={{span:24}} lg={{span:10}}>
@@ -207,8 +110,8 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
                                 ),
                               }}
                             />
-                            <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-4">{menteeDetails.name}</h2>
-                            <p>{menteeDetails.description}</p>
+                            <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-4 text-center">{menteeDetails.name}</h2>
+                            <p className="text-center">{menteeDetails.description}</p>
                             <Divider style={{margin:'15px'}}>
                               <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Personal Information</h3>
                             </Divider>
@@ -235,14 +138,14 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
                             <Divider style={{margin:'15px'}}>
                               <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Edit Info</h3>
                             </Divider>
-                            <Stack spacing={2} direction="column">
+                            <div className="flex flex-col space-y-3">
                                 <Link href='/'>
-                                  <Button>Edit Personal Information</Button>
+                                  <Button className="w-full">Edit Personal Information</Button>
                                 </Link>
                                 <Link href='/mentee/bookSession'>
-                                  <Button>Book A MentorShip Session</Button>
+                                  <Button className="w-full">Book A MentorShip Session</Button>
                                 </Link>
-                            </Stack>
+                            </div>
                         </div>
                       </Col>
 
@@ -253,7 +156,31 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
                               <Divider style={{margin:'15px'}}>
                                 <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Upcoming Sessions</h3>
                               </Divider>
-                              <Bookings />
+                              {bookings.length == 0 && <div id="alert-additional-content-1" className="p-4 mb-4 text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
+                                            <div className="flex items-center">
+                                              <svg className="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                                              </svg>
+                                              <span className="sr-only">Info</span>
+                                              <h3 className="text-lg font-medium">No Upcoming Sessions</h3>
+                                            </div>
+                                            <div className="mt-2 mb-4 text-sm">
+                                              Hey there ! 
+                                              You don't have any upcoming sessions as of now ! Visit the Bookings page to book more sessions.  
+                                            </div>
+                                            <div className="flex">
+                                              <Link href={`/mentee/bookSession`}>
+                                                <button type="button" className="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                                  <svg className="me-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+                                                    <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                                                  </svg>
+                                                  Book a mentorship Session
+                                                </button>
+                                              </Link>
+                                            </div>
+                                          </div>}
+                                          <MenteeBookings bookings={bookings}/>
+                              {/* <Bookings mentorDetails={{}} bookings={[]}/> */}
                             </Col>
                           </Row>
 
@@ -269,7 +196,7 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
                       </Col>
                   </Row>
 
-            </PageContainer>
+            </div>
             </div>
 
 

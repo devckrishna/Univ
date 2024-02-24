@@ -1,14 +1,4 @@
 import * as React from 'react';
-// import AspectRatio from '@mui/joy/AspectRatio';
-// import Box from '@mui/joy/Box';
-// import Button from '@mui/joy/Button';
-// import Card from '@mui/joy/Card';
-// import CardContent from '@mui/joy/CardContent';
-// import Typography from '@mui/joy/Typography';
-// import Sheet from '@mui/joy/Sheet';
-// import Link from 'next/link';
-import { AspectRatio } from './ui/aspect-ratio';
-import Image from 'next/image';
 import { Button } from './ui/button';
 import Link from 'next/link';
 
@@ -31,9 +21,9 @@ type Props = {
 
 const MentorCard = (props:Props) =>  {
   return (
-        <div className="bg-white">
+        // <div className="bg-white">
 
-            <div className="mx-auto mt-5 max-w-2xl rounded-3xl ring-1 bg-white ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
+            <div className="max-w-2xl rounded-3xl ring-1 bg-white ring-gray-200 sm:mt-8 lg:mx-0 lg:flex lg:max-w-none">
                     <div className="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
                         {props.image && <img src={props.image} alt="Image" className="rounded-md object-cover h-full" />}  
                     </div>
@@ -99,75 +89,7 @@ const MentorCard = (props:Props) =>  {
                     </div>
 
             </div>
-        </div>
-
-        // <Box  
-        //     sx={{
-        //             width: '100%',
-        //             position: 'relative',
-        //             overflow: { xs: 'auto', sm: 'initial' },
-        //             marginBottom:'20px'
-        //         }}
-        //     >
-        //     <Card orientation="horizontal">
-        //             <AspectRatio flex ratio="1" maxHeight={182} sx={{ minWidth: 182 }}>
-        //                 <img
-        //                     src={props.image}
-        //                     // srcSet="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286&dpr=2 2x"
-        //                     loading="lazy"
-        //                     alt=""
-        //                 />
-        //             </AspectRatio>
-        //             <CardContent>
-        //                <Typography fontSize="xl" fontWeight="lg">
-        //                  {props.name}
-        //                </Typography>
-        //                <Typography level="body-sm" fontWeight="lg" textColor="text.tertiary">
-        //                  {props.university}
-        //                </Typography>
-        //                <Sheet
-        //                     sx={{
-        //                     bgcolor: 'background.level1',
-        //                     borderRadius: 'sm',
-        //                     p: 1.5,
-        //                     my: 1.5,
-        //                     display: 'flex',
-        //                     gap: 2,
-        //                     '& > div': { flex: 1 },
-        //                     }}
-        //                 >
-                            
-        //                     <div>
-        //                         <Typography level="body-xs" fontWeight="lg">
-        //                             Country
-        //                         </Typography>
-        //                         <Typography fontWeight="lg">{props.country}</Typography>
-        //                     </div>
-        //                     <div>
-        //                         <Typography level="body-xs" fontWeight="lg">
-        //                             Rating
-        //                         </Typography>
-        //                         <Typography fontWeight="lg">{props.rating.toString()}</Typography>
-        //                     </div>
-        //                     <div>
-        //                         <Typography level="body-xs" fontWeight="lg">
-        //                             Rate
-        //                         </Typography>
-        //                         <Typography fontWeight="lg">{props.rate.toString()}</Typography>
-        //                     </div>
-        //                 </Sheet>
-
-        //                 <Box sx={{ display: 'flex', gap: 1.5, '& > button': { flex: 1 } }}>
-        //                      {/* <Button variant="outlined" color="neutral">
-        //                        Chat
-        //                      </Button> */} 
-        //                      <Link href={'/mentor/'+ props.id + '/bookSession'}>
-        //                         <Button variant="solid" color="primary">Check Slots</Button>
-        //                      </Link>
-        //                 </Box>
-        //             </CardContent>
-        //     </Card>
-        // </Box>
+        // </div>
   );
 }
 

@@ -1,15 +1,12 @@
 'use client'
 import * as React from 'react';
-import Typography from '@mui/joy/Typography';
 import { Select } from 'antd';
-import { useAppSelector } from '@/redux/hooks';
 import { Calendar } from "@/components/ui/calendar"
-import { redirect, useSearchParams } from 'next/navigation';
+import {useSearchParams } from 'next/navigation';
 import getStipePromise from '@/lib/stripe';
 import { Button } from './ui/button';
 import { useUser } from '@clerk/nextjs';
-import { CardHeader,Card,CardDescription,CardContent } from './ui/card';
-import { db } from '@/utils/db';
+import {Card,CardContent } from './ui/card';
 import Loading from './Loading';
 
 
@@ -50,32 +47,24 @@ type SlotOptionInterface = {
   label:string
 }
 
-const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
+const SessionBookingForm = ({mentorDetails,slots}:Props) =>  {
   const searchParams = useSearchParams();
   // console.log("searchparams are: ",searchParams);
   const [date, setDate] = React.useState<Date>();
-  const [loading,setLoading] = React.useState<Boolean>(false);
+  const [loading2,setLoading2] = React.useState<Boolean>(false);
   const [duration,setduration] = React.useState<number | null>(null);
   const [slot,setSlot] = React.useState<String | null> (null);  
   const [doptions,setDoptions] = React.useState<DurationInterface[]>([
                                                                     {
-                                                                      value: 30,
-                                                                      label: '30 mins',
-                                                                    },
-                                                                    {
-                                                                      value: 60,
+                                                                      value: 1,
                                                                       label: '60 mins',
                                                                     },
                                                                     {
-                                                                      value: 90,
-                                                                      label: '90 mins',
-                                                                    },
-                                                                    {
-                                                                      value: 120,
+                                                                      value: 2,
                                                                       label: '120 mins',
                                                                     }
                                                                   ]);
-  const [soptions,setSoptions] = React.useState<SlotOptionInterface[][]>([[],[],[],[]]);
+  const [soptions,setSoptions] = React.useState<SlotOptionInterface[][]>([[],[]]);
   const user = useUser();
 
   const makePayment = async() => {
@@ -84,9 +73,6 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
     console.log(slot);
     console.log(date?.toDateString());
     const slots = slot?.split('-');
-    // console.log(currstate);
-    let hrduration = 0;
-    if(duration)hrduration = duration/60;
     
     const stripe = await getStipePromise();
 
@@ -99,7 +85,7 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
                     name:'session',
                     id:mentorDetails.id,
                     duration:duration,
-                    amount: hrduration*700,
+                    amount: (duration?duration:1)*700,
                     start_time:slots?slots[0]:'21',
                     end_time:slots?slots[1]:'23',
                     date: date?.toDateString(),
@@ -110,7 +96,7 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
                   }])
         });
     const data = await response.json();
-    console.log(data);
+    console.log('frontend payment route response is : ',data);
     if (data.session) {
       stripe?.redirectToCheckout({ sessionId: data.session.id });
     }
@@ -118,9 +104,9 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
   }
 
   const onChange = (value: number) => {
-    setLoading(true);
+    setLoading2(true);
     setduration(value);
-    setLoading(false);
+    setLoading2(false);
     console.log(`selected ${value}`);
   };
 
@@ -130,59 +116,54 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
   }
 
   const onChange3 = (value:any) => {
-    console.log(value);
-    setDate(value);
     
-    setLoading(true);
+    let newduration:DurationInterface[] = [];
+    let slotsbydate:SlotOptionInterface[][] = [[],[]];
+    if(!value){
+      setDate(value);
+      setDoptions(newduration);
+      setSoptions(slotsbydate);
+      return;
+    }
 
-    const filteredslots = slots.filter((s)=>(new Date(s.date) == value));
-    let slotsbydate:SlotOptionInterface[][] = [[],[],[],[]];
-    let a = false,b = false,c = false,d = false;
+    console.log('current date selected is ',value);
+    setDate(value);
+    setLoading2(true);
+    const filteredslots = slots.filter((s)=>(s.date == value.toDateString()));
+    let a = false,b = false;
+    console.log("filtered slots are : ",filteredslots);
+    
     for(let i=0;i<filteredslots.length;i++){
       let x = `${filteredslots[i].start_time}-${filteredslots[i].end_time}`;
       let y = `${filteredslots[i].start_time}-${filteredslots[i].end_time} IST`;
-      if(filteredslots[i].duration == 30){
+      if(filteredslots[i].duration == 1){
         a = true;
         slotsbydate[0].push({
           value:x,
           label:y
         })
       }
-      else if(filteredslots[i].duration == 60){
+      else if(filteredslots[i].duration == 2){
         b = true;
         slotsbydate[1].push({
           value:x,
           label:y
         })
       }
-      else if(filteredslots[i].duration == 90){
-        c = true;
-        slotsbydate[2].push({
-          value:x,
-          label:y
-        })
-      }
-      else if(filteredslots[i].duration == 120){
-        d = true;
-        slotsbydate[3].push({
-          value:x,
-          label:y
-        })
-      }
     }
 
-    let newduration:DurationInterface[] = [];
-    if(a)newduration.push({value:30,label:'30 mins'});
-    if(b)newduration.push({value:60,label:'60 mins'});
-    if(c)newduration.push({value:90,label:'90 mins'});
-    if(d)newduration.push({value:120,label:'120 mins'});
+    if(a)newduration.push({value:1,label:'60 mins'});
+    if(b)newduration.push({value:2,label:'120 mins'});
+
+    console.log("finally selected slots are : ",slotsbydate);
+    console.log("finally available durations are : ",newduration);
 
     setDoptions(newduration);
     setSoptions(slotsbydate);
     setduration(null);
     setSlot(null);
 
-    setLoading(false);
+    setLoading2(false);
 
     console.log(date);
   }
@@ -208,8 +189,8 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
                           />
                   {/* date : [ {2,"12:30-14"},{1,"12-13"},{4,"14-18"}] */}
                   <h4 className="scroll-m-20 text-xl font-semibold tracking-tight m-4">Pick a time</h4>
-                  {loading == true && <Loading />}
-                  {loading == false && doptions.length>0 && <Select
+                  {loading2 == true && <Loading />}
+                  {loading2 == false && doptions.length>0 && <Select
                                           showSearch
                                           placeholder="Select duration"
                                           optionFilterProp="children"
@@ -217,15 +198,15 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
                                           options={doptions}
                                           style={{width:180,margin:'10px'}}
                                         />}   
-                  {loading == false && doptions.length>0 && <Select
+                  {loading2 == false && doptions.length>0 && <Select
                                           showSearch
                                           placeholder="Pick a Slot  "
                                           optionFilterProp="children"
                                           onChange={onChange2}
-                                          options={duration?soptions[duration/30 - 1]:[]}
+                                          options={duration?soptions[duration-1]:[]}
                                           style={{width:180}}
                                         />}
-                  {doptions.length>0 && <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 wfull ring-inset ring-blue-700/10">Sorry ! No Slots available for the mentioned date</span>}
+                  {doptions.length==0 && <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 wfull ring-inset ring-blue-700/10">Sorry ! No Slots available for the mentioned date</span>}
                 </CardContent>
                 
                 <CardContent className='flex flex-col items-center text-center'>
@@ -237,14 +218,15 @@ const SessionBookingForm: React.FC<Props> = ({mentorDetails,slots}) =>  {
                         <Card className='mt-2 w-full'>
                           <CardContent className='flex flex-row pt-4 p-4'>
                               <div className='w-4/5 flex items-center justify-start'>
-                                  <Typography><strong>This is a rare find.</strong> Josephine's time<br></br>
-                                  on Uni-Connect is usually booked.</Typography>
+                                  <p><strong>This is a rare find.</strong> Josephine's time<br></br>
+                                  on Uni-Connect is usually booked.</p>
                               </div>
                               <div className='w-1/5 flex items-center justify-end'>
                                   <img src="https://topmate.io/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon-service-diamond.79e0878f.svg&w=48&q=75"/>
                               </div>
                           </CardContent>
                         </Card>
+
                 </CardContent>
 
             </Card>

@@ -1,22 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Row,Col,Button,Divider,Space,Card,Avatar,Pagination,ConfigProvider,Dropdown,Input,Popover,theme,Carousel,} from "antd";
-// import {CaretDownFilled,DoubleRightOutlined,GithubFilled,InfoCircleFilled,LogoutOutlined,PlusCircleFilled,QuestionCircleFilled,SearchOutlined,} from "@ant-design/icons";
-// import {PageContainer,ProCard,ProConfigProvider,ProLayout,SettingDrawer,} from "@ant-design/pro-components";
+  Row,Col,Divider,Carousel,} from "antd";
 import Link from "next/link";
 import Verticalcard from "@/components/VerticalCard";
 import Sidecard from "@/components/SideCard";
-import { useAuth } from "@clerk/nextjs";
+// import { auth, clerkClient, useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
+// import { db } from "@/utils/db";
 
-function Dashboard() {
-  // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
-  const headingStyle = {
-    color: "black !important",
-    textAlign: "left !important",
-  };
+const Dashboard = () => {
     
   const contentStyle: React.CSSProperties = {
     margin: 0,
@@ -27,27 +21,45 @@ function Dashboard() {
     background: '#364d79',
   };
   let [posts, setposts] = useState([]);
-  const [settings, setSetting] = useState({
-    fixSiderbar: true,
-    layout: "mix",
-    splitMenus: true,
-  });
-  const { userId,
-    sessionId,
-    getToken,
-    isLoaded,
-    isSignedIn,
-    signOut} = useAuth();
+  const [profile,setProfile] = useState("/");
+  // const { userId} = useAuth();
 
   async function fetchPosts() {
     const res = await fetch('http://localhost:3000/api/posts');
     const data = await res.json();
     setposts(data);
   }
+//   const isUserRegistered = async () => {
+//     const {userId} = auth();
+//     if(userId){
+//             const user = clerkClient.users.getUser(userId ?? "");
+//             const email = (await user).emailAddresses[0].emailAddress;
+//             const dbUsermentor = await db.mentor.findFirst({
+//                 where: {
+//                 email: email,
+//                 },
+//             });
+//             const dbUserStudent = await db.student.findFirst({
+//                 where:{
+//                     email:email
+//                 }
+//             })
+//             if (!dbUsermentor && !dbUserStudent) {
+//                 redirect("/");
+//             }
+//             if(dbUserStudent){
+//                setProfile(`/mentee/${dbUserStudent.id}`);
+//             }
+//             if(dbUsermentor){
+//                 setProfile(`/mentor/${dbUsermentor.id}`);
+//             }
+//     }
+// }
 
   useEffect(() => {
-    console.log(userId)
-    if(!userId)redirect("/onboarding");
+    // console.log(userId)
+    // if(!userId)redirect("/onboarding");
+    // isUserRegistered();
     fetchPosts();
   }, []);
 
@@ -57,7 +69,7 @@ function Dashboard() {
 
   return (
     <>
-        <Navbar />
+        <Navbar profile={profile} />
         {/* <PageContainer content=""> */}
             <Row>
                 <Col span={24}>

@@ -1,8 +1,17 @@
+'use client'
 import { cn } from "@/lib/utils";
-import { UserButton } from "@clerk/nextjs";
+import { db } from "@/utils/db";
+import { UserButton, auth, clerkClient } from "@clerk/nextjs";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default function Navbar() {
+type Props = {
+    profile:string
+}
+
+export default function Navbar(props:Props) {
+
   return (
         <div className="border-b">
             <div className="flex h-16 items-center px-4">
@@ -15,7 +24,7 @@ export default function Navbar() {
                     Dashboard
                 </Link>
                 <Link
-                    href="/examples/dashboard"
+                    href={props.profile}
                     className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                 >
                     Profile

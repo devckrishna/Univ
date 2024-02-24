@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 const { Title } = Typography;
 const style: React.CSSProperties = { display:'flex', flexDirection:'column',  justifyContent: 'center', alignItems: 'center' };
 
-const Home:  React.FC = () => {
+const Home = () => {
   // const user = await db.user.findMany();
   // console.log(user);
   const [mounted, setMounted] = useState(false);

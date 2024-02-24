@@ -4,26 +4,10 @@ import {
   Row,
   Col,
   Space,
-  Card,
-  ConfigProvider,
-  Dropdown,
-  Input,
-  Popover,
-  theme,
   Descriptions,
-  Flex,
-  Avatar,
   Image,
   Carousel,
 } from "antd";
-import {
-  PageContainer,
-  ProCard,
-  ProConfigProvider,
-  ProLayout,
-  SettingDrawer,
-  StatisticCard,
-} from "@ant-design/pro-components";
 import {
   RotateLeftOutlined,
   RotateRightOutlined,
@@ -31,31 +15,16 @@ import {
   ZoomInOutlined,
   ZoomOutOutlined,
 } from "@ant-design/icons";
-import RcResizeObserver from "rc-resize-observer";
 import Link from "next/link";
 import {
   Divider,
-  Stack,
-  Paper,
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  Menu,
-  Container,
-  Button,
-  Tooltip,
-  MenuItem,
 } from "@mui/material";
-import Feedbacks from "@/components/Feedbacks";
-import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
-// import Bookings from "../subcomponents/Bookings";
-// import Feedbacks from "../subcomponents/Feedbacks";
+import Navbar from "@/components/Navbar";
+import axios from "axios";
+import Loading from "@/components/Loading";
+import { Button } from "@/components/ui/button";
 
-const { Statistic } = StatisticCard;
-const settings = ["Go to Profile", "Dashboard", "Logout"];
 const items = [
   {
     key: "1",
@@ -96,217 +65,195 @@ const contentStyle: React.CSSProperties = {
   background: "#364d79",
 };
 
-const UnivProfile: React.FC = () => {
-  const currstate = useAppSelector(state=>state);
+type UniversityObj = {
+  id: string;
+  description: string;
+  email: string;
+  images: string[];
+  name: string;
+  bachelor_courses:string[];
+  masters_courses:string[];
+  address:string;
+  website:string;
+};
+
+
+const UnivProfile = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
-  const [responsive, setResponsive] = useState(false);
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [university,setUniversity] = useState<UniversityObj>({
+    id: "abcd",
+    description: "",
+    email: "",
+    images:[],
+    name: "",
+    bachelor_courses:[],
+    masters_courses:[],
+    address:"",
+    website:""
+  })
+  const getdetails = async() => {
+    console.log("hehehhe");
+    const data = await axios.get("/api/university/"+params.id);
+    console.log(data.data.data);
+    setUniversity(data.data.data);
+    console.log("University details ",university);
+  }
 
-  const handleOpenNavMenu = (event: any) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: any) => {
-    console.log("entered in handle")
-    setAnchorElUser(event.currentTarget);
-  };
+  useEffect(()=>{
+    getdetails();
+    setIsLoading(false);
+  },[]);
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  if(isLoading){
+    return (<Loading />)
+  }else{
+      return (
+        <>
+          <Navbar profile="/" />
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  // useEffect(()=>{
-  //   if(!currstate.auth.credentials){
-  //     router.push(`/`);
-  //   }
-  // })
-
-  return (
-    <>
-      <AppBar position="static" color="transparent">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              sx={{
-                mr: 2,
-                display: { md: "flex" },
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              UnivConnect
-            </Typography>
-
-            <Box
-              sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
-            ></Box>
-
-            <Box
-              sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
-            ></Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg"
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-
-          </Toolbar>
-        </Container>
-      </AppBar>
-
-      <div
-        style={{
-          background: "#F5F7FA",
-        }}
-      >
-        <PageContainer>
-          <Row gutter={[48, 48]}>
-            <Col xs={{ span: 24 }} lg={{ span: 10 }}>
-              <div
-                style={{
-                  backgroundColor: "white",
-                  padding: "20px",
-                  height: "inherit",
-                }}
-              >
-                <Image
-                  src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg"
-                  preview={{
-                    toolbarRender: (
-                      _,
-                      {
-                        transform: { scale },
-                        actions: {
-                          onFlipY,
-                          onFlipX,
-                          onRotateLeft,
-                          onRotateRight,
-                          onZoomOut,
-                          onZoomIn,
-                        },
-                      }
-                    ) => (
-                      <Space size={12} className="toolbar-wrapper">
-                        <SwapOutlined rotate={90} onClick={onFlipY} />
-                        <SwapOutlined onClick={onFlipX} />
-                        <RotateLeftOutlined onClick={onRotateLeft} />
-                        <RotateRightOutlined onClick={onRotateRight} />
-                        <ZoomOutOutlined
-                          disabled={scale === 1}
-                          onClick={onZoomOut}
-                        />
-                        <ZoomInOutlined
-                          disabled={scale === 50}
-                          onClick={onZoomIn}
-                        />
-                      </Space>
-                    ),
-                  }}
-                />
-                <h2>Chirag Jindal</h2>
-                <p>
-                  {" "}
-                  excepteur. Nostrud ea occaecat ad dolore commodo tempor ut
-                  pariatur. Veniam Lorem Lorem adipisicing sit occaecat nostrud
-                  occaecat ex adipisicing deserunt id anim duis. Eiusmod aliqua
-                  minim veniam id ea amet nulla exercitation cupidatat do enim
-                  adipisicing incididunt.
-                </p>
-                <Divider>
-                  <h2>Personal Information</h2>
-                </Divider>
-                <Descriptions bordered items={items} />
-                <Divider>
-                  <h2>Edit Info</h2>
-                </Divider>
-                <Stack spacing={2} direction="column">
-                  <Button variant="contained">Edit Personal Information</Button>
-                    <Button variant="contained">                    
-                      <Link href={`/university/${currstate.auth.credentials?.id}/createPost`}>
-                          Create New Post
-                      </Link>
-                    </Button>
-                </Stack>
-              </div>
-            </Col>
-
-            <Col xs={{ span: 24 }} lg={{ span: 14 }}>
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <Divider>
-                    <h2>Explore Campus</h2>
-                  </Divider>
-                  <Carousel autoplay>
-                    <div>
-                      <h3 style={contentStyle}>1</h3>
+          <div
+            style={{
+              background: "#F5F7FA",
+            }}
+          >
+            <div className="p-8">
+              <Row gutter={[48, 48]}>
+                <Col xs={{ span: 24 }} lg={{ span: 10 }}>
+                  <div
+                    style={{
+                      backgroundColor: "white",
+                      padding: "20px",
+                      height: "inherit",
+                    }}
+                  >
+                    <Image
+                      src={university.images[university.images.length-1]}
+                      preview={{
+                        toolbarRender: (
+                          _,
+                          {
+                            transform: { scale },
+                            actions: {
+                              onFlipY,
+                              onFlipX,
+                              onRotateLeft,
+                              onRotateRight,
+                              onZoomOut,
+                              onZoomIn,
+                            },
+                          }
+                        ) => (
+                          <Space size={12} className="toolbar-wrapper">
+                            <SwapOutlined rotate={90} onClick={onFlipY} />
+                            <SwapOutlined onClick={onFlipX} />
+                            <RotateLeftOutlined onClick={onRotateLeft} />
+                            <RotateRightOutlined onClick={onRotateRight} />
+                            <ZoomOutOutlined
+                              disabled={scale === 1}
+                              onClick={onZoomOut}
+                            />
+                            <ZoomInOutlined
+                              disabled={scale === 50}
+                              onClick={onZoomIn}
+                            />
+                          </Space>
+                        ),
+                      }}
+                    />
+                    <h2 className="scroll-m-20 pb-2 text-3xl text-center font-semibold tracking-tight first:mt-4">{university.name}</h2>
+                    <p className="text-center">
+                      {university.description}
+                    </p>
+                    <Divider>
+                      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Personal Information</h3>
+                    </Divider>
+                    <Descriptions bordered items={
+                        [
+                          {
+                            key: "1",
+                            label: "Name",
+                            children: university.name,
+                            span: 3,
+                          },
+                          {
+                            key: "2",
+                            label: "Email",
+                            children: university.email,
+                            span: 3,
+                          },
+                          {
+                            key: "3",
+                            label: "Website",
+                            children: university.website,
+                            span: 3,
+                          },
+                          {
+                            key: "4",
+                            label: "Address",
+                            children: university.address,
+                            span: 3,
+                          },
+                          {
+                            key: "5",
+                            label: "Courses",
+                            children: university.bachelor_courses,
+                            span: 3,
+                          },
+                        ]
+                    } />
+                    <Divider>
+                      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Edit Info</h3>
+                    </Divider>
+                    <div className="flex flex-col space-y-3">
+                        <Link href={`/university/${university.id}`}>
+                          <Button className="w-full">Edit Personal Information</Button>
+                        </Link>
+                        <Link href={`/university/${university.id}/createPost`}>
+                          <Button className="w-full">Create New Post</Button>
+                        </Link>
                     </div>
-                    <div>
-                      <h3 style={contentStyle}>2</h3>
-                    </div>
-                    <div>
-                      <h3 style={contentStyle}>3</h3>
-                    </div>
-                    <div>
-                      <h3 style={contentStyle}>4</h3>
-                    </div>
-                  </Carousel>
+                  </div>
+                </Col>
+
+                <Col xs={{ span: 24 }} lg={{ span: 14 }}>
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <Divider>
+                        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Explore Campus</h3>
+                      </Divider>
+                      <Carousel autoplay>
+                        <div>
+                          <h3 style={contentStyle}>1</h3>
+                        </div>
+                        <div>
+                          <h3 style={contentStyle}>2</h3>
+                        </div>
+                        <div>
+                          <h3 style={contentStyle}>3</h3>
+                        </div>
+                        <div>
+                          <h3 style={contentStyle}>4</h3>
+                        </div>
+                      </Carousel>
+                    </Col>
+                  </Row>
+
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <Divider>
+                        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Posts</h3>
+                      </Divider>
+                      {/* <Feedbacks /> */}
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
-
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <Divider>
-                    <h2>Posts</h2>
-                  </Divider>
-                  {/* <Feedbacks /> */}
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </PageContainer>
-      </div>
-    </>
-  );
+            </div>
+          </div>
+        </>
+      );
+  }
 };
 
 export default UnivProfile;

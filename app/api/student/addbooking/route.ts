@@ -24,7 +24,12 @@ export async function POST(req: Request) {
           start_time,
           end_time,
           date,
-          amount
+          amount,
+          mentorFeedbackFlag:false,
+          mentorFeedback:"",
+          menteeFeedbackFlag:false,
+          menteeFeedbackRating:0,
+          menteeFeedback:""
         }
     });
     

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 const PlatformLayout = async ({ children }: { children: React.ReactNode }) => {
     const isUserRegistered = async () => {
         const {userId} = auth();
+        console.log("user id is ",userId);
         if(userId){
                 const user = clerkClient.users.getUser(userId ?? "");
                 const email = (await user).emailAddresses[0].emailAddress;
@@ -18,14 +19,19 @@ const PlatformLayout = async ({ children }: { children: React.ReactNode }) => {
                         email:email
                     }
                 })
-                if (!dbUsermentor && !dbUserStudent) {
-                    redirect("/onboarding");
-                }
+                const dbUniversity = await db.university.findFirst({
+                    where: {
+                    email: email,
+                    },
+                });
                 if(dbUserStudent){
                     redirect(`/mentee/${dbUserStudent.id}`);
                 }
                 if(dbUsermentor){
                     redirect(`/mentor/${dbUsermentor.id}`);
+                }
+                if(dbUniversity){
+                    redirect(`/university/${dbUniversity.id}`);
                 }
         }
     }

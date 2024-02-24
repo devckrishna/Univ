@@ -1,18 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import {
-  AutoComplete,
-  Button,
-  Cascader,
-  Checkbox,
   Col,
   Form,
   Input,
   InputNumber,
   Row,
   Select,
-  Upload,
-  message,
 } from "antd";
 import {
   UploadOutlined,
@@ -21,19 +15,16 @@ import {
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-// import { useSelector, useDispatch } from 'react-redux';
-// import { setcredentials } from "../slices/AuthSlice";
-// import { setuniversityvalue } from "../slices/UnivSlice";
-// import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
 
 const { Option } = Select;
 
-const normFile = (e: any) => {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e?.fileList;
-};
+// const normFile = (e: any) => {
+//   if (Array.isArray(e)) {
+//     return e;
+//   }
+//   return e?.fileList;
+// };
 
 const formItemLayout = {
   labelCol: {
@@ -64,7 +55,7 @@ let inivals = {
   gender: "",
 };
 
-const MRegister: React.FC = () => {
+const MRegister = () => {
   let [formstate, setformstate] = useState(inivals);
   let [fileList, setFileList] = useState([]);
   const router = useRouter();
@@ -77,12 +68,6 @@ const MRegister: React.FC = () => {
   const onGenderChange = (value: string) => {
     console.log("current gender value is : ", value);
   };
-
-  function getBase64(img: any, callback: any) {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-  }
 
   const handleSubmit = async (values: any) => {
 
@@ -138,9 +123,8 @@ const MRegister: React.FC = () => {
           width: "100%",
         }}
         scrollToFirstError
+        layout="vertical"
       >
-        <Row style={{ width: "100%" }}>
-          <Col span={15}>
                   <Form.Item
                     name="name"
                     label="Name"
@@ -156,7 +140,7 @@ const MRegister: React.FC = () => {
                   </Form.Item>
                   <Form.Item
                     name="rate"
-                    label="Hourly Price(INR)"
+                    label="Hourly Price (INR)"
                     rules={[
                       {
                         type: "number",
@@ -231,12 +215,10 @@ const MRegister: React.FC = () => {
                     />
                   </Form.Item>
                   <Form.Item {...tailFormItemLayout}>
-                    <Button type="primary" htmlType="submit">
+                    <Button>
                       Register
                     </Button>
                   </Form.Item>
-          </Col>
-        </Row>
       </Form>
     </>
   );

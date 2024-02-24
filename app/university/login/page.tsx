@@ -2,25 +2,17 @@
 import React from "react";
 import { Row, Col } from "antd";
 import Link from "next/link";
-// import { useRouter } from "next/router";
-import { usePathname } from "next/navigation";
-import { Button, Space } from "antd";
 import img1 from "../../../public/img12.png";
 import ULogin from "@/components/ULogin";
 
-const UniversityAuthForm: React.FC = () => {
-  //  let location = useLocation();
-  // const pathname = usePathname();
-  //  console.log(pathname);
+const UniversityAuthForm = () => {
+  
   const backgroundStyle = {
     backgroundImage: `url(${img1.src})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     width: "100%",
     height: "100%",
-    // display:'flex',
-    // justifyContent: 'center',
-    // alignItems:'center'
   };
 
   return (

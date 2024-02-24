@@ -49,6 +49,11 @@ model Booking {
   start_time String
   end_time   String
   amount     Int
+  mentorFeedbackFlag Boolean
+  mentorFeedback String
+  menteeFeedbackFlag Boolean
+  menteeFeedbackRating Int
+  menteeFeedback  String
 }
 
 model MentorBooking {
@@ -63,11 +68,11 @@ model MentorBooking {
 
 model Feedback {
   id         String  @id @default(uuid())
+  type       String
   student    Student @relation(fields: [student_id], references: [id])
   student_id String
   mentor     Mentor  @relation(fields: [mentor_id], references: [id])
   mentor_id  String
-
   date        String
   rating      Float
   description String
@@ -78,7 +83,6 @@ model University {
   id               String   @id @default(uuid())
   name             String
   email            String
-  password         String
   description      String
   images           String[]
   bachelor_courses String[]

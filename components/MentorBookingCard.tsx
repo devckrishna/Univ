@@ -2,50 +2,49 @@
 import * as React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Chip from '@mui/joy/Chip';
-import Box from '@mui/joy/Box';
-// import Card from '@mui/joy/Card';
-// import CardContent from '@mui/joy/CardContent';
-// import CardOverflow from '@mui/joy/CardOverflow';
-// import CardActions from '@mui/joy/CardActions';
-// import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import Divider from '@mui/joy/Divider';
 import { CardHeader,Card,CardDescription,CardContent } from './ui/card';
-import { Rating } from '@mui/material';
 import Feedback from './Feedback';
 
 const data = [
   {
+    id:1,
     src: 'https://images.unsplash.com/photo-1502657877623-f66bf489d236',
     title: 'Night view',
     stars: 4,
     description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
   },
   {
+    id:2,
     src: 'https://images.unsplash.com/photo-1527549993586-dff825b37782',
     title: 'Lake view',
     stars: 4,
     description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
   },
   {
+    id:3,
     src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
     title: 'Mountain view',
     stars: 4,
     description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
   },
   {
+    id:4,
     src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
     title: 'Mountain view',
     stars: 4,
     description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
   },
   {
+    id:5,
     src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
     title: 'Mountain view',
     stars: 4,
     description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
   },
   {
+    id:6,
     src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
     title: 'Mountain view',
     stars: 4,
@@ -127,7 +126,7 @@ const MentorBookingCard = (props:Props) =>  {
                 </CardContent>
 
                 <div className="flex space-x-4 px-3 pb-6 overflow-x-auto overflow-hidden no-scrollbar">
-                  {data.map((item)=>(<Feedback />))}
+                  {data.map((item)=>(<Feedback key={item.id} />))}
                 </div>
 
 

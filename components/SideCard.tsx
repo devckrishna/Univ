@@ -1,78 +1,42 @@
 'use client'
 import React from 'react';
-// import { ProCard } from '@ant-design/pro-components';
-// import Link from 'next/link';
-// import { Button } from 'antd';
-import Card from '@mui/joy/Card';
-import Button from '@mui/joy/Button';
-import CardCover from '@mui/joy/CardCover';
-import CardContent from '@mui/joy/CardContent';
-import Typography from '@mui/joy/Typography';
-import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
-import img8 from '../public/img8.jpg'
 import { redirect, useRouter } from 'next/navigation';
-// import { CardHeader } from './ui/card';
-// import { Card } from './ui/card';
 
-const Sidecard:  React.FC = () => {
+
+const Sidecard = () => {
 
     const router = useRouter();
     const func = () => router.push('/');
-
-    // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
+        
+    const style = {
+        minHeight:'250px',
+        height:'100%',
+        backgroundImage:`url('https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320')`
+    }
+    
     return (
         <>
-            {/* <div className="rounded-xl relative min-h-[100px] h-full">
-                
-                <div className="absolute w-full h-full bg-black/50 rounded-xl text-white">
-                    <p className="font-bold text-2xl px-2 pt-4">text</p>
-                    <p className="px-2">subtitle</p>
-                    <button className="border rounded-xl px-5 py-1 border-white bg-white text-black hover:bg-black/50 hover:text-white border-none mx-2 absolute bottom-4">
-                        order
-                    </button>
+            
+        <div className="relative w-full h-full flex items-end justify-start text-left bg-cover bg-center cursor-pointer" style={style} >
+            <div className="absolute top-0 mt-20 right-0 bottom-0 left-0 bg-gradient-to-b from-transparent to-gray-900">
+            </div>
+            <div className="absolute top-0 right-0 left-0 mx-5 mt-2 flex justify-between items-center">
+                {/* <a href="#" className="text-xs bg-indigo-600 text-white px-5 py-2 uppercase hover:bg-white hover:text-indigo-600 transition ease-in-out duration-500">Politics</a> */}
+                <div className="text-white font-regular flex flex-col justify-start">
+                    <span className="text-3xl leading-0 font-semibold">25</span>
+                    <span className="-mt-3">May</span>
                 </div>
-                    <img
-                    className="h-full w-full object-cover rounded-xl"
-                    src="https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320"
-                    alt="/"
-                    />
-            </div> */}
+            </div>
+            <main className="p-5 z-10">
+                <a href="#" className="text-md tracking-tight font-medium leading-7 font-regular text-white hover:underline">
+                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">  
+                    Admissions 2024 Brochure
+                </h3>
+                </a>
+                <p className='text-white'> Harvard University </p>
+            </main>
 
-            <Card sx={{ minHeight: '250px', height:'100%'}}>
-                <CardCover 
-                // sx={{
-                    // transition: 'transform 0.3s',
-                    // '&:hover': {
-                    //     filter: 'blur(5px)', // or any other hover effect you want
-                    // },
-                // }}
-                onClick={func}
-                >
-                    <img
-                    src="https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320"
-                    srcSet="https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320&dpr=2 2x"
-                    loading="lazy"
-                    alt=""
-                    />
-                </CardCover>
-                <CardCover
-                    sx={{
-                            background:
-                            'linear-gradient(to top, rgba(0,0,0,0.4), rgba(0,0,0,0) 200px), linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0) 300px)',
-                        }}
-                />
-                <CardContent sx={{ justifyContent: 'flex-end' }}>
-                    <Typography level="title-lg" textColor="#fff">
-                    Yosemite National Park
-                    </Typography>
-                    <Typography
-                        // startDecorator={<LocationOnRoundedIcon />}
-                        textColor="neutral.300"
-                    >
-                        Author: Harvard University
-                    </Typography>
-                </CardContent>
-            </Card>
+        </div>
 
 
         </>

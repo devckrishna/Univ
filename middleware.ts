@@ -6,13 +6,18 @@ import { authMiddleware } from "@clerk/nextjs";
 export default authMiddleware({
     publicRoutes: [
         "/",
+        "/dashboard/post/:id",
         "/onboarding",
         "/mentor",
         "/mentee",
+        "/university",
         "/mentor/:id/",
         "/mentee/:id/",
+        "/university/:id",
         "/mentor/:id/bookSession",
+        "/university/register",
         // "/dashboard",
+        // "/api/mentor/getslots",
         "/api/user/mentor",
         "/api/user/student",
         "/api/user/:id",

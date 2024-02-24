@@ -4,17 +4,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// export async function GET(req: Request) {
-//   try {
-//     const mentors = await db.mentor.findMany();
-//     return NextResponse.json(mentors);
-//   } catch (err) {
-//     return NextResponse.json({
-//       message: "Error finding the mentors {GET: api/mentor}",
-//     });
-//   }
-// }
-
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -62,35 +51,64 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       message: "Error updating mentor slots {POST: api/mentor/:id/addSlots}",
       error: err,
+      statusCode:404
     });
   }
 }
 
-
-export async function DELETE(req:NextRequest){
+export async function DELETE(req: NextRequest) {
   try {
-    const {
-      date,
-      mentor_id,
-      duration,
-      start_time,
-      end_time,
-    } = await req.json();
 
-    await db.mentorBooking.deleteMany({
+    const {date,mentor_id,start_time,end_time,duration} = await req.json();
+    const mentor = await db.mentor.findUnique({
+      where: {id:mentor_id}
+    });
+    if(!mentor){
+      return NextResponse.json({
+          message: "Invalid credentials ! Unable to update slots",
+          statusCode:401
+        });
+    }
+
+    const todeleterecord = await prisma.mentorBooking.findFirst({
       where:{
+        mentor_id:mentor.id,
         date:date,
-        mentor_id:mentor_id,
-        duration:duration,
-        start_time:start_time,
-        end_time:end_time
+        start_time: start_time,
+        end_time: end_time,
+        duration: duration,
       }
+    });
+    if(!todeleterecord){
+      return NextResponse.json({message:"No such slot exists",statusCode:404});
+    }
+
+    const deletedBooking  = await prisma.mentorBooking.delete({
+      where:{id:todeleterecord?.id}
     })
+    
+    const mentorId = deletedBooking?.mentor_id;
+      const updatedMentor = await prisma.mentor.update({
+        where: {
+          id: mentorId,
+        },
+        data: {
+          availability: {
+            // Remove the deleted booking from the array
+            disconnect: {
+              id:deletedBooking.id  
+            },
+          },
+        },
+      });
+
+      return NextResponse.json({message:"deleted the entry successfully",statusCode:200,deletedBooking:deletedBooking});
 
   }catch(err){
     return NextResponse.json({
-      message: "Error updating mentor slots {POST: api/mentor/:id/addSlots}",
+      message: "Unable to delete the mentor availability slot from backend",
       error: err,
+      statusCode:404
     });
   }
 }
