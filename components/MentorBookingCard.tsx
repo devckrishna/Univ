@@ -1,11 +1,9 @@
 'use client'
 import * as React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Chip from '@mui/joy/Chip';
-import Typography from '@mui/joy/Typography';
-import Divider from '@mui/joy/Divider';
 import { CardHeader,Card,CardDescription,CardContent } from './ui/card';
 import Feedback from './Feedback';
+import { Divider } from 'antd';
 
 const data = [
   {
@@ -76,26 +74,14 @@ const MentorBookingCard = (props:Props) =>  {
     return (
         <>
             <Card className='w-9/10 shadow-lg'>
-                {/* <CardOverflow variant="solid" sx={{ alignItems: 'center', textAlign: 'center', paddingTop:'6px', paddingBottom:'6px', backgroundColor:'background-color:rgba(48, 88, 137, 0.2)' }}> */}
                 <div className='flex flex-col items-center bg-blue-400 p-3'>
-                    {/* <Avatar src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg" sx={{ '--Avatar-size': '6rem' }} /> */}
                     <Avatar className="h-24 w-24">
                       <AvatarImage src={props.image} />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
-                    <Chip
-                        size="sm"
-                        variant="soft"
-                        color="primary"
-                        sx={{
-                            mt: -1,
-                            mb: 1,
-                            border: '3px solid',
-                            borderColor: 'background.surface',
-                        }}
-                      >
+                    <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 -mt-2 ml-1 z-50">
                       {props.rating.toString()} / 5
-                    </Chip>
+                    </span>
                     <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">{props.name}</h4>
                 {/* </CardOverflow> */}
                 </div>
@@ -107,7 +93,7 @@ const MentorBookingCard = (props:Props) =>  {
                             <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Hourly Rate : Rs {props.rate.toString()}</span>
                           </div>
                         </div>
-                        <Divider orientation="vertical" />
+                        <Divider type='vertical' orientation='center' style={{height:'40px'}}/>
                         <div className='w-3/5 flex items-center justify-items-center'>
                           <div style={{paddingLeft:'80px'}}>
                             <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">{props.university}</h4>
