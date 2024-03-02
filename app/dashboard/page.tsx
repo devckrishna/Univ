@@ -1,14 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-  Row,Col,Divider,Carousel,} from "antd";
-import Link from "next/link";
-import Verticalcard from "@/components/VerticalCard";
-import Sidecard from "@/components/SideCard";
-// import { auth, clerkClient, useAuth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import Navbar from "@/components/Navbar";
-// import { db } from "@/utils/db";
+import React,{useEffect, useState} from "react";
+import {Row,Col,Carousel,} from "antd";
+import Loading from "@/components/Loading";
+import PostsGrid from "@/components/PostGrid";
+
+type PostSchema = {
+  id:string;
+  title:string;
+  images:string[];
+  description:string;
+  created_at:Date,
+  university_name:string
+}
 
 const Dashboard = () => {
     
@@ -20,141 +23,59 @@ const Dashboard = () => {
     textAlign: 'center',
     background: '#364d79',
   };
-  let [posts, setposts] = useState([]);
+  const [posts, setPosts] = useState<PostSchema[]>([]);
   const [profile,setProfile] = useState("/");
+  const [loading,setLoading] = useState(true);
   // const { userId} = useAuth();
 
-  async function fetchPosts() {
+  const fetchPosts = async() => {
     const res = await fetch('http://localhost:3000/api/posts');
     const data = await res.json();
-    setposts(data);
+    console.log(data);
+    setPosts(data);
+    setLoading(false);
   }
-//   const isUserRegistered = async () => {
-//     const {userId} = auth();
-//     if(userId){
-//             const user = clerkClient.users.getUser(userId ?? "");
-//             const email = (await user).emailAddresses[0].emailAddress;
-//             const dbUsermentor = await db.mentor.findFirst({
-//                 where: {
-//                 email: email,
-//                 },
-//             });
-//             const dbUserStudent = await db.student.findFirst({
-//                 where:{
-//                     email:email
-//                 }
-//             })
-//             if (!dbUsermentor && !dbUserStudent) {
-//                 redirect("/");
-//             }
-//             if(dbUserStudent){
-//                setProfile(`/mentee/${dbUserStudent.id}`);
-//             }
-//             if(dbUsermentor){
-//                 setProfile(`/mentor/${dbUsermentor.id}`);
-//             }
-//     }
-// }
 
   useEffect(() => {
-    // console.log(userId)
-    // if(!userId)redirect("/onboarding");
-    // isUserRegistered();
     fetchPosts();
+    console.log("posts are : ",posts);
   }, []);
 
   const onChange = (currentSlide: number) => {
     // console.log(currentSlide);
   };
 
-  return (
-    <>
-        <Navbar profile={profile} />
-        {/* <PageContainer content=""> */}
-            <Row>
-                <Col span={24}>
-                    <Carousel afterChange={onChange} autoplay={true}>
-                        <div>
-                          <h3 style={contentStyle}>1</h3>
-                        </div>
-                        <div>
-                          <h3 style={contentStyle}>2</h3>
-                        </div>
-                        <div>
-                          <h3 style={contentStyle}>3</h3>
-                        </div>
-                        <div>
-                          <h3 style={contentStyle}>4</h3>
-                        </div>
-                    </Carousel>
 
-                </Col>
-            </Row>
+  if(loading){
+    return (<Loading />)
+  }else {
+  return (  
+            <>
+                    <Row>
+                        <Col span={24}>
+                            <Carousel afterChange={onChange} autoplay={true}>
+                                <div>
+                                  <h3 style={contentStyle}>1</h3>
+                                </div>
+                                <div>
+                                  <h3 style={contentStyle}>2</h3>
+                                </div>
+                                <div>
+                                  <h3 style={contentStyle}>3</h3>
+                                </div>
+                                <div>
+                                  <h3 style={contentStyle}>4</h3>
+                                </div>
+                            </Carousel>
 
-            <div style={{ marginLeft: "3%", marginRight: '3%', marginBottom:'3%'}}>
-                {/* <div style={{ margin: "20px" }}> */}
-                  <div className="my-6">
-                    <Divider orientation="center">
-                      <h2 className="scroll-m-20 pb-2 text-3xl font-bold tracking-tight first:mt-0">Most Recent Blogs</h2>
-                    </Divider>
-                  </div>
+                        </Col>
+                    </Row>
 
-                  <Row gutter={[48, 48]}>
-
-                    <Col xs={{ span: 24 }} lg={{ span: 12 }}>
-                        <Row gutter={[0,8]}>
-                          <Col xs={{span:24}} ><Sidecard /></Col> 
-                          <Col xs={{span:24}} ><Sidecard /></Col> 
-                        </Row>  
-                    </Col>
-
-                    <Col xs={{ span: 24 }} lg={{ span: 12 }}>
-                      <Sidecard />
-                    </Col>
-
-                  </Row>
-            </div>
-
-            <div style={{ marginLeft: "3%", marginRight: '3%', marginBottom:'3%'}}>
-                  {/* <Row> */}
-                      <Divider orientation="center">
-                        <h2 className="scroll-m-20 pb-2 text-3xl font-bold tracking-tight first:mt-0">All Posts</h2>
-                      </Divider>
-                      <Row gutter={[48, 48]}>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                        <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                          <Verticalcard />
-                        </Col>
-                      </Row>      
-            </div>
-
-        {/* </PageContainer> */}
-      
-    </>
-  );
+                    <PostsGrid posts={posts}/>                    
+            </>
+            
+          );
+  }
 }
 
 export default Dashboard;

@@ -33,12 +33,12 @@ export default function SlotsTable({slots}:Props) {
   const router = useRouter();
 
   useEffect(()=>{
-    setPage(1);
     if(slots.length<=5){
         setCslots(slots);
     }else{
         setCslots(slots.slice((page-1)*5,5));
     }
+    console.log("slots slice is ",cslots);
     console.log(slots);
   },[]);
 
@@ -46,8 +46,10 @@ export default function SlotsTable({slots}:Props) {
     // console.log("current page is",pageNumber)
     setPage(pageNumber);
     console.log("current updated page is",pageNumber)
-    if((page-1)*5 + 5<=slots.length)setCslots(slots.slice((page-1)*5,5));
-    else setCslots(slots.slice((page-1)*5));
+    if((pageNumber-1)*5 + 5<=slots.length){
+      console.log('slots slice is ', slots.slice((pageNumber-1)*5, (pageNumber-1)*5 + 5));
+      setCslots(slots.slice((pageNumber-1)*5,(pageNumber-1)*5 + 5));
+    }else setCslots(slots.slice((pageNumber-1)*5));
   };
 
 
@@ -82,7 +84,7 @@ export default function SlotsTable({slots}:Props) {
                     <TableFooter>
                         <TableRow>
                         <TableCell className="text-center bg-white" colSpan={5}>
-                            <Pagination defaultCurrent={1} current={page} onChange={onChange} pageSize={5} total={50} />
+                            <Pagination defaultCurrent={1} current={page} onChange={onChange} pageSize={5} total={slots.length} />
                         </TableCell>
                         </TableRow>
                     </TableFooter>

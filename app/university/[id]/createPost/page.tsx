@@ -4,9 +4,11 @@ import React,{useState} from 'react';
 import {Col,Form,Input,InputNumber,Row,Select,Upload,message} from 'antd';
 import { UploadOutlined ,PlusOutlined,LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import img from '../../../../public/img7.jpg';
+// import img from '../../../../public/img7.jpg';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/nextjs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+// import Navbar from '@/components/Navbar';
 
 const { Option } = Select;
   const normFile = (e:any) => {
@@ -27,13 +29,6 @@ const { Option } = Select;
     },
   };
 
-  const tailFormItemLayout = {
-    wrapperCol: {
-      xs: {span: 24,offset: 0,},
-      sm: {span: 16,offset: 8,},
-    },
-  };
-
   let inivals = {
     name:"",
     email:"",
@@ -45,23 +40,21 @@ const { Option } = Select;
     address:"",
     website:""
 }
+const style: React.CSSProperties = { display:'flex', height:'100%', width:'100%', flexDirection:'column',  justifyContent: 'center', alignItems: 'center' };
 
 const CreatePost = ({ params }: { params: { id: string } }) => {
 
-    // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img1.jfif`;
     let [formstate,setformstate] = useState(inivals);
     let [fileList,setFileList] = useState([]);
     const {user} = useUser();
     // const [editorState, setEditorState] = useState(EditorState.createEmpty());
-
     const [form] = Form.useForm();
     const router = useRouter();
     const backgroundStyle = {
-      backgroundImage: `url(${img.src})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       width: '100%',
-      height: '100%',
+      height: '100%'
    }
 
    const imageUpload = async(file:any) => {
@@ -91,7 +84,7 @@ const CreatePost = ({ params }: { params: { id: string } }) => {
                 title:values.title,
                 email:user?.emailAddresses[0].emailAddress,
                 description:values.description,
-                images:arr
+                images:arr,
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -118,6 +111,111 @@ const CreatePost = ({ params }: { params: { id: string } }) => {
     return (
         <>
             <div style={{height:'100vh'}}>
+                    {/* <Navbar profile={'/'} /> */}
+                    <Row style={{height:'90.8%'}} justify="center" align="middle">
+                        <Col xs={{span: 0}} lg={{span: 12}} style={backgroundStyle}>
+                            <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
+                                <div className="absolute inset-0 bg-blue-800" />
+                                <div className="relative z-20 flex items-center text-lg font-medium">
+                                    <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="mr-2 h-6 w-6"
+                                    >
+                                    <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+                                    </svg>
+                                    UnivConnect
+                                </div>
+                                {/* <div className='w-full h-full flex justify-center items-center'>
+                                      <div className='flex justify-center items-center flex-col'>
+                                        <Avatar>
+                                          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                                          <AvatarFallback>CN</AvatarFallback>
+                                        </Avatar>
+                                        <Button className='w-full text-white'>Go To Profile Page</Button>
+                                        <Button className='w-full text-white'>Go To Dashboard</Button>
+                                      </div>
+                                </div> */}
+                                <div className="relative z-20 mt-auto">
+                                    <blockquote className="space-y-2">
+                                    <p className="text-lg">
+                                        &ldquo;This library has saved me countless hours of work and
+                                        helped me deliver stunning designs to my clients faster than
+                                        ever before.&rdquo;
+                                    </p>
+                                    <footer className="text-sm">Sofia Davis</footer>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </Col>
+
+                        <Col xs={{span:24}} lg={{span:12}} style={style}>
+                          <div className="flex min-h-full w-11/12 flex-1 flex-col justify-center items-center px-2 lg:px-4">
+                              <div className="m-0 w-10/12">
+                                <Form form={form} name="register" onFinish={onFinish} layout='vertical' scrollToFirstError>
+                                          <Form.Item
+                                                name="Title"
+                                                label="Title"
+                                                rules={[
+                                                {
+                                                    required: true,
+                                                    message: 'Please input the Title!',
+                                                    whitespace: true,
+                                                },
+                                                ]}
+                                                className='w-full'
+                                            >
+                                                <Input name="Title" className='w-full' onChange={handleChange} />
+                                            </Form.Item>
+                                            <Form.Item
+                                                    name="description"
+                                                    label="Description"
+                                                    rules={[
+                                                    {
+                                                        message: 'Please add description !',
+                                                    },
+                                                    ]}
+                                                >
+                                
+                                                    <Input.TextArea name="description" onChange={handleChange} showCount maxLength={2000} />
+                                            </Form.Item>
+                                                        
+                                            <Form.Item name="images" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+                                                <Upload
+                                                    // action={null}
+                                                    beforeUpload={()=>{return false;}}
+                                                    listType="picture-card"
+                                                    fileList={fileList}
+                                                    maxCount={3}
+                                                    name="file"
+                                                    // onChange={handleFileChange}
+                                                    multiple
+                                                    >
+                                                    <div>
+                                                        <PlusOutlined />
+                                                        <div style={{ marginTop: 8 }}>Upload</div>
+                                                    </div>
+                                                </Upload>
+                                            </Form.Item>
+                                                        
+                                            <Form.Item>
+                                                <Button className='w-full bg-blue-800'>Create Post</Button>
+                                            </Form.Item>
+                                                        
+                                    </Form>
+                              </div>
+                          </div>
+                        </Col>
+                    </Row>
+            </div>
+
+
+            {/* <div style={{height:'100vh'}}>
                 <div style={backgroundStyle} className='blur-lg'></div>
                 
                 <div className='absolute top-1/2 left-1/2 w-full z-20' style={{transform:'translate(-50%,-50%)'}}>
@@ -148,18 +246,11 @@ const CreatePost = ({ params }: { params: { id: string } }) => {
                                                   },
                                                   ]}
                                               >
-                                                {/* <Editor
-                                                  editorState={editorState}
-                                                  onEditorStateChange={onEditorStateChange}
-                                                  wrapperClassName="demo-wrapper"
-                                                  editorClassName="demo-editor editor"
-                                                  // editorStyle = {editorStyle}
-                                                /> */}
-                                                
+                              
                                                   <Input.TextArea name="description" onChange={handleChange} showCount maxLength={2000} />
-                                          </Form.Item>
+                                          </Form.Item> */}
                                                       
-                                          <Form.Item name="images" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+                                          {/* <Form.Item name="images" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
                                               <Upload
                                                   // action={null}
                                                   beforeUpload={()=>{return false;}}
@@ -175,20 +266,20 @@ const CreatePost = ({ params }: { params: { id: string } }) => {
                                                       <div style={{ marginTop: 8 }}>Upload</div>
                                                   </div>
                                               </Upload>
-                                          </Form.Item>
+                                          </Form.Item> */}
                                                       
                                           {/* <Form.Item {...tailFormItemLayout}> */}
-                                              <Button className='w-1/2'>Create Post</Button>
+                                              {/* <Button className='w-1/2'>Create Post</Button> */}
                                           {/* </Form.Item> */}
                                                       
-                                  </Form>
+                                  {/* </Form>
                           </Col>
                         
                         <Col xs={{span:1}} lg={{span:2}}></Col>
                       </Row>
                 </div>
 
-            </div>
+            </div> */}
         </>
     )
 

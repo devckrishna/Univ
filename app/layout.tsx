@@ -20,17 +20,16 @@ export default function RootLayout({
 }) {
   return (
     <>
-    <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>
-          <Providers>
-            {children}
-            <Toaster />
-          </Providers>
-        </body>
-      </html>
-    </ClerkProvider>
-    
+      <ClerkProvider>
+        <html lang="en">
+          <body className={inter.className}>
+            <Providers>
+              {children}
+              <Toaster />
+            </Providers>
+          </body>
+        </html>
+      </ClerkProvider>
     </>
   )
 }

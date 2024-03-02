@@ -1,7 +1,7 @@
 import { db } from "@/utils/db";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request,{ params }: { params: { id: string } }) {
+export async function GET({ params }: { params: { id: string } }) {
   try {
     const mentorId = params.id;
     const mentor = await db.mentor.findUnique({

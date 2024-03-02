@@ -19,8 +19,8 @@ type DetailsInterface = {
   image: string;
   name: string;
   university: string;
-  rating: Number,
-  rate: Number
+  rating: number,
+  rate: number
 };
 
 type SlotInterface = {
@@ -73,7 +73,6 @@ const SessionBookingForm = ({mentorDetails,slots}:Props) =>  {
     console.log(slot);
     console.log(date?.toDateString());
     const slots = slot?.split('-');
-    
     const stripe = await getStipePromise();
 
     const response = await fetch("http://localhost:3000/api/payment",{
@@ -85,14 +84,11 @@ const SessionBookingForm = ({mentorDetails,slots}:Props) =>  {
                     name:'session',
                     id:mentorDetails.id,
                     duration:duration,
-                    amount: (duration?duration:1)*700,
+                    amount: (duration?duration:1)*mentorDetails.rate,
                     start_time:slots?slots[0]:'21',
                     end_time:slots?slots[1]:'23',
                     date: date?.toDateString(),
                     mentorEmail: mentorDetails.email
-                    // payeeName: currstate.auth.credentials?.username,
-                    // payeeEmail: currstate.auth.credentials?.email,
-                    // payeeId: currstate.auth.credentials?.id
                   }])
         });
     const data = await response.json();

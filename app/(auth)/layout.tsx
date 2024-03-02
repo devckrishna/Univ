@@ -14,22 +14,22 @@ const PlatformLayout = async ({ children }: { children: React.ReactNode }) => {
                     email: email,
                     },
                 });
+                if(dbUsermentor){
+                    redirect(`/mentor/${dbUsermentor.id}`);
+                }
                 const dbUserStudent = await db.student.findFirst({
                     where:{
                         email:email
                     }
                 })
+                if(dbUserStudent){
+                    redirect(`/mentee/${dbUserStudent.id}`);
+                }
                 const dbUniversity = await db.university.findFirst({
                     where: {
                     email: email,
                     },
                 });
-                if(dbUserStudent){
-                    redirect(`/mentee/${dbUserStudent.id}`);
-                }
-                if(dbUsermentor){
-                    redirect(`/mentor/${dbUsermentor.id}`);
-                }
                 if(dbUniversity){
                     redirect(`/university/${dbUniversity.id}`);
                 }

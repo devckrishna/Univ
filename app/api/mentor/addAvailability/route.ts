@@ -63,6 +63,7 @@ export async function DELETE(req: NextRequest) {
     const mentor = await db.mentor.findUnique({
       where: {id:mentor_id}
     });
+    console.log(mentor);
     if(!mentor){
       return NextResponse.json({
           message: "Invalid credentials ! Unable to update slots",
@@ -79,6 +80,7 @@ export async function DELETE(req: NextRequest) {
         duration: duration,
       }
     });
+    console.log(todeleterecord);
     if(!todeleterecord){
       return NextResponse.json({message:"No such slot exists",statusCode:404});
     }
@@ -86,22 +88,22 @@ export async function DELETE(req: NextRequest) {
     const deletedBooking  = await prisma.mentorBooking.delete({
       where:{id:todeleterecord?.id}
     })
-    
-    const mentorId = deletedBooking?.mentor_id;
-      const updatedMentor = await prisma.mentor.update({
-        where: {
-          id: mentorId,
-        },
-        data: {
-          availability: {
-            // Remove the deleted booking from the array
-            disconnect: {
-              id:deletedBooking.id  
-            },
-          },
-        },
-      });
+    console.log(deletedBooking);
 
+    // const mentorId = deletedBooking?.mentor_id;
+    //   const updatedMentor = await prisma.mentor.update({
+    //     where: {
+    //       id: mentorId,
+    //       email:mentor.email
+    //     },
+    //     data: {
+    //       availability: {
+    //         // Remove the deleted booking from the array
+    //         disconnect: [{id:deletedBooking.id}],
+    //       },
+    //     },
+    //   });
+    //   console.log(updatedMentor);
       return NextResponse.json({message:"deleted the entry successfully",statusCode:200,deletedBooking:deletedBooking});
 
   }catch(err){

@@ -156,9 +156,7 @@ export default function MenteeBookings({bookings}:Props) {
                           </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={()=>submitFeedback()}>
-                            Submit Feedback
-                        </AlertDialogAction>
+                        <AlertDialogAction onClick={()=>submitFeedback()}>Submit Feedback</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

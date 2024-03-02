@@ -1,8 +1,23 @@
 import React from 'react';
 import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 
-const Verticalcard = () => {
-    // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
+type PostSchema = {
+    id:string;
+    title:string;
+    images:string[];
+    description:string;
+    created_at:Date,
+    university_name:string
+}
+
+type Props = {
+    post:PostSchema
+}
+
+const Verticalcard = ({post}:Props) => {
+    
+    const router = useRouter();
     return (
         <>
             <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -11,14 +26,12 @@ const Verticalcard = () => {
                 </a>
                 <div className="p-5">
                     <a href="#">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
+                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{post.title}</h5>
                     </a>
-                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Duis est ullamco culpa aute fugiat qui aliqua in. Qui dolore veniam dolore laborum commodo. Mollit id laborum cillum voluptate veniam nisi laboris. Duis incididunt dolor fugiat esse velit consequat cillum elit qui. Laborum mollit magna reprehenderit amet enim aliqua elit eiusmod reprehenderit amet velit.</p>
-                    <Button className='w-full'>Read More</Button>
+                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{post.description.length>50?post.description.substring(0,50):post.description}</p>
+                    <Button className='w-full' onClick={()=>router.push(`/dashboard/post/${post.id}`)}>Read More</Button>
                 </div>
             </div>
-
-            
         </>
     )
 }

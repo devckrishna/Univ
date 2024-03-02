@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import {Row,Col,Avatar} from "antd";
 import { Divider} from "@mui/material";
 import {Select} from 'antd';
-import Navbar from "@/components/Navbar";
 import axios from "axios";
 import Loading from "@/components/Loading";
 import SlotsTable from "@/components/SlotsTable";
@@ -64,6 +63,8 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
   const getslots = async() => {
     const data = await axios.get("/api/mentor/"+params.id+'/getSlot');
     console.log('2nd route is',data.data.data);
+    let allslots = data.data.data;
+    allslots.sort((a:SlotInterface,b:SlotInterface) => (+new Date(a.date) - +new Date(b.date)) );
     setSlots(data.data.data);
   }
 
@@ -98,7 +99,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
       });
       const data = await res.json();
       console.log(data.data);
-      getslots();
+      await getslots();
       setIsLoading(false);
   }
 
@@ -162,13 +163,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
   }else{
   return (
           <>
-            <Navbar profile={`/mentor/${mentorDetails.id}`}/>
-
-              <div
-                style={{
-                  background: "#F5F7FA",
-                }}
-              >
+              <div style={{background: "#F5F7FA",}}>
                 <div className="p-8">
                   <Row gutter={[48, 48]} align="middle" justify="center">
                     <div className="flex flex-col justify-center align-middle">

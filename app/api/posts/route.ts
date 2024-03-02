@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
         title:title,
         images:images,
         description:description,
+        university_name:university.name,
         university_id:university.id
       }
     })

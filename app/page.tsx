@@ -36,7 +36,11 @@ const Home = () => {
                                     <Col xs={{span: 0}} lg={{span: 6}}></Col>
                                     <Col xs={{span:24}} lg={{span: 12}} style={style}>
                                             
-                                                <Title style={{fontSize:'80px'}}>UNIV <br></br> CONNECT</Title>
+                                                <Title style={{fontSize:'80px'}}>
+                                                    <span className="ml-20">UNIV</span> 
+                                                    <br></br> 
+                                                    CONNECT
+                                                </Title>
                                             
                                                 <Divider plain>Enter As</Divider>
                                                 <Space direction="vertical" wrap>

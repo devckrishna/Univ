@@ -98,6 +98,7 @@ model Post {
   images        String[]
   description   String
   created_at    DateTime   @default(now())
+  university_name String
   university    University @relation(fields: [university_id], references: [id])
   university_id String
 }

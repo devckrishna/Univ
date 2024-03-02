@@ -18,7 +18,7 @@ export async function PUT(req: NextRequest) {
    if(!booking){
     return NextResponse.json({message:' No such session found', statusCode: 404});
    }
-   
+
    const newBooking = await db.booking.update({
     where:{id:bookingId},
     data:{

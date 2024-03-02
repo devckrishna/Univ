@@ -1,6 +1,5 @@
-import { Avatar, Card, Carousel, Divider,Typography  } from 'antd';
+import { Avatar, Card, Carousel,Typography  } from 'antd';
 const { Title,Text } = Typography;
-const { Meta } = Card;
 const contentStyle: React.CSSProperties = {
     margin: 0,
     height: '400px',
@@ -15,19 +14,37 @@ const styling : React.CSSProperties = {
     flexDirection:'row',
     marginBottom:'15px'
 }
-function PostCard() {
+
+
+type PostSchema = {
+  id:string;
+  title:string;
+  images:string[];
+  description:string;
+  created_at:Date,
+  university_name:string,
+  university_id:string
+}
+
+type Props = {
+  post:PostSchema,
+  universityimage:string
+}
+
+function PostCard({post,universityimage}:Props) {
+    
     const onChange = (currentSlide: number) => {
         // console.log(currentSlide);
-      };
+    };
+
     return (
         <>
-            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl my-6">Tempor sint dolor laborum culpa nulla adipisicing Lorem. Minim incididunt sit qui ea minim et </h1>
-            {/* <Divider /> */}
+            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl my-6">{post.title}</h1>
             <div style={styling}>
-                <div><Avatar size={64} src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" /></div>
+                <div><Avatar size={64} src={universityimage} /></div>
                 <div style={{marginLeft:'8px', marginTop:'4px'}}>
-                    <Title level={4} style={{padding:'0px',marginBottom:'0px', marginTop:'4px' , marginLeft:'6px'}}>John Wick</Title>
-                    <Text disabled>Posted 20 Sept,2023</Text>
+                    <Title level={4} style={{padding:'0px',marginBottom:'0px', marginTop:'4px' , marginLeft:'6px'}}>{post.university_name}</Title>
+                    <Text disabled>Posted {new Date(post.created_at).toDateString().slice(4)}</Text>
                 </div>
             </div>
             <Carousel afterChange={onChange} autoplay={true}>

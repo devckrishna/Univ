@@ -62,8 +62,8 @@ type Props = {
   image: string;
   name: string;
   university: string;
-  rating: Number,
-  rate: Number
+  rating: number,
+  rate: number
 };
 
 const MentorBookingCard = (props:Props) =>  {
@@ -118,7 +118,7 @@ const MentorBookingCard = (props:Props) =>  {
                 
                 <CardContent className='text-center'>
                     <p className="leading-5 [&:not(:first-child)]:mt-6">
-                        {props.description}
+                        Ex veniam veniam aliqua consectetur. Excepteur nisi reprehenderit ipsum nostrud. Amet ullamco commodo Lorem fugiat occaecat eiusmod sint. Reprehenderit velit anim culpa occaecat consequat consectetur ullamco incididunt consectetur ipsum et occaecat commodo pariatur. Ut nisi duis cupidatat sunt et pariatur laboris aute excepteur dolore officia eiusmod Lorem cupidatat.
                     </p>
                 </CardContent>
                 <CardContent className='text-center p-4 pt-0'>

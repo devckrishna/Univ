@@ -4,9 +4,10 @@ import {Pagination, PaginationProps} from 'antd';
 import MentorCard from "@/components/MentorCard";
 import axios from "axios";
 import Loading from "@/components/Loading";
-import Navbar from "@/components/Navbar";
+// import Navbar from "@/components/Navbar";
 import { useUser } from "@clerk/nextjs";
-// React
+
+
 type MentorObj = {
     id: string;
     country: string;
@@ -30,7 +31,7 @@ const AllMentors = () => {
     const getAllmentors = async() => {
         const data = await axios.get("/api/mentor");
         console.log('current mentors data from booksession page ',data.data.data);
-        if(mentors.length == 0)setMentors(data.data.data);
+        setMentors(data.data.data);
 
         if((currPage-1)+5<=data.data.data.length){
             setDisplayMentors(data.data.data.slice(currPage-1,currPage+5));
@@ -57,7 +58,7 @@ const AllMentors = () => {
     }else{
             return (
                 <>
-                    <Navbar profile="/"/>
+                    {/* <Navbar profile="/"/> */}
                     <div
                         style={{
                             background: '#F5F7FA',

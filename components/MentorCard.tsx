@@ -2,10 +2,6 @@ import * as React from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 
-// const theme = createTheme();
-// theme.spacing(2); // `${8 * 2}px` = '16px'
-
-
 type Props = {
     id: string;
     country: string;
@@ -20,6 +16,7 @@ type Props = {
   };
 
 const MentorCard = (props:Props) =>  {
+    console.log('props are',props);
   return (
         // <div className="bg-white">
 

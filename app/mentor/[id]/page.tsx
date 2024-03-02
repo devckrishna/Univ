@@ -2,11 +2,10 @@
 import {useEffect, useState} from "react";
 import {Row,Col,Space,Descriptions, Image, Divider} from 'antd';
 import { RotateLeftOutlined,RotateRightOutlined,SwapOutlined,ZoomInOutlined,ZoomOutOutlined } from '@ant-design/icons';
-import Bookings from "@/components/Bookings";
 import Feedbacks from "@/components/Feedbacks";
 import Loading from "@/components/Loading";
 import axios from "axios";
-import Navbar from "@/components/Navbar";
+
 import Link from "next/link";
 import {
   Table,
@@ -32,6 +31,7 @@ import { Pagination, PaginationProps } from "antd";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 type MentorObj = {
   id: string;
@@ -81,6 +81,8 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
   const [cbookings,setCbookings] = useState<BookingInterface[]>([]);
   const [page,setPage] = useState(1);
   const router = useRouter();
+  const [content,setContent] = useState("");
+  const {toast} = useToast();
   
   const getdetails = async() => {
     console.log("hehehhe");
@@ -95,39 +97,55 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
     const data = await axios.post("/api/mentor/getBookings",{
       email:mentorDetails.email
     });
+    let allslots = data.data.data;
+    allslots.sort((a:BookingInterface,b:BookingInterface) => (+new Date(a.date) - +new Date(b.date)) );
+    console.log("current bookings data is ",data);
     setBookings(data.data.data);
+
+    //setting current display bookings
+    setPage(1);
+    if(data.data.data.length<=5)setCbookings(data.data.data);
+    else setCbookings(data.data.data.slice(0,5));
   }
 
   const onChange: PaginationProps['onChange'] = (pageNumber) => {
-    // console.log("current page is",pageNumber)
     setPage(pageNumber);
     console.log("current updated page is",pageNumber)
-    if((page-1)*5 + 5<=bookings.length)setCbookings(bookings.slice((page-1)*5,5));
-    else setCbookings(bookings.slice((page-1)*5));
+    if((pageNumber-1)*5 + 5<=bookings.length)setCbookings(bookings.slice((pageNumber-1)*5,(pageNumber-1)*5+5));
+    else setCbookings(bookings.slice((pageNumber-1)*5));
   };
 
-  const submitFeedback = async () => {
+  const submitFeedback = async (bookingId:string) => {
 
+    if(content === ""){
+          toast({
+            variant: "destructive",
+            title: "Invalid Feedback!",
+            description: "Please provide feedback with a non-empty message!",
+          })
+          setContent("");
+          return;
+    }
+
+    setIsLoading(true);
     const res = await axios.post("/api/mentor/Feedback",{
       method:"PUT",
       body:JSON.stringify({
-        bookingId: '',
-        feedbackText:''
+        bookingId: bookingId,
+        feedbackText:content
       })
     });
 
-    // const data = await res.json();
-    
+    await getBookings();
 
+    setContent("");
+    setIsLoading(false);
   }
 
   useEffect(()=>{
     getdetails();
     getBookings();
     console.log("current mentor details are",mentorDetails);
-    setPage(1);
-    if(bookings.length<=5)setCbookings(bookings);
-    else setCbookings(bookings.slice((page-1)*5,5));
     console.log(bookings);
   },[])
 
@@ -136,8 +154,6 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
         }else{
         return (
             <>
-                <Navbar profile={`/mentor/${mentorDetails.id}`}/>
-                
                 <div
                     style={{
                       background: '#F5F7FA',
@@ -158,7 +174,7 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                               actions: { onFlipY, onFlipX, onRotateLeft, onRotateRight, onZoomOut, onZoomIn },
                                             },
                                           ) => (
-                                            <Space size={12} className="toolbar-wrapper">
+                                            <Space size={10} className="toolbar-wrapper">
                                               <SwapOutlined rotate={90} onClick={onFlipY} />
                                               <SwapOutlined onClick={onFlipX} />
                                               <RotateLeftOutlined onClick={onRotateLeft} />
@@ -189,7 +205,7 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                                   },
                                                   {
                                                     key: '3',
-                                                    label: 'gender',
+                                                    label: 'Gender',
                                                     children: mentorDetails.gender,
                                                     span:3
                                                   },
@@ -210,9 +226,10 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Edit Info</h3>
                                       </Divider>
                                       <div className="flex flex-col space-y-3">
-                                          <Link href='/'>
-                                            <Button className="w-full">Edit Personal Information</Button>
-                                          </Link>
+                                          <Button className="w-full" onClick={()=>toast({
+                                                  title: "Coming soon !",
+                                                  description: "Will be added for next version !",
+                                          })}>Edit Personal Information</Button>  
                                           <Link href={`/mentor/${mentorDetails.id}/updateSlots`}>
                                             <Button className="w-full">Update Mentorship Slots</Button>
                                           </Link>
@@ -220,7 +237,8 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                     
                                   </div>
                                 </Col>
-
+                                
+                                {/* Statistics */}
                                 <Col xs={{span:24}} lg={{span:14}}>
                                     <Row gutter={[16,16]}>
                                       <Col span={24}>
@@ -229,16 +247,20 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                               <div className="mx-auto max-w-7xl px-6 lg:px-8">
                                                 <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
                                                   <div className="mx-auto flex max-w-xs flex-col gap-y-4">
-                                                    <dt className="text-base leading-7 text-gray-600">Total Sessions</dt>
-                                                    <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">60</dd>
+                                                    <dt className="text-base leading-7 text-gray-600">Sessions</dt>
+                                                    <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{bookings.length}</dd>
                                                   </div>
                                                   <div className="mx-auto flex max-w-xs flex-col gap-y-4">
-                                                    <dt className="text-base leading-7 text-gray-600">Mentor Rating</dt>
-                                                    <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">4/5</dd>
+                                                    <dt className="text-base leading-7 text-gray-600">Rating</dt>
+                                                    <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{mentorDetails.rating.toString()}/5</dd>
                                                   </div>
                                                   <div className="mx-auto flex max-w-xs flex-col gap-y-4">
                                                     <dt className="text-base leading-7 text-gray-600">Mentorship Hours</dt>
-                                                    <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">70</dd>
+                                                    <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                                                      {70}
+                                                      {/* {bookings.map(b => b.duration)} */}
+                                                      {/* {bookings.reduce( (accumulator,current) => accumulator + current.duration)} */}
+                                                    </dd>
                                                   </div>
                                                 </dl>
                                               </div>
@@ -246,15 +268,17 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
 
                                       </Col>
                                     </Row>
+                                    
 
+                                    {/* Sessions */}
                                     <Row gutter={[16,16]}>
                                       <Col span={24}>
                                         <Divider>
                                             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Upcoming Sessions</h3>
                                         </Divider>
-                                        {bookings.length>0 && 
+                                        
                                           <>
-                                            {/* <Bookings mentorDetails={mentorDetails} bookings={bookings} /> */}
+                                            
                                             <Table className="bg-white">
                                                   <TableHeader>
                                                     <TableRow>
@@ -267,19 +291,21 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                                     </TableRow>
                                                   </TableHeader>
                                                   <TableBody>
-                                                    {bookings.map((b) => (
+                                                    {cbookings.map((b) => (
                                                       <TableRow key={b.id}>
                                                         <TableCell className="font-medium">{b.date}</TableCell>
                                                         <TableCell>{b.start_time}</TableCell>
                                                         <TableCell>{b.end_time}</TableCell>
                                                         <TableCell className="text-right">{b.duration.toString()}</TableCell>
-                                                        <TableCell className="text-center"><Button key={b.id} onClick={()=>router.push("/videocall/"+ `${b.mentor_id}` + "@" + `${b.student_id}` + `?ismentor=true`)}>Join Meet</Button></TableCell>
+                                                        <TableCell className="text-center">
+                                                          <Button key={b.id} onClick={()=>router.push("/videocall/"+ `${b.mentor_id}` + "@" + `${b.student_id}` + `?ismentor=true`)} disabled={+new Date()>+new Date(b.date)}>Join Meet</Button>
+                                                        </TableCell>
                                                         <TableCell className="text-center">
                                                           { !b.mentorFeedbackFlag &&  
 
                                                             <AlertDialog>
                                                               <AlertDialogTrigger asChild>
-                                                                <Button key={"694838632uihfewukgugdewkg"}>Feedback</Button>
+                                                                <Button key={b.id} disabled={+new Date()<+new Date(b.date)}>Feedback</Button>
                                                               </AlertDialogTrigger>
                                                               <AlertDialogContent>
                                                                 <AlertDialogHeader>
@@ -289,14 +315,17 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                                                                   Feedback
                                                                                 </Label>
                                                                                 <div className="flex flex-col w-full">
-                                                                                    <Textarea placeholder="Type your message here." className="w-full mb-2" />
+                                                                                    <Textarea placeholder="Type your message here." className="w-full mb-2" onChange={(e:any)=>{
+                                                                                          console.log(e.target.value);
+                                                                                          setContent(e.target.value);
+                                                                                        }} value={content}/>
                                                                                 </div>
                                                                     </div>
                                                                 </AlertDialogHeader>
                                                                 <AlertDialogFooter>
                                                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                                   <AlertDialogAction onClick={()=>{
-                                                                    submitFeedback();
+                                                                    submitFeedback(b.id);
                                                                     console.log("heyllloooo feed")
                                                                     }}>
                                                                       Submit Feedback
@@ -308,57 +337,21 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                                           { b.mentorFeedbackFlag && <Badge>Feedback Provider Already</Badge>}
                                                         </TableCell>
                                                       </TableRow>
-                                                    ))}
-                                                      <TableRow>
-                                                        <TableCell className="font-medium">abcd</TableCell>
-                                                        <TableCell>bcde</TableCell>
-                                                        <TableCell>fafaea</TableCell>
-                                                        <TableCell className="text-right">euiwguewy</TableCell>
-                                                        <TableCell className="text-center"><Button onClick={()=>router.push("/videocall/"+ `694838632uihfewukgugdewkg` + "@" + `694838632uihfewukgugdewkg` + `?ismentor=true`)}>Join Meet</Button></TableCell>
-                                                        <TableCell className="text-center">
-                                                          <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
-                                                              <Button key={"694838632uihfewukgugdewkg"}>Feedback</Button>
-                                                            </AlertDialogTrigger>
-                                                            <AlertDialogContent>
-                                                              <AlertDialogHeader>
-                                                                <AlertDialogTitle>Provide Feedback for Student !</AlertDialogTitle>
-                                                                {/* <AlertDialogDescription> */}
-                                                                  <div className="flex flex-col">
-                                                                              <Label htmlFor="Feedback" className="text-left mt-3 mb-2">
-                                                                                Feedback
-                                                                              </Label>
-                                                                              <div className="flex flex-col w-full">
-                                                                                  <Textarea placeholder="Type your message here." className="w-full mb-2" />
-                                                                              </div>
-                                                                  </div>
-                                                                {/* </AlertDialogDescription> */}
-                                                              </AlertDialogHeader>
-                                                              <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={()=>{
-                                                                    submitFeedback();
-                                                                    console.log("heyllloooo feed")
-                                                                    }}>
-                                                                    Submit Feedback
-                                                                </AlertDialogAction>
-                                                              </AlertDialogFooter>
-                                                            </AlertDialogContent>
-                                                          </AlertDialog>
-                                                        </TableCell>
-                                                      </TableRow>
+                                                    ))
+                                                    }
                                                   </TableBody>
 
-                                                  {bookings.length>5 && <TableFooter>
-                                                    <TableRow>
-                                                      <TableCell className="text-center bg-white" colSpan={5}>
-                                                          <Pagination defaultCurrent={1} current={page} onChange={onChange} pageSize={5} total={50} />
-                                                      </TableCell>
-                                                    </TableRow>
-                                                  </TableFooter>}
+                                                  {bookings.length>5 && 
+                                                      <TableFooter>
+                                                        <TableRow>
+                                                          <TableCell className="text-center bg-white" colSpan={5}>
+                                                              <Pagination defaultCurrent={1} current={page} onChange={onChange} pageSize={5} total={bookings.length} />
+                                                          </TableCell>
+                                                        </TableRow>
+                                                      </TableFooter>}
                                               </Table>
                                           </>
-                                          }
+                                          
                                         {bookings.length == 0 && 
                                           <div id="alert-additional-content-1" className="p-4 mb-4 text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
                                             <div className="flex items-center">
@@ -387,6 +380,7 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                       </Col>
                                     </Row>
                                     
+                                    {/* Feedbacks */}
                                     <Row gutter={[16,16]}>
                                       <Col span={24}>
                                           <Divider>

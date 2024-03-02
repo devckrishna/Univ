@@ -6,7 +6,6 @@ import {
 } from "antd";
 import MentorBookingCard from "@/components/MentorBookingCard";
 import SessionBookingForm from "@/components/SessionBookingForm";
-import Navbar from "@/components/Navbar";
 import axios from "axios";
 import Loading from "@/components/Loading";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
@@ -22,8 +21,8 @@ type MentorObj = {
   image: string;
   name: string;
   university: string;
-  rating: Number,
-  rate: Number
+  rating: number,
+  rate: number
 };
 
 
@@ -39,8 +38,8 @@ type booking = {
 // mentor id
 const BookSessionPage = ({ params }: { params: { id: string } }) => {
   const {toast} = useToast();
-  const searchParams = useSearchParams();
   const {user} = useUser();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [bookings,setBookings] = useState<booking[]>([]);
@@ -58,6 +57,7 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   });
  
   const getdetails = async() => {
+    // console.log("/api/mentor/"+params.id);
     const data = await axios.get("/api/mentor/"+params.id);
     console.log('mentor details on payment page',data.data.data);
     setMentorDetails(data.data.data);
@@ -65,12 +65,23 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   }
 
   const getslots = async() => {
-    const data = await axios.get("/api/mentor/"+params.id+'/getSlot');
+    // console.log("/api/mentor/"+params.id+"/getSlot");
+    const data = await axios.get("/api/mentor/"+params.id+"/getSlot");
     console.log("slots data ",data);
     setBookings(data.data.data);
+    setIsLoading(false);
+    const isSuccessfull = searchParams.get("success");
+    if(isSuccessfull == "true"){
+      toast({
+        title: "Booking added successfully !",
+        description: "Your session has been booked ! Head over to the profile page to see details!",
+      })
+    }
   }
 
   const handleSuccessfull = async(email:string,date:string,start_time:string,end_time:string,duration:number,amount:number) => {
+    console.log(email,date,start_time,end_time,duration,amount,params.id);
+    console.log("we are here at handelsuccessfull");
     const res = await fetch('/api/student/addbooking',{
       method:"POST",
       headers: {
@@ -105,22 +116,29 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
     });
 
     const response = await del.json();
-    if(response.data.statusCode == 404){
-      console.log(response.data);
-      return;
-    }
+    console.log(response);
 
-    router.push("/dashboard");
+    await getdetails();
+    await getslots();
+
+    // router.push("/dashboard");
   } 
 
   useEffect(()=>{
-    const email = user?.emailAddresses[0].emailAddress;
+    // const email = user?.emailAddresses[0].emailAddress;
     const isSuccessfull = searchParams.get("success");
     const tempDate = searchParams.get("date");
     const start_time = searchParams.get("start_time");
     const end_time = searchParams.get("end_time");
-    const hrduration = searchParams.get("duration")??"2";
+    const hrduration = searchParams.get("hrduration");
     const amount = searchParams.get("amount")??"0";
+    console.log(isSuccessfull);
+    console.log(tempDate);
+    console.log(start_time);
+    console.log(end_time);
+    console.log(hrduration);
+    // console.log(email);
+    console.log(amount);
     if (isSuccessfull === "false") {
       toast({
         title: "Fail",
@@ -128,12 +146,15 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
         description: "Booking Failed, Try Again",
       });
     }
-    else if (isSuccessfull !== null && email !== undefined) {
-      handleSuccessfull(email, tempDate + "", start_time ?? "", end_time ?? "",parseInt(hrduration),parseInt(amount));
+    else if (isSuccessfull !== null) {
+      console.log("hey we are here");
+      // handleSuccessfull(email, tempDate + "", start_time ?? "", end_time ?? "",parseInt(hrduration),parseInt(amount));
     }
-    getdetails();
-    getslots();
-    setIsLoading(false);
+    // else {
+      getdetails();
+      getslots();
+      // setIsLoading(false);
+    // }
   },[]);
 
   if(isLoading){
@@ -141,7 +162,7 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   }else{
     return (
             <>
-              <Navbar profile="/" />
+              
               <div
                 style={{
                   background: "#F5F7FA",

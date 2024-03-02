@@ -88,8 +88,21 @@ const items = [
   ]
   
 
-export default function Feedbacks(){
+  type PostSchema = {
+    id:string;
+    title:string;
+    images:string[];
+    description:string;
+    created_at:Date,
+    university_name:string
+  }
 
+  type Props = {
+    posts:PostSchema[]
+  }
+
+export default function UniversityPosts(posts:Props){
+    console.log("component",posts)
     return (
         <ScrollArea className="h-screen bg-white">
           <div className="flex flex-col gap-2 p-4 pt-0">
@@ -98,19 +111,19 @@ export default function Feedbacks(){
                 key={item.id}
                 className={cn(
                   "flex flex-col items-start gap-2 rounded-lg border p-3 mt-2 text-left text-sm transition-all hover:bg-accent",
-                //   mail.selected === item.id && "bg-muted"
+                  //   mail.selected === item.id && "bg-muted"
                 )}
-                // onClick={() =>
-                // //   setMail({
-                // //     ...mail,
-                // //     selected: item.id,
-                // //   })
-                // }
+                  // onClick={() =>
+                  // //   setMail({
+                  // //     ...mail,
+                  // //     selected: item.id,
+                  // //   })
+                  // }
               >
                 <div className="flex w-full flex-col gap-1">
                   <div className="flex items-center">
                     <div className="flex items-center gap-2">
-                      <div className="font-semibold">{item.name}</div>
+                      <div className="font-semibold">{posts.posts[0].title}</div>
                       {!item.read && (
                         <span className="flex h-2 w-2 rounded-full bg-blue-600" />
                       )}
@@ -133,7 +146,7 @@ export default function Feedbacks(){
                 <div className="line-clamp-2 text-xs text-muted-foreground">
                   {item.text.substring(0, 300)}
                 </div>
-                {/* {item.labels.length ? (
+                {item.labels.length ? (
                   <div className="flex items-center gap-2">
                     {item.labels.map((label) => (
                       <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
@@ -141,7 +154,7 @@ export default function Feedbacks(){
                       </Badge>
                     ))}
                   </div>
-                ) : null} */}
+                ) : null}
               </button>
             ))}
           </div>
@@ -163,109 +176,3 @@ function getBadgeVariantFromLabel(
   
     return "secondary"
   }
-
-// const Feedbacks:  React.FC = () => {
-//     return (
-//         <>
-//             <List sx={{
-//                 width: '100%',
-//                 bgcolor: 'background.paper',
-//                 position: 'relative',
-//                 overflow: 'auto',
-//                 maxHeight: 150,
-//                 '& ul': { padding: 0 },
-//             }}>
-//                 <ListItem alignItems="flex-start">
-//                     <ListItemAvatar>
-//                     <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-//                     </ListItemAvatar>
-//                     <ListItemText
-//                     primary="Brunch this weekend?"
-//                     secondary={
-//                         <React.Fragment>
-//                         <Typography
-//                             sx={{ display: 'inline' }}
-//                             component="span"
-//                             variant="body2"
-//                             color="text.primary"
-//                         >
-//                             Ali Connors
-//                         </Typography>
-//                         {" — I'll be in your neighborhood doing errands this…"}
-//                         </React.Fragment>
-//                     }
-//                     />
-//                     <Button>Go To Post</Button>
-//                 </ListItem>
-//                 <Divider variant="inset" component="li" />
-//                 <ListItem alignItems="flex-start">
-//                     <ListItemAvatar>
-//                     <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-//                     </ListItemAvatar>
-//                     <ListItemText
-//                     primary="Summer BBQ"
-//                     secondary={
-//                         <React.Fragment>
-//                         <Typography
-//                             sx={{ display: 'inline' }}
-//                             component="span"
-//                             variant="body2"
-//                             color="text.primary"
-//                         >
-//                             to Scott, Alex, Jennifer
-//                         </Typography>
-//                         {" — Wish I could come, but I'm out of town this…"}
-//                         </React.Fragment>
-//                     }
-//                     />
-//                 </ListItem>
-//                 <Divider variant="inset" component="li" />
-//                 <ListItem alignItems="flex-start">
-//                     <ListItemAvatar>
-//                     <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-//                     </ListItemAvatar>
-//                     <ListItemText
-//                     primary="Oui Oui"
-//                     secondary={
-//                         <React.Fragment>
-//                         <Typography
-//                             sx={{ display: 'inline' }}
-//                             component="span"
-//                             variant="body2"
-//                             color="text.primary"
-//                         >
-//                             Sandra Adams
-//                         </Typography>
-//                         {' — Do you have Paris recommendations? Have you ever…'}
-//                         </React.Fragment>
-//                     }
-//                     />
-//                 </ListItem>
-//                 <Divider variant="inset" component="li" />
-//                 <ListItem alignItems="flex-start">
-//                     <ListItemAvatar>
-//                     <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-//                     </ListItemAvatar>
-//                     <ListItemText
-//                     primary="Oui Oui"
-//                     secondary={
-//                         <React.Fragment>
-//                         <Typography
-//                             sx={{ display: 'inline' }}
-//                             component="span"
-//                             variant="body2"
-//                             color="text.primary"
-//                         >
-//                             Sandra Adams
-//                         </Typography>
-//                         {' — Do you have Paris recommendations? Have you ever…'}
-//                         </React.Fragment>
-//                     }
-//                     />
-//                 </ListItem>
-//             </List>
-//         </>
-//     )
-// }
-
-// export default Feedbacks;

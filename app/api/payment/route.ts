@@ -1,66 +1,3 @@
-// import { db } from "@/utils/db";
-// // import Razorpay from 'razorpay';
-// // import {v4 as uuidv4 } from 'uuid';
-// // import crypto from "crypto";
-// import Stripe from 'stripe';
-// import { NextResponse, NextRequest } from "next/server";
-
-// const key = process.env.STRIPE_SECRET_KEY || "";
-
-// const stripe = new Stripe(key, {
-//   apiVersion: "2023-10-16",
-// });
-
-// export async function POST(req: NextRequest) {
-
-//     const body = await req.json();
-//     console.log("backend wali body is : ",body);
-//     try {
-//         if (body.length > 0) {
-//           const session = await stripe.checkout.sessions.create({
-//             submit_type: "pay",
-//             mode: "payment",
-//             payment_method_types: ["card"],
-//             billing_address_collection: "auto",
-//             shipping_options: [],
-//             invoice_creation: {
-//               enabled: true,
-//             },
-//             line_items: body.map((item: any) => {
-//               return {
-//                 price_data: {
-//                   currency: "inr",
-//                   product_data: {
-//                     name: item.name,
-//                   },
-//                   unit_amount: item.amount * 100,
-//                 },
-//                 quantity: 1,
-//                 adjustable_quantity: {
-//                   enabled: false,
-//                   minimum: 1,
-//                   maximum: 10,
-//                 },
-//               };
-//             }),
-//             phone_number_collection: {
-//               enabled: false,
-//             },
-//             success_url: `http://localhost:3000/mentor/${body[0]['id']}/bookSession?success=true&date=${body[0]["date"]}&start_time=${body[0]["start_time"]}&end_time=${body[0]["end_time"]}&duration=${body[0]["duration"]}&amount=${body[0]["amount"]}`,
-//             cancel_url: `http://localhost:3000/mentor/${body[0]['id']}/bookSession?success=false`,
-//           });
-//           return NextResponse.json({ session });
-//         } else {
-//           return NextResponse.json({ message: "No Data Found" });
-//         }
-//       } catch (err: any) {
-//         console.log(err);
-//         return NextResponse.json(err.message);
-//       }
-   
-// }
-
-
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -96,19 +33,14 @@ export async function POST(request: NextRequest) {
               unit_amount: item.amount * 100,
             },
             quantity: 1,
-            adjustable_quantity: {
-              enabled: true,
-              minimum: 1,
-              maximum: 10,
-            },
           };
         }),
         phone_number_collection: {
           enabled: false,
         },
 
-        success_url: `https://localhost:3000/mentor/${body[0]["id"]}/bookSession?success=true&date=${body[0]["date"]}&start_time=${body[0]["start_time"]}&end_time=${body[0]["end_time"]}&duration=${duration}&amount=${amount}`,
-        cancel_url: `https://localhost:3000/mentor/${body[0]["id"]}/bookSession?success=false`,
+        success_url: `http://localhost:3000/mentor/${body[0]["id"]}/bookSession?success=true&date=${body[0]["date"]}&start_time=${body[0]["start_time"]}&end_time=${body[0]["end_time"]}&hrduration=${body[0]["duration"]}&amount=${body[0]["amount"]}`,
+        cancel_url: `http://localhost:3000/mentor/3cedcfd1-4bd7-49b5-964a-8f7c8171e64b/bookSession`,
       });
       return NextResponse.json({ session });
     } else {
