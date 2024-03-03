@@ -33,9 +33,27 @@ type SlotInterface = {
   end_time:   string;
 };
 
+
+type BookingInterface = {
+  id:string,
+  date:string,
+  start_time:string,
+  end_time:string,
+  duration:Number,
+  student_id:string,
+  mentor_id:string,
+  amount:Number,
+  mentorFeedbackFlag:Boolean,
+  menteeFeedbackFlag:Boolean,
+  mentorFeedback: string,
+  menteeFeedback: string,
+  menteeFeedbackRating: Number
+}
+
 const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(true);
+  const [bookings,setBookings] = useState<BookingInterface[]>([]);
   const [slots,setSlots] = useState<SlotInterface[]>([]);
   const [mentorDetails, setMentorDetails]  = useState<MentorObj>({
     id: "",
@@ -66,6 +84,14 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
     let allslots = data.data.data;
     allslots.sort((a:SlotInterface,b:SlotInterface) => (+new Date(a.date) - +new Date(b.date)) );
     setSlots(data.data.data);
+  }
+
+  const getbookings = async() => {
+    const data = await axios.post("/api/mentor/getBookings",{
+      email:mentorDetails.email
+    });
+    setBookings(data.data.data);
+
   }
 
   const onChange = (value: string) => {
@@ -126,6 +152,16 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
       }      
     }
     
+    let newbookings = bookings.filter((b)=>(b.date == date?.toDateString()));
+    console.log(newbookings);
+    for(let i=0;i<newbookings.length;i++){
+        let start_time = parseInt(newbookings[i].start_time);
+        let end_time = parseInt(newbookings[i].end_time);
+        if( (start_time<=starthr && starthr<=end_time) || (start_time<=endhr && endhr<=end_time) ){
+          return true;
+        }      
+    }
+
     return false;
   }
 
@@ -147,7 +183,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
         toast({
           variant: "destructive",
           title: "Unable to update slot !",
-          description: "Clashing timings ! You have already added a slot clashing at the same time.",
+          description: "Clashing timings ! You have already added a slot/booking clashing at the same time.",
         })
       }
   };
@@ -155,6 +191,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     getdetails();
     getslots();
+    getbookings();
     setIsLoading(false);
   },[]);
 

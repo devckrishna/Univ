@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
+import { country_list } from "./Names";
 // import { useNavigate } from "react-router-dom";
 // import { useSelector, useDispatch } from 'react-redux'
 
@@ -190,7 +191,13 @@ const SRegister = () => {
                   },
                 ]}
               >
-                <Input name="country" onChange={handleChange} />
+                <Select
+                      placeholder="Select a option"
+                      // onChange={onGenderChange}
+                      allowClear
+                    >
+                      {country_list.map((c)=><Option value={c.toString()}>{c}</Option>)}
+                </Select>
               </Form.Item>
 
               <Form.Item

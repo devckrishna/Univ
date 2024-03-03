@@ -16,11 +16,11 @@ export async function POST(req: Request) {
       },
     });
 
-    const d = new Date();
-    const hrs = d.getHours();
-    const day = d.getDate();
-    const filteredSlots = slots.filter((b) => (  ( new Date(b.date)>d ) || (new Date(b.date)==d && parseInt(b.start_time)>hrs) ) );
-    return NextResponse.json({data:filteredSlots});
+    // const d = new Date();
+    // const hrs = d.getHours();
+    // const day = d.getDate();
+    // const filteredSlots = slots.filter((b) => (  ( new Date(b.date)>d ) || (new Date(b.date)==d && parseInt(b.start_time)>hrs) ) );
+    return NextResponse.json({data:slots});
   } catch (err) {
     return NextResponse.json({
       message: "Error extracting the upcoming mentor bookings : " + err,

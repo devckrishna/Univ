@@ -52,7 +52,7 @@
     "react-draft-wysiwyg": "^1.15.0",
     "react-quill": "^2.0.0",
     "react-redux": "^9.0.4",
-    "stripe": "^14.14.0",
+    "stripe": "^14.13.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1"

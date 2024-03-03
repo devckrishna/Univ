@@ -8,7 +8,7 @@ import MentorBookingCard from "@/components/MentorBookingCard";
 import SessionBookingForm from "@/components/SessionBookingForm";
 import axios from "axios";
 import Loading from "@/components/Loading";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import {useToast } from "@/components/ui/use-toast";
 
@@ -55,9 +55,8 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
     rating: 0,
     rate:0
   });
- 
+  
   const getdetails = async() => {
-    // console.log("/api/mentor/"+params.id);
     const data = await axios.get("/api/mentor/"+params.id);
     console.log('mentor details on payment page',data.data.data);
     setMentorDetails(data.data.data);
@@ -65,13 +64,13 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   }
 
   const getslots = async() => {
-    // console.log("/api/mentor/"+params.id+"/getSlot");
     const data = await axios.get("/api/mentor/"+params.id+"/getSlot");
     console.log("slots data ",data);
     setBookings(data.data.data);
     setIsLoading(false);
     const isSuccessfull = searchParams.get("success");
     if(isSuccessfull == "true"){
+      router.push(`/mentee/bookSession`);
       toast({
         title: "Booking added successfully !",
         description: "Your session has been booked ! Head over to the profile page to see details!",
@@ -80,52 +79,56 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   }
 
   const handleSuccessfull = async(email:string,date:string,start_time:string,end_time:string,duration:number,amount:number) => {
-    console.log(email,date,start_time,end_time,duration,amount,params.id);
-    console.log("we are here at handelsuccessfull");
-    const res = await fetch('/api/student/addbooking',{
-      method:"POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body:JSON.stringify({
-        student_email: email,
-        mentor_id:params.id,
-        date:date,
-        duration:duration,
-        start_time:start_time,
-        end_time:end_time,
-        amount:amount
-      })
-    });
+      if(email !== ""){
+          const res = await fetch('/api/student/addbooking',{
+            method:"POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+              student_email: email,
+              mentor_id:params.id,
+              date:date,
+              duration:duration,
+              start_time:start_time,
+              end_time:end_time,
+              amount:amount
+            })
+          });
 
-    const resp1 = await res.json();
-    console.log(resp1);
+          const resp1 = await res.json();
+          console.log(resp1);
 
-    const del = await fetch('/api/mentor/addAvailability',{
-      method:"DELETE",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body:JSON.stringify({
-        date,
-        mentor_id:params.id,
-        start_time,
-        end_time,
-        duration
-      })
-    });
+          const del = await fetch('/api/mentor/addAvailability',{
+            method:"DELETE",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+              date,
+              mentor_id:params.id,
+              start_time,
+              end_time,
+              duration
+            })
+          });
 
-    const response = await del.json();
-    console.log(response);
-
-    await getdetails();
-    await getslots();
-
-    // router.push("/dashboard");
+          const response = await del.json();
+          console.log(response);
+      }else {
+        toast({
+          title: "Fail",
+          variant: "destructive",
+          description: "Booking Failed, Try Again !",
+        });
+      }
+    
+      await getdetails();
+      await getslots();
   } 
 
   useEffect(()=>{
-    // const email = user?.emailAddresses[0].emailAddress;
+    const email = user?.emailAddresses[0].emailAddress;
     const isSuccessfull = searchParams.get("success");
     const tempDate = searchParams.get("date");
     const start_time = searchParams.get("start_time");
@@ -137,8 +140,8 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
     console.log(start_time);
     console.log(end_time);
     console.log(hrduration);
-    // console.log(email);
     console.log(amount);
+    console.log(email);
     if (isSuccessfull === "false") {
       toast({
         title: "Fail",
@@ -146,16 +149,15 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
         description: "Booking Failed, Try Again",
       });
     }
-    else if (isSuccessfull !== null) {
+    else if (isSuccessfull !== null && email!== null) {
       console.log("hey we are here");
-      // handleSuccessfull(email, tempDate + "", start_time ?? "", end_time ?? "",parseInt(hrduration),parseInt(amount));
+      handleSuccessfull(email??"",tempDate + "", start_time ?? "", end_time ?? "",parseInt(hrduration?hrduration:'2'),parseInt(amount));
     }
-    // else {
+    else {
       getdetails();
       getslots();
-      // setIsLoading(false);
-    // }
-  },[]);
+    }
+  },[user]);
 
   if(isLoading){
     return (<Loading />)

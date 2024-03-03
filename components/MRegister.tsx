@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
+import { country_list } from "./Names";
 
 const { Option } = Select;
 
@@ -177,7 +178,14 @@ const MRegister = () => {
                       },
                     ]}
                   >
-                    <Input name="country" onChange={handleChange} />
+                    {/* <Input name="country" onChange={handleChange} /> */}
+                    <Select
+                      placeholder="Select a option"
+                      // onChange={onGenderChange}
+                      allowClear
+                    >
+                      {country_list.map((c)=><Option value={c.toString()}>{c}</Option>)}
+                    </Select>
                   </Form.Item>
                   <Form.Item
                     name="gender"
@@ -211,7 +219,7 @@ const MRegister = () => {
                       name="description"
                       onChange={handleChange}
                       showCount
-                      maxLength={500}
+                      maxLength={1000}
                     />
                   </Form.Item>
                   <Form.Item {...tailFormItemLayout}>
