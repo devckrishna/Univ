@@ -26,7 +26,6 @@ import { AlertDialog,AlertDialogAction,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger, } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Pagination, PaginationProps } from "antd";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -52,7 +51,7 @@ type BookingInterface = {
   date:string,
   start_time:string,
   end_time:string,
-  duration:Number,
+  duration:number,
   student_id:string,
   mentor_id:string,
   amount:Number,
@@ -60,7 +59,15 @@ type BookingInterface = {
   menteeFeedbackFlag:Boolean,
   mentorFeedback: string,
   menteeFeedback: string,
-  menteeFeedbackRating: Number
+  menteeFeedbackRating: number
+}
+
+type Feedback = {
+  image:string,
+  name:string,
+  rating:number,
+  description:string
+  id:string
 }
 
 const MentorProfile = ({ params }: { params: { id: string } }) => {
@@ -100,12 +107,14 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
     let allslots = data.data.data;
     allslots.sort((a:BookingInterface,b:BookingInterface) => (+new Date(a.date) - +new Date(b.date)) );
     console.log("current bookings data is ",data);
-    setBookings(data.data.data);
+    setBookings(allslots);
 
     //setting current display bookings
     setPage(1);
     if(data.data.data.length<=5)setCbookings(data.data.data);
     else setCbookings(data.data.data.slice(0,5));
+
+    setIsLoading(false);
   }
 
   const onChange: PaginationProps['onChange'] = (pageNumber) => {
@@ -128,18 +137,19 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
     }
 
     setIsLoading(true);
-    const res = await axios.post("/api/mentor/Feedback",{
+    const res = await fetch("/api/mentor/Feedback",{
       method:"PUT",
       body:JSON.stringify({
         bookingId: bookingId,
         feedbackText:content
-      })
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
-
-    await getBookings();
-
+    console.log(await res.json());
     setContent("");
-    setIsLoading(false);
+    await getBookings();
   }
 
   useEffect(()=>{
@@ -257,7 +267,7 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                                   <div className="mx-auto flex max-w-xs flex-col gap-y-4">
                                                     <dt className="text-base leading-7 text-gray-600">Mentorship Hours</dt>
                                                     <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-                                                      {70}
+                                                      {bookings.reduce((accumulator,currentval)=>accumulator+currentval.duration,0)}
                                                       {/* {bookings.map(b => b.duration)} */}
                                                       {/* {bookings.reduce( (accumulator,current) => accumulator + current.duration)} */}
                                                     </dd>
@@ -282,7 +292,7 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                             <Table className="bg-white">
                                                   <TableHeader>
                                                     <TableRow>
-                                                      <TableHead className="w-[100px] font-extrabold">Date</TableHead>
+                                                      <TableHead className="font-extrabold">Date</TableHead>
                                                       <TableHead className="font-extrabold">Start Time</TableHead>
                                                       <TableHead className="font-extrabold">End Time</TableHead>
                                                       <TableHead className="text-right font-extrabold">Duration</TableHead>
@@ -294,18 +304,24 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                                     {cbookings.map((b) => (
                                                       <TableRow key={b.id}>
                                                         <TableCell className="font-medium">{b.date}</TableCell>
-                                                        <TableCell>{b.start_time}</TableCell>
-                                                        <TableCell>{b.end_time}</TableCell>
-                                                        <TableCell className="text-right">{b.duration.toString()}</TableCell>
+                                                        <TableCell className="text-center">{b.start_time}</TableCell>
+                                                        <TableCell className="text-center">{b.end_time}</TableCell>
+                                                        <TableCell className="text-center">{b.duration.toString()}</TableCell>
                                                         <TableCell className="text-center">
-                                                          <Button key={b.id} onClick={()=>router.push("/videocall/"+ `${b.mentor_id}` + "@" + `${b.student_id}` + `?ismentor=true`)} disabled={+new Date()>+new Date(b.date)}>Join Meet</Button>
+                                                          <Button key={b.id} onClick={()=>router.push("/videocall/"+ `${b.mentor_id}` + "@" + `${b.student_id}` + `?ismentor=true`)} 
+                                                            disabled={+new Date()!=+new Date(b.date) || new Date().getHours()<parseInt(b.start_time) || new Date().getHours()>parseInt(b.end_time) }>
+                                                            Join Meet
+                                                          </Button>
                                                         </TableCell>
                                                         <TableCell className="text-center">
                                                           { !b.mentorFeedbackFlag &&  
 
                                                             <AlertDialog>
                                                               <AlertDialogTrigger asChild>
-                                                                <Button key={b.id} disabled={+new Date()<+new Date(b.date)}>Feedback</Button>
+                                                                <Button key={b.id} 
+                                                                disabled={+new Date()<+new Date(b.date) && new Date().getHours()<parseInt(b.end_time) }>
+                                                                  Feedback
+                                                                </Button>
                                                               </AlertDialogTrigger>
                                                               <AlertDialogContent>
                                                                 <AlertDialogHeader>
@@ -334,7 +350,7 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                                               </AlertDialogContent>
                                                             </AlertDialog>                    
                                                           }
-                                                          { b.mentorFeedbackFlag && <Badge>Feedback Provider Already</Badge>}
+                                                          { b.mentorFeedbackFlag && <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Feedback Provider Already !</span>}
                                                         </TableCell>
                                                       </TableRow>
                                                     ))
@@ -386,7 +402,7 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                           <Divider>
                                             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Student Feedbacks</h3>
                                           </Divider>
-                                          <Feedbacks />
+                                          <Feedbacks bookings={bookings.filter((b)=>b.menteeFeedbackFlag)} type="Student"/>
                                       </Col>
                                     </Row>
 

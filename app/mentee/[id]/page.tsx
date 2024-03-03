@@ -13,7 +13,6 @@ import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 
 import { Table,TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -22,7 +21,6 @@ import { Table,TableBody,
 import { AlertDialog,AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -50,10 +48,15 @@ type BookingInterface = {
   date:string,
   start_time:string,
   end_time:string,
-  duration:Number,
+  duration:number,
   student_id:string,
   mentor_id:string,
-  amount:Number
+  amount:Number,
+  mentorFeedbackFlag:Boolean,
+  menteeFeedbackFlag:Boolean,
+  mentorFeedback: string,
+  menteeFeedback: string,
+  menteeFeedbackRating: number
 }
 
 
@@ -114,18 +117,23 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
         }
 
         setIsLoading(true);
-        const res = await axios.post("/api/student/Feedback",{
+        console.log("booking id is ",bookingId);
+        const res = await fetch("/api/student/Feedback",{
           method:"PUT",
           body:JSON.stringify({
             bookingId: bookingId,
             feedbackText:content,
-            FeedbackRating:rating
-          })
+            FeedbackRating:parseInt(rating)
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          }
         });
 
-        await getBookings();
+        console.log(await res.json());
         setContent("");
-        setIsLoading(false);
+        setRating('1');
+        await getBookings();
     }
 
     const onChange: PaginationProps['onChange'] = (pageNumber) => {
@@ -140,15 +148,14 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
       getBookings();
       console.log("current mentor details are",menteeDetails);
       console.log("upcoming sessions are ",bookings);
-      console.log("email is ",user?.emailAddresses[0].emailAddress);
-    },[])
+      // console.log("email is ",user?.emailAddresses[0].emailAddress);
+    },[]);
 
     if(isLoading){
       return (<Loading />);
     }else{
     return (
         <>
-            {/* <Navbar profile={`/mentee/${menteeDetails.id}`}/> */}
             <div
               style={{
                 background: '#F5F7FA',
@@ -233,7 +240,7 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
                               <Table className="bg-white">
                                       <TableHeader>
                                         <TableRow>
-                                          <TableHead className="w-[100px] font-extrabold">Date</TableHead>
+                                          <TableHead className="font-extrabold">Date</TableHead>
                                           <TableHead className="font-extrabold">Start Time</TableHead>
                                           <TableHead className="font-extrabold">End Time</TableHead>
                                           <TableHead className="text-right font-extrabold">Duration</TableHead>
@@ -245,71 +252,81 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
                                         {cbookings.map((b) => (
                                           <TableRow key={b.id}>
                                             <TableCell className="font-medium">{b.date}</TableCell>
-                                            <TableCell>{b.start_time}</TableCell>
-                                            <TableCell>{b.end_time}</TableCell>
-                                            <TableCell className="text-right">{b.duration.toString()}</TableCell>
+                                            <TableCell className="text-center">{b.start_time}</TableCell>
+                                            <TableCell className="text-center">{b.end_time}</TableCell>
+                                            <TableCell className="text-center">{b.duration.toString()}</TableCell>
                                             <TableCell className="text-center">
-                                              <Button key={b.id} onClick={()=>router.push("/videocall/"+ `${b.mentor_id}` + "@" + `${b.student_id}` + `?ismentor=false`)} disabled={+new Date()>+new Date(b.date)}>Join Meet</Button>
+                                              <Button key={b.id} onClick={()=>router.push("/videocall/"+ `${b.mentor_id}` + "@" + `${b.student_id}` + `?ismentor=false`)} 
+                                              disabled={+new Date()!=+new Date(b.date) || new Date().getHours()<parseInt(b.start_time) || new Date().getHours()>parseInt(b.end_time) }
+                                              >
+                                                Join Meet
+                                              </Button>
                                             </TableCell>
                                             <TableCell className="text-center">
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                  <Button key={b.id} disabled={+new Date()<+new Date(b.date)}>Feedback</Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                  <AlertDialogHeader>
-                                                    <AlertDialogTitle>Provide Feedback for Student !</AlertDialogTitle>
-                                                      <div className="flex flex-col">
-                                                                <Label htmlFor="Rating" className="text-left mb-2">
-                                                                    Session Rating
-                                                                </Label>
-                                                                <Select onValueChange={(value:string)=>{
-                                                                      setRating(value);
-                                                                      console.log(rating);
-                                                                      }} 
-                                                                      value={rating}
-                                                                >
-                                                                        <SelectTrigger className="w-[180px]">
-                                                                            <SelectValue placeholder="Rate the session" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            <SelectGroup>
-                                                                              <SelectLabel>Rating</SelectLabel>
-                                                                                <SelectItem value="1">1</SelectItem>
-                                                                                <SelectItem value="2">2</SelectItem>
-                                                                                <SelectItem value="3">3</SelectItem>
-                                                                                <SelectItem value="4">4</SelectItem>
-                                                                                <SelectItem value="5">5</SelectItem>
-                                                                            </SelectGroup>
-                                                                        </SelectContent>
-                                                                </Select>
-                                                                <Label htmlFor="Feedback" className="text-left mt-3 mb-2">
-                                                                Feedback
-                                                                </Label>
-                                                                <div className="flex flex-col w-full">
-                                                                    <Textarea placeholder="Type your message here." className="w-full mb-2" onChange={(e:any)=>{
-                                                                      console.log(e.target.value);
-                                                                      setContent(e.target.value);
-                                                                    }} value={content} />
-                                                                </div>
-                                                      </div>
-                                                      </AlertDialogHeader>
-                                                  <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={()=>submitFeedback(b.id)}>Submit Feedback</AlertDialogAction>
-                                                  </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                              
+                                                {b.menteeFeedbackFlag && <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Feedback Provider Already !</span>}
+                                                {!b.menteeFeedbackFlag && <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                      <Button key={b.id} 
+                                                        // disabled={+new Date()<+new Date(b.date) && new Date().getHours()<parseInt(b.end_time) }
+                                                        >
+                                                        Feedback
+                                                      </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                      <AlertDialogHeader>
+                                                        <AlertDialogTitle>Provide Feedback for Student !</AlertDialogTitle>
+                                                          <div className="flex flex-col">
+                                                                    <Label htmlFor="Rating" className="text-left mb-2">
+                                                                        Session Rating
+                                                                    </Label>
+                                                                    <Select onValueChange={(value:string)=>{
+                                                                          setRating(value);
+                                                                          console.log(rating);
+                                                                          }} 
+                                                                          value={rating}
+                                                                    >
+                                                                            <SelectTrigger className="w-[180px]">
+                                                                                <SelectValue placeholder="Rate the session" />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                <SelectGroup>
+                                                                                  <SelectLabel>Rating</SelectLabel>
+                                                                                    <SelectItem value="1">1</SelectItem>
+                                                                                    <SelectItem value="2">2</SelectItem>
+                                                                                    <SelectItem value="3">3</SelectItem>
+                                                                                    <SelectItem value="4">4</SelectItem>
+                                                                                    <SelectItem value="5">5</SelectItem>
+                                                                                </SelectGroup>
+                                                                            </SelectContent>
+                                                                    </Select>
+                                                                    <Label htmlFor="Feedback" className="text-left mt-3 mb-2">
+                                                                    Feedback
+                                                                    </Label>
+                                                                    <div className="flex flex-col w-full">
+                                                                        <Textarea placeholder="Type your message here." className="w-full mb-2" onChange={(e:any)=>{
+                                                                          console.log(e.target.value);
+                                                                          setContent(e.target.value);
+                                                                        }} value={content} />
+                                                                    </div>
+                                                          </div>
+                                                          </AlertDialogHeader>
+                                                      <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={()=>submitFeedback(b.id)}>Submit Feedback</AlertDialogAction>
+                                                      </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                              }
                                             </TableCell>
                                           </TableRow>
                                         ))}
                                       </TableBody>
 
-                                      {bookings.length>5 && <TableFooter>
+                                      {bookings.length>5 && 
+                                      <TableFooter>
                                         <TableRow>
                                           <TableCell className="text-center bg-white" colSpan={5}>
-                                              <Pagination defaultCurrent={1} current={page} onChange={onChange} pageSize={5} total={50} />
+                                              <Pagination defaultCurrent={1} current={page} onChange={onChange} pageSize={5} total={bookings.length} />
                                           </TableCell>
                                         </TableRow>
                                       </TableFooter>}
@@ -349,7 +366,7 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
                                 <Divider style={{margin:'15px'}}>
                                   <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Mentor Feedbacks</h3>
                                 </Divider>
-                                <Feedbacks />
+                                <Feedbacks bookings={bookings.filter((b)=>b.mentorFeedbackFlag)} type="Mentor" />
                             </Col>
                           </Row>
 

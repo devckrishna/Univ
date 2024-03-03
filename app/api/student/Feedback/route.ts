@@ -13,7 +13,7 @@ export async function PUT(req: NextRequest) {
     } = await req.json();
 
    const booking = await prisma.booking.findUnique({
-    where:{id:bookingId}
+      where:{id:bookingId}
    });
 
    if(!booking){
@@ -29,6 +29,28 @@ export async function PUT(req: NextRequest) {
     }
    });
 
+   let newRating = 0;
+   let b = 0;
+   let allbooks = await db.booking.findMany({
+    where:{mentor_id:booking.mentor_id}
+   });
+   for(let i=0;i<allbooks.length;i++){
+      if(allbooks[i].menteeFeedbackFlag){
+        newRating = newRating + allbooks[i].menteeFeedbackRating
+        b++;
+      }
+   }
+   
+  //  if(b>0){
+      newRating = newRating/b;
+      const mentor = await db.mentor.update({
+        where:{id:booking.mentor_id},
+        data:{
+          rating:newRating
+        }
+      });
+    // }
+   
     return NextResponse.json({ message: "Mentor Feedback updated !",data:newBooking,statusCode:200});
   } catch (err) {
     // console.log(err);

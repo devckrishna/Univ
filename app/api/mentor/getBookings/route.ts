@@ -10,16 +10,23 @@ export async function POST(req: Request) {
       },
     });
 
-    const slots = await db.booking.findMany({
+    let slots = await db.booking.findMany({
       where: {
         mentor_id: user?.id,
       },
     });
 
-    // const d = new Date();
-    // const hrs = d.getHours();
-    // const day = d.getDate();
-    // const filteredSlots = slots.filter((b) => (  ( new Date(b.date)>d ) || (new Date(b.date)==d && parseInt(b.start_time)>hrs) ) );
+    // if(slots.length>0){
+      // slots = slots.map((s)=>{
+      //   let studentd = db.student.findFirst({
+      //     where:{id:s.student_id}
+      //   })
+      //   s.student_name = studentd.name
+      //   return s;
+      // });
+    // }
+
+
     return NextResponse.json({data:slots});
   } catch (err) {
     return NextResponse.json({

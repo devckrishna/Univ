@@ -35,6 +35,14 @@ type booking = {
   mentor_id:string
 }
 
+type Feedback = {
+  image:string,
+  name:string,
+  rating:number,
+  description:string
+  id:string
+}
+
 // mentor id
 const BookSessionPage = ({ params }: { params: { id: string } }) => {
   const {toast} = useToast();
@@ -42,6 +50,7 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [feedback,setFeedback] = useState<Feedback[]>([]);
   const [bookings,setBookings] = useState<booking[]>([]);
   const [mentorDetails, setMentorDetails]  = useState<MentorObj>({
     id: "",
@@ -76,6 +85,12 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
         description: "Your session has been booked ! Head over to the profile page to see details!",
       })
     }
+  }
+
+  const getFeedbacks = async() => {
+    const data = await axios.get("/api/mentor/"+params.id + "/getFeedback");
+    console.log('feedback data is ',data.data.data);
+    setFeedback(data.data.data);
   }
 
   const handleSuccessfull = async(email:string,date:string,start_time:string,end_time:string,duration:number,amount:number) => {
@@ -125,6 +140,7 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
     
       await getdetails();
       await getslots();
+      await getFeedbacks();
   } 
 
   useEffect(()=>{
@@ -156,6 +172,7 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
     else {
       getdetails();
       getslots();
+      getFeedbacks();
     }
   },[user]);
 
@@ -173,7 +190,9 @@ const BookSessionPage = ({ params }: { params: { id: string } }) => {
                 <div className="p-12">
                     <Row> 
                         <Col xs={{ span: 0}} lg={{ span: 2}}></Col>
-                        <Col xs={{ span: 24}} lg={{ span: 10}}><MentorBookingCard key={mentorDetails.id} {...mentorDetails} /></Col>
+                        <Col xs={{ span: 24}} lg={{ span: 10}}>
+                          <MentorBookingCard key={mentorDetails.id} mentordetails={mentorDetails} feedbacks={feedback.length>5?feedback.slice(0,5):feedback} />
+                        </Col>
                         <Col xs={{span:0}} lg={{span:1}}></Col>
                         <Col xs={{ span: 24}} lg={{ span: 8}}><SessionBookingForm key={mentorDetails.id} mentorDetails={mentorDetails} slots={bookings} /></Col>
                         <Col xs={{ span: 0}} lg={{ span: 2}}></Col>
