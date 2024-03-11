@@ -1,15 +1,12 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import {Row,Col, Divider,Space, Select} from 'antd';
+import {Row,Col, Divider,Space} from 'antd';
 import { UserAddOutlined, SolutionOutlined,BankFilled } from '@ant-design/icons';
 import Link from "next/link";
 import QueueAnim from 'rc-queue-anim';
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { country_list } from "@/components/Names";
-const { Option } = Select;
-
 
 const style: React.CSSProperties = { display:'flex', flexDirection:'column',  justifyContent: 'center', alignItems: 'center' };
 
@@ -24,10 +21,10 @@ const Home = () => {
   }, []);
   if (!mounted) return <></>;
   
-  // const checkAuth = () => {
-  //   if(userId!==null)redirect('/dashboard');
-  // }
-  // checkAuth();
+  const checkAuth = () => {
+    if(userId!==null)redirect('/dashboard');
+  }
+  checkAuth();
 
   return (
                 <div>
@@ -48,18 +45,15 @@ const Home = () => {
                                                     />
                                                 </div> */}
                                             </Col>
-                                            <Col xs={{span:24}} lg={{span: 12}} style={style}>
+                                            <Col xs={{span:24}} lg={{span: 12}} className="flex flex-col justify-center items-center">
                                                     
                                                         <h1 className="font-bold tracking-tight text-gray-900 text-8xl">
-                                                             <span className="ml-20">Univ</span>
+                                                             <span className="ml-20">Convarsor</span>
                                                              <br></br>
-                                                             Connect
                                                         </h1>
                                                     
                                                         <p className="my-6 mx-4 text-lg leading-8 text-gray-600">
-                                                             <span>Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui.</span> 
-                                                             {/* <br></br> */}
-                                                             {/* <span>Elit sunt amet</span>  */}
+                                                             <span>Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui.</span>
                                                              <br></br>
                                                              <span className="ml-28">fugiat veniam occaecat fugiat aliqua.</span> 
                                                         </p>

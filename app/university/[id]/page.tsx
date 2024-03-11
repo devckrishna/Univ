@@ -7,6 +7,7 @@ import {
   Descriptions,
   Image,
   Carousel,
+  Divider,
 } from "antd";
 import {
   RotateLeftOutlined,
@@ -16,55 +17,18 @@ import {
   ZoomOutOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import {
-  Divider,
-} from "@mui/material";
 import { useRouter } from "next/navigation";
-// import Navbar from "@/components/Navbar";
 import axios from "axios";
 import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import UniversityPosts from "@/components/UniversityPosts";
 import { useToast } from "@/components/ui/use-toast";
 
-const items = [
-  {
-    key: "1",
-    label: "Name",
-    children: "Cloud Database",
-    span: 3,
-  },
-  {
-    key: "2",
-    label: "Email",
-    children: "Prepaid",
-    span: 3,
-  },
-  {
-    key: "3",
-    label: "Country",
-    children: "YES",
-    span: 3,
-  },
-  {
-    key: "4",
-    label: "University",
-    children: "2018-04-24 18:00:00",
-    span: 3,
-  },
-  {
-    key: "5",
-    label: "Gender",
-    children: "2019-04-24 18:00:00",
-    span: 3,
-  },
-];
 const contentStyle: React.CSSProperties = {
-  height: "260px",
-  color: "#fff",
-  lineHeight: "260px",
-  textAlign: "center",
-  background: "#364d79",
+  backgroundSize:"cover",
+  backgroundRepeat:"no-repeat",
+  width:'80%',
+  height:'200px !important'
 };
 
 type UniversityObj = {
@@ -139,8 +103,6 @@ const UnivProfile = ({ params }: { params: { id: string } }) => {
   }else{
       return (
         <>
-          {/* <Navbar profile="/" /> */}
-
           <div
             style={{
               background: "#F5F7FA",
@@ -190,13 +152,11 @@ const UnivProfile = ({ params }: { params: { id: string } }) => {
                         ),
                       }}
                     />
-                    <h2 className="scroll-m-20 pb-2 text-3xl text-center font-semibold tracking-tight first:mt-4">{university.name}</h2>
+                    <h2 className="scroll-m-20 py-2 text-3xl text-center font-semibold tracking-tight first:mt-4">{university.name}</h2>
                     <p className="text-center">
                       {university.description}
                     </p>
-                    <Divider>
-                      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Personal Information</h3>
-                    </Divider>
+                    <Divider><h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Personal Information</h3></Divider>
                     <Descriptions bordered items={
                         [
                           {
@@ -253,18 +213,11 @@ const UnivProfile = ({ params }: { params: { id: string } }) => {
                         <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Explore Campus</h3>
                       </Divider>
                       <Carousel autoplay>
-                        <div>
-                          <h3 style={contentStyle}>1</h3>
+                        {university.images.map((img)=>(
+                        <div key={img} style={contentStyle}>
+                          <img src={img} alt="" style={{height:'400px',width:'100%'}}></img>
                         </div>
-                        <div>
-                          <h3 style={contentStyle}>2</h3>
-                        </div>
-                        <div>
-                          <h3 style={contentStyle}>3</h3>
-                        </div>
-                        <div>
-                          <h3 style={contentStyle}>4</h3>
-                        </div>
+                        ))}
                       </Carousel>
                     </Col>
                   </Row>
