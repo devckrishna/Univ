@@ -48,7 +48,7 @@ const Home = () => {
                                             <Col xs={{span:24}} lg={{span: 12}} className="flex flex-col justify-center items-center">
                                                     
                                                         <h1 className="font-bold tracking-tight text-gray-900 text-8xl">
-                                                             <span className="ml-20">Convarsor</span>
+                                                             <span className="ml-2">Convarse</span>
                                                              <br></br>
                                                         </h1>
                                                     
@@ -58,7 +58,9 @@ const Home = () => {
                                                              <span className="ml-28">fugiat veniam occaecat fugiat aliqua.</span> 
                                                         </p>
 
-                                                        <Divider plain>Enter As</Divider>
+                                                        <Divider plain>
+                                                            <p className="text-xl">Enter As</p>
+                                                        </Divider>
                                                         <Space direction="vertical" wrap>
                                                             <Button className="w-96 bg-blue-800 hover:bg-blue-600">
                                                                 <Link href={"/university"}>University</Link>
