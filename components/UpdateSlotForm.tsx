@@ -40,7 +40,7 @@ const UpdateSlotForm = () => {
         
         console.log("current values are ",values);
 
-        // const res = await fetch('http://localhost:3000/api/mentor/addAvailability',{
+        // const res = await fetch('/api/mentor/addAvailability',{
         //     method:'POST',
         //     body:JSON.stringify({
         //         mentor_id:currstate.auth.credentials?.id,

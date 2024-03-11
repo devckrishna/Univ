@@ -109,7 +109,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
   const handleSubmit = async () => {
       setIsLoading(true);
       console.log(date?.toDateString());
-      const res = await fetch('http://localhost:3000/api/mentor/addAvailability',{
+      const res = await fetch('/api/mentor/addAvailability',{
           method:'POST',
           body:JSON.stringify({
               mentor_id:params.id,

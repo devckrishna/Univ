@@ -75,7 +75,7 @@ const SessionBookingForm = ({mentorDetails,slots}:Props) =>  {
     const slots = slot?.split('-');
     const stripe = await getStipePromise();
 
-    const response = await fetch("http://localhost:3000/api/payment",{
+    const response = await fetch("/api/payment",{
                   method:'POST',
                   headers: {
                     'Content-Type': 'application/json',

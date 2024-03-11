@@ -78,7 +78,7 @@ const CreatePost = ({ params }: { params: { id: string } }) => {
             arr.push(url);
         }
 
-        const res = await fetch('http://localhost:3000/api/posts',{
+        const res = await fetch('/api/posts',{
             method:'POST',
             body:JSON.stringify({
                 title:values.title,

@@ -104,7 +104,7 @@ const SRegister = () => {
         console.log(email);
         if(user) console.log(user.imageUrl);
         console.log("here",values);
-        const res = await fetch("http://localhost:3000/api/student", {
+        const res = await fetch("/api/student", {
           method:'POST',
           body:JSON.stringify({
               name:values.name,

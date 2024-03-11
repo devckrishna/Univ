@@ -79,7 +79,7 @@ const MRegister = () => {
     console.log(email);
     console.log(user);
 
-    const res = await fetch("http://localhost:3000/api/mentor", {
+    const res = await fetch("/api/mentor", {
       method: "POST",
       body: JSON.stringify({
         name: values.name,

@@ -77,7 +77,7 @@ const URegister = () => {
         console.log('images are : ', arr);
         const email = user?.emailAddresses[0].emailAddress;
         console.log(email);
-        const res = await fetch('http://localhost:3000/api/university',{
+        const res = await fetch('/api/university',{
             method:'POST',
             body:JSON.stringify({
                     name:values.name,
