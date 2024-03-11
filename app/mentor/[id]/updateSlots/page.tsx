@@ -1,7 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import {Row,Col,Avatar} from "antd";
-import { Divider} from "@mui/material";
+import {Row,Col,Avatar, Divider} from "antd";
 import {Select} from 'antd';
 import axios from "axios";
 import Loading from "@/components/Loading";
