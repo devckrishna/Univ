@@ -1,130 +1,187 @@
-'use client';
-import React from 'react';
-import {Paper,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow} from '@mui/material'
+'use client'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Button } from "./ui/button"
+import { useEffect, useState } from "react";
+import { Pagination, PaginationProps } from "antd";
+import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label"
+import { Textarea } from "./ui/textarea";
+import { AlertDialog,AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger, } from "./ui/alert-dialog";
+import { Badge } from "./ui/badge";
 
-const columns = [
-    { id: 'name', label: 'Student Name', minWidth: 170 },
-    { id: 'code', label: 'Date', minWidth: 100 },
-    {
-      id: 'population',
-      label: 'Start Time',
-      minWidth: 170,
-      align: 'right',
-      format: (value:any) => value.toLocaleString('en-US'),
-    },
-    {
-      id: 'size',
-      label: 'End Time',
-      minWidth: 170,
-      align: 'right',
-      format: (value:any) => value.toLocaleString('en-US'),
-    },
-    {
-      id: 'density',
-      label: 'Duration (hrs)',
-      minWidth: 170,
-      align: 'right',
-      format: (value:any) => value.toFixed(2),
-    },
-  ];
+type DetailsInterface = {
+  id: string;
+  country: string;
+  description: string;
+  email: string;
+  gender: string;
+  image: string;
+  name: string;
+  university: string;
+  rating: Number,
+  rate: Number
+};
 
-  function createData(name:any, code:any, population:any, size:any) {
-    const density = population / size;
-    return { name, code, population, size, density };
-  }
-
-  const rows = [
-    createData('India', 'IN', 1324171354, 3287263),
-    createData('China', 'CN', 1403500365, 9596961),
-    createData('Italy', 'IT', 60483973, 301340),
-    createData('United States', 'US', 327167434, 9833520),
-    createData('Canada', 'CA', 37602103, 9984670),
-    createData('Australia', 'AU', 25475400, 7692024),
-    createData('Germany', 'DE', 83019200, 357578),
-    createData('Ireland', 'IE', 4857000, 70273),
-    createData('Mexico', 'MX', 126577691, 1972550),
-    createData('Japan', 'JP', 126317000, 377973),
-    createData('France', 'FR', 67022000, 640679),
-    createData('United Kingdom', 'GB', 67545757, 242495),
-    createData('Russia', 'RU', 146793744, 17098246),
-    createData('Nigeria', 'NG', 200962417, 923768),
-    createData('Brazil', 'BR', 210147125, 8515767),
-  ];
-
-
-const Bookings:  React.FC = async () =>{
-    
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-  const handleChangePage = (event:any, newPage:any) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event:any) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-    return (
-        <Paper>
-        <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-                <TableRow>
-                <TableCell align="center" colSpan={2}>
-                    Student Details
-                </TableCell>
-                <TableCell align="center" colSpan={3}>
-                    Timings
-                </TableCell>
-                </TableRow>
-                <TableRow>
-                {columns.map((column:any) => (
-                    <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ top: 57}}
-                    >
-                    {column.label}
-                    </TableCell>
-                ))}
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row:any) => {
-                    return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                        {columns.map((column:any) => {
-                        const value = row[column.id];
-                        return (
-                            <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number'
-                                ? column.format(value)
-                                : value}
-                            </TableCell>
-                        );
-                        })}
-                    </TableRow>
-                    );
-                })}
-            </TableBody>
-            </Table>
-        </TableContainer>
-        <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-        </Paper>
-    )
-
+type BookingInterface = {
+  id:string,
+  date:string,
+  start_time:string,
+  end_time:string,
+  duration:Number,
+  student_id:string,
+  mentor_id:string,
+  amount:Number,
+  mentorFeedbackFlag:Boolean,
+  menteeFeedbackFlag:Boolean,
+  mentorFeedback: string,
+  menteeFeedback: string,
+  menteeFeedbackRating: Number
 }
 
-export default Bookings;
+type Props = {
+  mentorDetails:DetailsInterface,
+  bookings:BookingInterface[]
+}
+
+export default function TableDemo({mentorDetails,bookings}:Props) {
+  const [cbookings,setCbookings] = useState<BookingInterface[]>([]);
+  const [page,setPage] = useState(1);
+  const router = useRouter();
+
+  useEffect(()=>{
+    setPage(1);
+    if(bookings.length<=5){
+      setCbookings(bookings);
+    }else{
+      setCbookings(bookings.slice((page-1)*5,5));
+    }
+    console.log(bookings);
+  },[]);
+
+  const onChange: PaginationProps['onChange'] = (pageNumber) => {
+    // console.log("current page is",pageNumber)
+    setPage(pageNumber);
+    console.log("current updated page is",pageNumber)
+    if((page-1)*5 + 5<=bookings.length)setCbookings(bookings.slice((page-1)*5,5));
+    else setCbookings(bookings.slice((page-1)*5));
+  };
+
+
+  return (
+    <>
+    <Table className="bg-white">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px] font-extrabold">Date</TableHead>
+              <TableHead className="font-extrabold">Start Time</TableHead>
+              <TableHead className="font-extrabold">End Time</TableHead>
+              <TableHead className="text-right font-extrabold">Duration</TableHead>
+              <TableHead className="text-center font-extrabold">Join Link</TableHead>
+              <TableHead className="text-center font-extrabold">Fill Feedback</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {bookings.map((b) => (
+              <TableRow key={b.id}>
+                <TableCell className="font-medium">{b.date}</TableCell>
+                <TableCell>{b.start_time}</TableCell>
+                <TableCell>{b.end_time}</TableCell>
+                <TableCell className="text-right">{b.duration.toString()}</TableCell>
+                <TableCell className="text-center"><Button key={b.id} onClick={()=>router.push("/videocall/"+ `${b.mentor_id}` + "@" + `${b.student_id}` + `?ismentor=true`)}>Join Meet</Button></TableCell>
+                <TableCell className="text-center">
+                  { !b.mentorFeedbackFlag &&  
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button key={"694838632uihfewukgugdewkg"}>Feedback</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Provide Feedback for Student !</AlertDialogTitle>
+                            <div className="flex flex-col">
+                                        <Label htmlFor="Feedback" className="text-left mt-3 mb-2">
+                                          Feedback
+                                        </Label>
+                                        <div className="flex flex-col w-full">
+                                            <Textarea placeholder="Type your message here." className="w-full mb-2" />
+                                        </div>
+                            </div>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={()=>console.log("heyllloooo feed")}>
+                              Submit Feedback
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>                    
+                  }
+                  { b.mentorFeedbackFlag && <Badge>Feedback Provider Already</Badge>}
+                </TableCell>
+              </TableRow>
+            ))}
+              <TableRow>
+                <TableCell className="font-medium">abcd</TableCell>
+                <TableCell>bcde</TableCell>
+                <TableCell>fafaea</TableCell>
+                <TableCell className="text-right">euiwguewy</TableCell>
+                <TableCell className="text-center"><Button onClick={()=>router.push("/videocall/"+ `694838632uihfewukgugdewkg` + "@" + `694838632uihfewukgugdewkg` + `?ismentor=true`)}>Join Meet</Button></TableCell>
+                <TableCell className="text-center">
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button key={"694838632uihfewukgugdewkg"}>Feedback</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Provide Feedback for Student !</AlertDialogTitle>
+                        {/* <AlertDialogDescription> */}
+                          <div className="flex flex-col">
+                                      <Label htmlFor="Feedback" className="text-left mt-3 mb-2">
+                                        Feedback
+                                      </Label>
+                                      <div className="flex flex-col w-full">
+                                          <Textarea placeholder="Type your message here." className="w-full mb-2" />
+                                      </div>
+                          </div>
+                        {/* </AlertDialogDescription> */}
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={()=>console.log("heyllloooo feed")}>
+                            Submit Feedback
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </TableCell>
+              </TableRow>
+          </TableBody>
+          {bookings.length>5 && <TableFooter>
+            <TableRow>
+              <TableCell className="text-center bg-white" colSpan={5}>
+                  <Pagination defaultCurrent={1} current={page} onChange={onChange} pageSize={5} total={50} />
+              </TableCell>
+            </TableRow>
+          </TableFooter>}
+      </Table>
+    </>
+  )
+}
+
+

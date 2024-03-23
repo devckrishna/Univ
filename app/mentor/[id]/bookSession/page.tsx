@@ -1,189 +1,207 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
-  Space,
-  Card,
-  ConfigProvider,
-  Dropdown,
-  Input,
-  Popover,
-  theme,
-  Descriptions,
-  DatePicker,
-  Flex,
-  Avatar,
-  Select,
-  Form,
 } from "antd";
-import {
-  PageContainer,
-  ProCard,
-  ProConfigProvider,
-  ProLayout,
-  SettingDrawer,
-  StatisticCard,
-} from "@ant-design/pro-components";
-import {
-  CaretDownFilled,
-  DoubleRightOutlined,
-  GithubFilled,
-  InfoCircleFilled,
-  LogoutOutlined,
-  PlusCircleFilled,
-  QuestionCircleFilled,
-  SearchOutlined,
-  AntDesignOutlined,
-} from "@ant-design/icons";
-import RcResizeObserver from "rc-resize-observer";
-import Link from "next/link";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import { Divider, Stack, Paper } from "@mui/material";
-import Bookings from "@/components/Bookings";
 import MentorBookingCard from "@/components/MentorBookingCard";
 import SessionBookingForm from "@/components/SessionBookingForm";
+import axios from "axios";
+import Loading from "@/components/Loading";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import {useToast } from "@/components/ui/use-toast";
 
-const { Option } = Select;
-const { Statistic } = StatisticCard;
-const settings = ["Go to Profile", "Dashboard", "Logout"];
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: { span: 24, offset: 0 },
-    sm: { span: 16, offset: 8 },
-  },
+type MentorObj = {
+  id: string;
+  country: string;
+  description: string;
+  email: string;
+  gender: string;
+  image: string;
+  name: string;
+  university: string;
+  rating: number,
+  rate: number
 };
 
-const BookSessionPage: React.FC = async () => {
-  const [responsive, setResponsive] = useState(false);
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  let [hr, sethr] = useState(2);
 
-  const handleOpenNavMenu = (event: any) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: any) => {
-    setAnchorElUser(event.currentTarget);
-  };
+type booking = {
+  id:string,
+  date:string,
+  start_time:string,
+  end_time:string,
+  duration:Number,
+  mentor_id:string
+}
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+type Feedback = {
+  image:string,
+  name:string,
+  rating:number,
+  description:string
+  id:string
+}
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+// mentor id
+const BookSessionPage = ({ params }: { params: { id: string } }) => {
+  const {toast} = useToast();
+  const {user} = useUser();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [feedback,setFeedback] = useState<Feedback[]>([]);
+  const [bookings,setBookings] = useState<booking[]>([]);
+  const [mentorDetails, setMentorDetails]  = useState<MentorObj>({
+    id: "",
+    country: "",
+    description: "",
+    email: "",
+    gender: "",
+    image: "",
+    name: "",
+    university: "",
+    rating: 0,
+    rate:0
+  });
+  
+  const getdetails = async() => {
+    const data = await axios.get("/api/mentor/"+params.id);
+    console.log('mentor details on payment page',data.data.data);
+    setMentorDetails(data.data.data);
+    console.log("mentor details ",mentorDetails);
+  }
 
-  const onChange = (date: any, dateString: any) => {
-    console.log(date, dateString);
-  };
+  const getslots = async() => {
+    const data = await axios.get("/api/mentor/"+params.id+"/getSlot");
+    console.log("slots data ",data);
+    setBookings(data.data.data);
+    setIsLoading(false);
+    const isSuccessfull = searchParams.get("success");
+    if(isSuccessfull == "true"){
+      router.push(`/mentee/bookSession`);
+      toast({
+        title: "Booking added successfully !",
+        description: "Your session has been booked ! Head over to the profile page to see details!",
+      })
+    }
+  }
 
-  const handleChange = (value: any) => {
-    // console.log("value selected is ",value);
-    sethr(value);
-  };
+  const getFeedbacks = async() => {
+    const data = await axios.get("/api/mentor/"+params.id + "/getFeedback");
+    console.log('feedback data is ',data.data.data);
+    setFeedback(data.data.data);
+  }
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-  };
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
+  const handleSuccessfull = async(email:string,date:string,start_time:string,end_time:string,duration:number,amount:number) => {
+      if(email !== ""){
+          const res = await fetch('/api/student/addbooking',{
+            method:"POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+              student_email: email,
+              mentor_id:params.id,
+              date:date,
+              duration:duration,
+              start_time:start_time,
+              end_time:end_time,
+              amount:amount
+            })
+          });
 
-  return (
-    <>
-      <AppBar position="static" color="transparent">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              sx={{
-                mr: 2,
-                display: { md: "flex" },
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              UnivConnect
-            </Typography>
+          const resp1 = await res.json();
+          console.log(resp1);
 
-            <Box
-              sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
-            ></Box>
+          const del = await fetch('/api/mentor/addAvailability',{
+            method:"DELETE",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({
+              date,
+              mentor_id:params.id,
+              start_time,
+              end_time,
+              duration
+            })
+          });
 
-            <Box
-              sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
-            ></Box>
+          const response = await del.json();
+          console.log(response);
+      }else {
+        toast({
+          title: "Fail",
+          variant: "destructive",
+          description: "Booking Failed, Try Again !",
+        });
+      }
+    
+      await getdetails();
+      await getslots();
+      await getFeedbacks();
+  } 
 
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg"
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+  useEffect(()=>{
+    const email = user?.emailAddresses[0].emailAddress;
+    const isSuccessfull = searchParams.get("success");
+    const tempDate = searchParams.get("date");
+    const start_time = searchParams.get("start_time");
+    const end_time = searchParams.get("end_time");
+    const hrduration = searchParams.get("hrduration");
+    const amount = searchParams.get("amount")??"0";
+    console.log(isSuccessfull);
+    console.log(tempDate);
+    console.log(start_time);
+    console.log(end_time);
+    console.log(hrduration);
+    console.log(amount);
+    console.log(email);
+    if (isSuccessfull === "false") {
+      toast({
+        title: "Fail",
+        variant: "destructive",
+        description: "Booking Failed, Try Again",
+      });
+    }
+    else if (isSuccessfull !== null && email!== null) {
+      console.log("hey we are here");
+      handleSuccessfull(email??"",tempDate + "", start_time ?? "", end_time ?? "",parseInt(hrduration?hrduration:'2'),parseInt(amount));
+    }
+    else {
+      getdetails();
+      getslots();
+      getFeedbacks();
+    }
+  },[user]);
+
+  if(isLoading){
+    return (<Loading />)
+  }else{
+    return (
+            <>
+              
+              <div
+                style={{
+                  background: "#F5F7FA",
                 }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-
-      <div
-        style={{
-          background: "#F5F7FA",
-        }}
-      >
-        <PageContainer>
-            <Row> 
-                <Col xs={{ span: 0}} lg={{ span: 2}}></Col>
-                <Col xs={{ span: 24}} lg={{ span: 10}}><MentorBookingCard /></Col>
-                <Col xs={{ span: 24}} lg={{ span: 8}}><SessionBookingForm /></Col>
-                <Col xs={{ span: 0}} lg={{ span: 4}}></Col>
-            </Row>
-        </PageContainer>
-      </div>
-    </>
-  );
+                <div className="p-12">
+                    <Row> 
+                        <Col xs={{ span: 0}} lg={{ span: 2}}></Col>
+                        <Col xs={{ span: 24}} lg={{ span: 10}}>
+                          <MentorBookingCard key={mentorDetails.id} mentordetails={mentorDetails} feedbacks={feedback.length>5?feedback.slice(0,5):feedback} />
+                        </Col>
+                        <Col xs={{span:0}} lg={{span:1}}></Col>
+                        <Col xs={{ span: 24}} lg={{ span: 8}}><SessionBookingForm key={mentorDetails.id} mentorDetails={mentorDetails} slots={bookings} /></Col>
+                        <Col xs={{ span: 0}} lg={{ span: 2}}></Col>
+                    </Row>
+                </div>
+              </div>
+            </>
+          );
+        }
 };
 
 export default BookSessionPage;

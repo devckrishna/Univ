@@ -2,23 +2,11 @@ import { db } from "@/utils/db";
 import cloudinary from "@/cloudinaryConfig";
 import { NextResponse,NextRequest } from "next/server";
 
-// export async function GET(req: Request) {
-//   try {
-//     const mentors = await db.mentor.findMany();
-//     return NextResponse.json(mentors);
-//   } catch (err) {
-//     return NextResponse.json({
-//       message: "Error finding the mentors {GET: api/mentor}",
-//     });
-//   }
-// }
-
 export async function POST(req: NextRequest) {
   try {
-    const {
+    let {
       name,
       email,
-      password,
       description,
       images,
       bachelor_courses,
@@ -27,7 +15,8 @@ export async function POST(req: NextRequest) {
       website,
       // rate
     } = await req.json();
-    // console.log('images at backend are : ', images);
+
+    console.log('images at backend are : ', images);
     // const imageUrls = [];
 
     // for (const image of images) {
@@ -37,25 +26,25 @@ export async function POST(req: NextRequest) {
     //   imageUrls.push(result.secure_url);
     // }
 
+    bachelor_courses = bachelor_courses.split(",");
+    masters_courses = masters_courses.split(",")
+
     const newuniversity = await db.university.create({
       data: {
         name,
         email,
-        password,
         description,
         images,
         bachelor_courses,
         masters_courses,
         address,
-        website
-        // rate
+        website,
       },
     });
-    return NextResponse.json({ message: "Created Mentor", data: newuniversity });
+    return NextResponse.json({ message: "Created University", data: newuniversity });
   } catch (err) {
-    // console.log(err);
     return NextResponse.json({
-      message: "Error creating mentor {POST: api/university}",
+      message: "Error creating university {POST: api/university}",
       error: err,
     });
   }

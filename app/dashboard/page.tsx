@@ -1,178 +1,85 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-  Row,
-  Col,
-  Button,
-  Divider,
-  Space,
-  Card,
-  Avatar,
-  Pagination,
-  ConfigProvider,
-  Dropdown,
-  Input,
-  Popover,
-  theme,
-} from "antd";
-import {
-  CaretDownFilled,
-  DoubleRightOutlined,
-  GithubFilled,
-  InfoCircleFilled,
-  LogoutOutlined,
-  PlusCircleFilled,
-  QuestionCircleFilled,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  PageContainer,
-  ProCard,
-  ProConfigProvider,
-  ProLayout,
-  SettingDrawer,
-} from "@ant-design/pro-components";
-import Link from "next/link";
-import Verticalcard from "@/components/VerticalCard";
-import Sidecard from "@/components/SideCard";
+import React,{useEffect, useState} from "react";
+import {Row,Col,Carousel,} from "antd";
+import Loading from "@/components/Loading";
+import PostsGrid from "@/components/PostGrid";
+import QueueAnim from "rc-queue-anim";
 
-function Dashboard() {
-  // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
-  const headingStyle = {
-    color: "black !important",
-    textAlign: "left !important",
+type PostSchema = {
+  id:string;
+  title:string;
+  images:string[];
+  description:string;
+  created_at:Date,
+  university_name:string
+}
+
+const Dashboard = () => {
+    
+  const contentStyle: React.CSSProperties = {
+    margin: 0,
+    height: '400px',
+    color: '#fff',
+    lineHeight: '160px',
+    textAlign: 'center',
+    background: '#364d79',
   };
-  let [posts, setposts] = useState([]);
-  const [settings, setSetting] = useState({
-    fixSiderbar: true,
-    layout: "mix",
-    splitMenus: true,
-  });
+  const [posts, setPosts] = useState<PostSchema[]>([]);
+  const [loading,setLoading] = useState(true);
+  // const { userId} = useAuth();
 
-  async function fetchPosts() {
-    // const res = await fetch('/api/v1/posts');
-    // const data = res.json();
-    // setposts(posts);
+  const fetchPosts = async() => {
+    const res = await fetch('/api/posts');
+    const data = await res.json();
+    console.log(data);
+    setPosts(data);
+    setLoading(false);
   }
+
 
   useEffect(() => {
     fetchPosts();
+    console.log("posts are : ",posts);
   }, []);
 
-  return (
-    <>
-      {/* <Navbar /> */}
-      <ProLayout
-        prefixCls="my-prefix"
-        token={
-          {
-            // colorBgMenuItemSelected: 'white',
-            //   bgLayout: 'white',
-          }
-        }
-        title="UnivConnect"
-        layout="top"
-        //   collapsed={true}
-        //   colorBgHeader={"black"}
-        avatarProps={{
-          src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
-          size: "small",
-          title: "",
-          render: (props, dom) => {
-            return (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: "Go to Profile",
-                      icon: <InfoCircleFilled />,
-                      label: "Profile",
-                    },
-                    {
-                      key: "logout",
-                      icon: <LogoutOutlined />,
-                      label: "Logout",
-                    },
-                  ],
-                }}
-              >
-                {dom}
-              </Dropdown>
-            );
-          },
-        }}
-      >
-        <PageContainer content="">
-          <div>
-            <div style={{ margin: "20px" }}>
-              <Divider orientation="center">
-                <h2>Most Recent Blogs</h2>
-              </Divider>
-              <Row gutter={[48, 48]}>
-                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
-                  <Verticalcard />
-                </Col>
+  const onChange = (currentSlide: number) => {
+    
+  };
 
-                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
-                  <Space direction="vertical" size="large">
-                    <Row>
-                      <Sidecard />
-                    </Row>
-                    <Row>
-                      <Sidecard />
-                    </Row>
-                  </Space>
-                </Col>
-              </Row>
-            </div>
 
-            <div style={{ margin: "20px" }}>
-              {/* <Row> */}
-              <Divider orientation="center">
-                <h2>See All Posts</h2>
-              </Divider>
-              <Row gutter={[48, 48]}>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-                <Col xs={{ span: 24 }} lg={{ span: 8 }}>
-                  <Verticalcard />
-                </Col>
-              </Row>
-
-              {/* <Row gutter={[16,16]}>
-                                        <Col xs={{span:24}} lg={{span:8}}><Verticalcard /></Col>
-                                        <Col xs={{span:24}} lg={{span:8}}><Verticalcard /></Col>
-                                        <Col xs={{span:24}} lg={{span:8}}><Verticalcard /></Col>
-                                </Row> */}
-              <Row>
-                {" "}
-                <Pagination
-                  defaultCurrent={1}
-                  total={50}
-                  showLessItems={true}
-                />{" "}
-              </Row>
-
-              {/* </Row> */}
-            </div>
-          </div>
-        </PageContainer>
-      </ProLayout>
-    </>
-  );
+  if(loading){
+    return (<Loading />)
+  }else {
+  return (  
+            <>
+                  <QueueAnim type={['right', 'left']} delay={700} duration={1200} className="demo-content">
+                       {[<div key={'a'}>
+                            <Row>
+                                <Col span={24}>
+                                    <Carousel afterChange={onChange} autoplay={true}>
+                                        <div>
+                                          <h3 style={contentStyle}>1</h3>
+                                        </div>
+                                        <div>
+                                          <h3 style={contentStyle}>2</h3>
+                                        </div>
+                                        <div>
+                                          <h3 style={contentStyle}>3</h3>
+                                        </div>
+                                        <div>
+                                          <h3 style={contentStyle}>4</h3>
+                                        </div>
+                                    </Carousel>
+                                </Col>
+                            </Row>
+                      </div>,
+                      <div key="all_posts_list">
+                        <PostsGrid posts={posts}/>  
+                      </div>]}
+                  </QueueAnim>
+            </>
+        );
+  }
 }
 
 export default Dashboard;

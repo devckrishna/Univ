@@ -1,201 +1,87 @@
 'use client'
 import * as React from 'react';
-import Avatar from '@mui/joy/Avatar';
-import Chip from '@mui/joy/Chip';
-import Box from '@mui/joy/Box';
-import Button from '@mui/joy/Button';
-import ButtonGroup from '@mui/joy/ButtonGroup';
-import Card from '@mui/joy/Card';
-import CardContent from '@mui/joy/CardContent';
-import CardOverflow from '@mui/joy/CardOverflow';
-import CardActions from '@mui/joy/CardActions';
-import IconButton from '@mui/joy/IconButton';
-import Typography from '@mui/joy/Typography';
-import Divider from '@mui/joy/Divider';
-import SvgIcon from '@mui/joy/SvgIcon';
-import Sheet from '@mui/joy/Sheet';
-import AspectRatio from '@mui/joy/AspectRatio';
-import { Rating } from '@mui/material';
-import TabScrollButton from '@mui/material/TabScrollButton'
-import Tabs from '@mui/material/Tabs';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { CardHeader,Card,CardDescription,CardContent } from './ui/card';
+import Feedback from './Feedback';
+import { Divider } from 'antd';
 
-const data = [
-  {
-    src: 'https://images.unsplash.com/photo-1502657877623-f66bf489d236',
-    title: 'Night view',
-    stars: 4,
-    description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1527549993586-dff825b37782',
-    title: 'Lake view',
-    stars: 4,
-    description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
-    title: 'Mountain view',
-    stars: 4,
-    description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
-    title: 'Mountain view',
-    stars: 4,
-    description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
-    title: 'Mountain view',
-    stars: 4,
-    description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
-    title: 'Mountain view',
-    stars: 4,
-    description: 'Session went really well. Got all my doubts cleared and she traced out all the mistakes in resume and gave the best practices to improvise my resume . Definitely recommended .',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
-    title: 'Mountain view',
-    stars: 4,
-    description: 'Khushboo was very helpful and shared a lot of insights in a short span of time in a structured fashion. She was sweet and courteous as well.',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1532614338840-ab30cf10ed36',
-    title: 'Mountain view',
-    stars: 4,
-    description: 'Khushboo was very helpful and shared a lot of insights in a short span of time in a structured fashion. She was sweet and courteous as well.',
-  },
-];
+type mentorDetails = {
+  id: string;
+  country: string;
+  description: string;
+  email: string;
+  gender: string;
+  image: string;
+  name: string;
+  university: string;
+  rating: number,
+  rate: number
+};
 
-const MentorBookingCard:  React.FC = () =>  {
-    const [value, setValue] = React.useState(0);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-      setValue(newValue);
-    };
+type Feedback = {
+  image:string,
+  name:string,
+  rating:number,
+  description:string
+  id:string
+}
 
+type Props = {
+  mentordetails:mentorDetails,
+  feedbacks:Feedback[]
+}
+
+const MentorBookingCard = ({mentordetails,feedbacks}:Props) =>  {
+   
     return (
         <>
-            <Card
-                sx={{
-                    width: '90%',
-                    // maxWidth: '100%',
-                    boxShadow: 'lg',
-                }}
-                >
-                <CardOverflow variant="solid" sx={{ alignItems: 'center', textAlign: 'center', paddingTop:'6px', paddingBottom:'6px', backgroundColor:'background-color:rgba(48, 88, 137, 0.2)' }}>
-                    <Avatar src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg" sx={{ '--Avatar-size': '6rem' }} />
-                    <Chip
-                    size="sm"
-                    variant="soft"
-                    color="primary"
-                    sx={{
-                        mt: -1,
-                        mb: 1,
-                        border: '3px solid',
-                        borderColor: 'background.surface',
-                    }}
-                    >
-                    4.5 / 5
-                    </Chip>
-                    <Typography level="title-lg">Josephine Blanton</Typography>
-                </CardOverflow>
+            <Card className='w-9/10 shadow-lg'>
+                <div className='flex flex-col items-center bg-blue-400 p-3'>
+                    <Avatar className="h-24 w-24">
+                      <AvatarImage src={mentordetails.image} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 -mt-2 ml-1 z-50">
+                      {mentordetails.rating.toString()} / 5
+                    </span>
+                    <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">{mentordetails.name}</h4>
+                {/* </CardOverflow> */}
+                </div>
 
-                <CardOverflow variant="soft" sx={{backgroundColor:'white'}}>
-                    {/* <Divider inset="context" /> */}
-                    <CardContent orientation="horizontal">
-                        <div style={{width:'40%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                            <Chip
-                                variant="outlined"
-                                color="primary"
-                                size="sm"
-                                sx={{ pointerEvents: 'none', marginRight:'40px' }}
-                                >
-                                Hourly Rate : Rs 700
-                            </Chip>
-                        </div>
-                        <Divider orientation="vertical" />
-                        <div style={{width:'60%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                            <Typography level="title-lg">Harvard University</Typography>
-                        </div>
-                        <Divider />
-                    </CardContent>
-                </CardOverflow>
                 
-                <CardContent sx={{ alignItems: 'center', textAlign: 'center' }}>
-                    <Typography level="body-sm">
-                        Hello, this is my bio and I am a PRO member of MUI. I am a developer and I
-                        love to code. Nostrud minim occaecat culpa veniam nostrud. Adipisicing sit ex in eu ullamco et cillum eu.Anim ipsum occaecat reprehenderit voluptate. Quis eiusmod elit non incididunt consectetur aliqua aliqua excepteur tempor do in voluptate laboris. Id ut eiusmod eiusmod esse aliqua enim sunt eiusmod laboris ea incididunt tempor excepteur laborum.
-                    </Typography>
-                </CardContent>
-
-                <CardContent sx={{ alignItems: 'center', textAlign: 'center' }}>
-                    <Typography level="h3">Testimonials</Typography>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            gap: 1,
-                            py: 1,
-                            overflow: 'auto',
-                            width: '100%',
-                            // height:400,
-                            scrollSnapType: 'x mandatory',
-                            '& > *': {
-                            scrollSnapAlign: 'center',
-                            },
-                            '::-webkit-scrollbar': { display: 'none' },
-                        }}
-                        >
-
-                            {data.map((item) => (
-
-                                <Card size="sm" key={item.title} variant="outlined" sx={{maxWidth:250}} >
-                                    {/* <AspectRatio sx={{ minWidth: 60 }}> */}
-                                    {/* <Avatar
-                                        // srcSet={`${item.src}?h=120&fit=crop&auto=format&dpr=2 2x`}
-                                        src={`${item.src}?h=120&fit=crop&auto=format`}
-                                        alt={item.title}
-                                    /> */}
-                                    {/* </AspectRatio> */}
-                                    <Box sx={{ whiteSpace: 'nowrap', mx: 1 }}>
-                                      <Typography level="title-md">{item.title}</Typography>
-                                      <Rating name="read-only" value={item.stars} readOnly />
-                                    </Box>
-                                    <CardContent>
-                                      <Typography>{item.description.length>100?item.description.substr(0,100)+'...':item.description}</Typography>
-                                    </CardContent>
-                                </Card>
-                                // <Card
-                                //     // sx={{
-                                //     // width: 300,
-                                //     // maxWidth: '100%',
-                                //     // boxShadow: 'lg',
-                                //     // }}
-                                // >
-                                //     <CardContent sx={{ alignItems: 'center', textAlign: 'center' }}>
-                                //         <Avatar src={`${item.src}?h=120&fit=crop&auto=format`} sx={{ '--Avatar-size': '4rem' }} />
-                                //         <Typography level="title-lg">{item.title}</Typography>
-                                //         <Typography level="body-sm" sx={{ maxWidth: '24ch' }}>{item.description.length>200 ?item.description.substr(0,200) + '...': item.description }</Typography>
-                                //     </CardContent>
-
-                                
-                                // </Card>
-                            ))}
-                            
-                    </Box>
+                    <CardHeader className='flex flex-row px-0 py-2'>
+                        <div className='w-2/5 flex justify-items-center items-center p-0 m-0'>
+                          <div className='pl-10'>
+                            <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Hourly Rate : Rs {mentordetails.rate.toString()}</span>
+                          </div>
+                        </div>
+                        <Divider type='vertical' orientation='center' style={{height:'40px'}}/>
+                        <div className='w-3/5 flex items-center justify-items-center'>
+                          <div style={{paddingLeft:'80px'}}>
+                            <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">{mentordetails.university}</h4>
+                          </div>
+                        </div>
+                    </CardHeader>
+                {/* </CardOverflow> */}
+                
+                <CardContent className='text-center'>
+                    <p className="leading-5 [&:not(:first-child)]:mt-6">
+                        Ex veniam veniam aliqua consectetur. Excepteur nisi reprehenderit ipsum nostrud. Amet ullamco commodo Lorem fugiat occaecat eiusmod sint. Reprehenderit velit anim culpa occaecat consequat consectetur ullamco incididunt consectetur ipsum et occaecat commodo pariatur. Ut nisi duis cupidatat sunt et pariatur laboris aute excepteur dolore officia eiusmod Lorem cupidatat.
+                    </p>
                 </CardContent>
                 
-                {/* <CardOverflow sx={{ bgcolor: 'background.level1' }}>
-                    <CardActions buttonFlex="1">
-                    <ButtonGroup variant="outlined" sx={{ bgcolor: 'background.surface' }}>
-                        <Button>Message</Button>
-                        <Button>Connect</Button>
-                    </ButtonGroup>
-                    </CardActions>
-                </CardOverflow> */}
+                {feedbacks.length>0 && 
+                    <>
+                      <CardContent className='text-center p-4 pt-0'>
+                        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Testimonials</h3>
+                      </CardContent>
+
+                      <div className="flex items-center justify-center space-x-4 px-3 pb-6 overflow-x-auto overflow-hidden no-scrollbar">
+                        {feedbacks.map((item)=>(<Feedback key={item.id} feedback={item} />))}
+                      </div>
+                    </>
+                }            
             </Card>
         </>
     )

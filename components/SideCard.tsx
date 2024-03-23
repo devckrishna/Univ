@@ -1,25 +1,54 @@
+'use client'
+import { useRouter } from 'next/navigation';
 import React from 'react';
-import { ProCard } from '@ant-design/pro-components';
-import Link from 'next/link';
-import { Button } from 'antd';
-import img8 from '../public/img8.jpg'
 
-const Sidecard:  React.FC = () => {
-    // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
+type PostSchema = {
+    id:string;
+    title:string;
+    images:string[];
+    description:string;
+    created_at:Date,
+    university_name:string
+}
+
+type Props = {
+    post:PostSchema
+}
+
+const Sidecard = ({post}:Props) => {
+    const router = useRouter();
+    // console.log('Sidecard component prop',post)
+    const d = new Date(post.created_at).toDateString().split(" ");
+    // console.log(d)
+
+    const style = {
+        minHeight:'250px',
+        height:'100%',
+        backgroundImage:`url('https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320')`
+    }
+    
     return (
         <>
-            <ProCard split="vertical">
-                        <ProCard colSpan="50%">
-                            <img src={img8.src} style={{height:'100%',width:'100%'}} />
-                        </ProCard>
-                        <ProCard headerBordered>
-                            <h3>Title of the card</h3>
-                            <div style={{ height:180 }}>Ut veniam cillum minim eu dolore fugiat non sit consequat nisi ad nisi. Tempor consequat cillum adipisicing ea cillum commodo. Veniam esse dolor est fugiat duis esse minim ullamco Lorem laborum.</div>
-                            <Button type="primary" block >
-                                <Link href={"/university"}>Read complete Article</Link>
-                            </Button>
-                        </ProCard>
-            </ProCard>
+                
+            <div className="relative w-full h-full flex items-end justify-start text-left bg-cover bg-center cursor-pointer" style={style} onClick={()=>router.push(`/post/${post.id}`)} >
+                <div className="absolute top-0 mt-20 right-0 bottom-0 left-0 bg-gradient-to-b from-transparent to-gray-900">
+                </div>
+                <div className="absolute top-0 right-0 left-0 mx-5 mt-2 flex justify-between items-center">
+                    <div className="text-white font-regular flex flex-row justify-start">
+                        <span className="text-3xl leading-0 font-semibold">{d[2]}</span>
+                        <span className="ml-1 mt-3 font-bold">{d[1]}</span>
+                    </div>
+                </div>
+                <main className="p-5 z-10">
+                    <a href="#" className="text-md tracking-tight font-medium leading-7 font-regular text-white hover:underline">
+                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">  
+                        {post.title}
+                    </h3>
+                    </a>
+                    <p className='text-white'> {post.university_name} </p>
+                </main>
+
+            </div>
         </>
     )
 }

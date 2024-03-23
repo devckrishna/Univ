@@ -14,27 +14,24 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password, description, country, image, gender } =
-      await req.json();
-    const newStudent = await db.student.create({
-      data: {
-        name,
-        email,
-        password,
-        description,
-        country,
-        image,
-        gender,
-        // bookings:{[] as Array},
-        // feedbacks:[] as Array
-      },
-    });
-    return NextResponse.json({ message: "Created Student", data: newStudent });
+      const { name, email, description, country, image, gender } = await req.json();
+      console.log(name,"--",email,"--","---",gender,"----",image);
+      const newStudent = await db.student.create({
+        data: {
+          name,
+          email,
+          description,
+          country,
+          image,
+          gender,
+        },
+      });
+      return NextResponse.json({ message: "Created Student", data: newStudent });
   } catch (err) {
-    // console.log(err);
-    return NextResponse.json({
-      message: "Error creating mentor {POST: api/student}",
-      error: err,
-    });
+      // console.log(err);
+      return NextResponse.json({
+        message: "Error creating mentor {POST: api/student}",
+        error: err,
+      });
   }
 }

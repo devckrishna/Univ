@@ -1,39 +1,41 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { RootState,AppDispatch } from "../store";
+// import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 interface Universityinterface {
-    id: string,
-    username: string,
-    password: string,
-    email: string,
-    images: Array<string>,
-    bachelor_courses: string,
-    masters_courses: string,
-    description: string,
-    address : string,
-    website: string
+    id: String,
+    username: String,
+    password: String,
+    email: String,
+    images: Array<String>,
+    bachelor_courses: Array<String>,
+    masters_courses: Array<String>,
+    description: String,
+    address : String,
+    website: String
 }
 
 interface Mentorinterface {
-    id: string,
-    username: string,
-    password: string,
-    email: string,
-    images: Array<string>,
-    description: string,
-    country: string,
-    gender: string,
-    rating: number
+    id: String,
+    username: String,
+    password: String,
+    email: String,
+    images: Array<String>,
+    description: String,
+    country: String,
+    gender: String,
+    rating: Number
 }
 
 interface Menteeinterface {
-    id: string,
-    username: string,
-    password: string,
-    email: string,
-    images: Array<string>,
-    description: string,
-    country: string,
-    gender: string,
+    id: String,
+    username: String,
+    password: String,
+    email: String,
+    images: Array<String>,
+    description: String,
+    country: String,
+    gender: String,
 }
 
 interface AuthState{

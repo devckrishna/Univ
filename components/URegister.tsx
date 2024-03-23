@@ -1,10 +1,10 @@
 "use client";
-import React, { useState } from "react";
-import {AutoComplete,Button,Cascader,Checkbox,Col,Form,Input,InputNumber,Row,Select,Upload,message} from 'antd';
+import React, { useEffect, useState } from "react";
+import {Form,Input,Select,Upload} from 'antd';
 import { UploadOutlined ,PlusOutlined,LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from "next/navigation";
-import { reset,setcredentials } from "@/redux/features/AuthSlice";
-import { useAppDispatch,useAppSelector } from "@/redux/hooks";
+import { Button } from "./ui/button";
+import { useUser } from "@clerk/nextjs";
   
   const { Option } = Select;
   const normFile = (e:any) => {
@@ -44,25 +44,20 @@ import { useAppDispatch,useAppSelector } from "@/redux/hooks";
     website:""
   }
 
-const URegister:  React.FC = () => {
+const URegister = () => {
     let [formstate,setformstate] = useState(inivals);
     let [fileList,setFileList] = useState([]);
     const router = useRouter();
-    const currstate = useAppSelector((state)=>state);
-    const dispatch = useAppDispatch();
     const [form] = Form.useForm();
+    const {user} = useUser();
     
-    // function getBase64(img, callback) {
-    //     const reader = new FileReader();
-    //     reader.addEventListener("load", () => callback(reader.result));
-    //     reader.readAsDataURL(img);
-    //   }
-
     const imageUpload = async(file:any) => {
         const formData = new FormData();
         formData.append('file',file);
         formData.append('upload_preset','uni_connect_assets');
-        const image = await fetch(`https://api.cloudinary.com/v1_1/dxzc7smaf/image/upload`,{
+        const url = process.env.NEXT_PUBLIC_CLOUDINARY_URL || "";
+        console.log(process.env.NEXT_PUBLIC_CLOUDINARY_URL);
+        const image = await fetch(url,{
                 method: 'POST',
                 body: formData,
             }).then(r => r.json());
@@ -78,15 +73,15 @@ const URegister:  React.FC = () => {
             let url = await imageUpload(values.images[i].originFileObj);
             arr.push(url);
         }
-
+        arr.push(user?.imageUrl);
         console.log('images are : ', arr);
-
-        const res = await fetch('http://localhost:3000/api/university',{
+        const email = user?.emailAddresses[0].emailAddress;
+        console.log(email);
+        const res = await fetch('/api/university',{
             method:'POST',
             body:JSON.stringify({
                     name:values.name,
-                    email:values.email,
-                    password:values.password,
+                    email:email,
                     images:arr,
                     description:values.description,
                     bachelor_courses:values.bachelor_courses,
@@ -100,15 +95,9 @@ const URegister:  React.FC = () => {
         });
 
         const data = await res.json();
-        dispatch(reset());
-        const new_univ = {
-            credentials:data,
-            type:'university'
-        }
-        dispatch(setcredentials(new_univ));
-        console.log("curr authslice state is : ",currstate);
-
-        // router.push(`/dashboard/${data._id}`);
+        console.log("data from database is : ",data);
+        
+        router.push(`/university/${data.data.id}`);
     }
 
     const handleChange = (evt:any) =>{
@@ -117,23 +106,6 @@ const URegister:  React.FC = () => {
         // console.log(name + "  " + value);
         setformstate({...formstate,[name]: value});
     }
-
-    // const handleFileChange = async (info) => {
-    //     // console.log(info.file.status)
-    //     if (info.file.status !== "uploading") {
-    //         var x = info.file;
-    //         // console.log('file is : ',x);
-    //         let arr = fileList;
-    //         // console.log(arr);
-    //         arr.push(x);
-    //         // console.log("new arr",arr);
-    //         await setFileList(arr);
-    //         let newform = formstate;
-    //         newform.images = arr;
-    //         await setformstate(newform);
-           
-    //       }
-    // }
 
     const onFinish = (values:any) => {
         console.log('Received values of form: ', values);
@@ -148,57 +120,10 @@ const URegister:  React.FC = () => {
                 style={{
                     width:'100%'
                 }}
-                scrollToFirstError>
-                <Row style={{
-                    width:'100%'
-                }}>
-                    <Col span={12}>
-                        <Form.Item name="email" label="E-mail"
-                            rules={[
-                            {
-                                type: 'email',
-                                message: 'The input is not valid E-mail!',
-                            },
-                            {
-                                required: true,
-                                message: 'Please input your E-mail!',
-                            },
-                            ]}
-                        >
-                            <Input name="email" onChange={handleChange} />
-                        </Form.Item>
-
-                        <Form.Item name="password" label="Password"
-                            rules={[
-                            {
-                                required: true,
-                                message: 'Please input your password!',
-                            },
-                            ]}
-                            hasFeedback
-                        >
-                            <Input.Password name="password" onChange={handleChange} />
-                        </Form.Item>
-
-                        <Form.Item name="confirm" label="Confirm Password" dependencies={['password']} hasFeedback
-                            rules={[
-                            {
-                                required: true,
-                                message: 'Please confirm your password!',
-                            },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                if (!value || getFieldValue('password') === value) {
-                                    return Promise.resolve();
-                                }
-                                return Promise.reject(new Error('The new password that you entered do not match!'));
-                                },
-                            }),
-                            ]}
-                        >
-                            <Input.Password />
-                        </Form.Item>
-
+                scrollToFirstError
+                layout="vertical"
+                >
+                
                         <Form.Item
                             name="name"
                             label="University Name"
@@ -267,73 +192,39 @@ const URegister:  React.FC = () => {
                             {/* </AutoComplete> */}
                         </Form.Item>
 
-                        {/* {window.innerWidth<992 && <Form.Item
-                                                        name="description"
-                                                        label="Description"
-                                                        rules={[
-                                                        {
-                                                            message: 'Please input Intro',
-                                                        },
-                                                        ]}
-                                                    >
-                                                        <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
-                                                  </Form.Item>
-                        }
-                        {window.innerWidth<992 && <Form.Item name="images" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
-                                                        <Upload
-                                                            // action={null}
-                                                            beforeUpload={()=>{return false;}}
-                                                            listType="picture"
-                                                            fileList={fileList}
-                                                            maxCount={3}
-                                                            // onChange={handleFileChange}
-                                                            multiple
-                                                            >
-                                                            <Button icon={<UploadOutlined />}>Upload </Button>
-                                                        </Upload>
-                                                    </Form.Item>
-                        }
-                        {window.innerWidth<992 && <Form.Item {...tailFormItemLayout}>
-                                                        <Button type="primary" htmlType="submit">Register</Button>
-                                                    </Form.Item>
-                        } */}
-                </Col>
-                 <Col span={8}>
-                                                    <Form.Item
-                                                        name="description"
-                                                        label="Description"
-                                                        rules={[
-                                                        {
-                                                            message: 'Please input Intro',
-                                                        },
-                                                        ]}
-                                                    >
-                                                        <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
-                                                  </Form.Item>
-                                                    <Form.Item name="images" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
-                                                        <Upload
-                                                            // action={null}
-                                                            beforeUpload={()=>{return false;}}
-                                                            listType="picture-card"
-                                                            fileList={fileList}
-                                                            maxCount={3}
-                                                            name="file"
-                                                            // onChange={handleFileChange}
-                                                            multiple
-                                                            >
-                                                            <div>
-                                                                <PlusOutlined />
-                                                                <div style={{ marginTop: 8 }}>Upload</div>
-                                                            </div>
-                                                        </Upload>
-                                                    </Form.Item>
+                        <Form.Item
+                            name="description"
+                            label="Description"
+                            rules={[
+                            {
+                                message: 'Please input Intro',
+                            },
+                            ]}
+                        >
+                            <Input.TextArea name="description" onChange={handleChange} showCount maxLength={500} />
+                      </Form.Item>
+                      <Form.Item name="images" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+                          <Upload
+                              // action={null}
+                              beforeUpload={()=>{return false;}}
+                              listType="picture-card"
+                              fileList={fileList}
+                              maxCount={3}
+                              name="file"
+                              // onChange={handleFileChange}
+                              multiple
+                              >
+                              <div>
+                                  <PlusOutlined />
+                                  <div style={{ marginTop: 8 }}>Upload</div>
+                              </div>
+                          </Upload>
+                      </Form.Item>
 
-                                                <Form.Item {...tailFormItemLayout}>
-                                                    <Button type="primary" htmlType="submit">Register</Button>
-                                                </Form.Item>
-                                        </Col>
+                      <Form.Item {...tailFormItemLayout}>
+                          <Button>Register</Button>
+                      </Form.Item>
                 
-                </Row>
             </Form>
         </>
     )

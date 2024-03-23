@@ -1,33 +1,38 @@
 import React from 'react';
-import { ProCard } from '@ant-design/pro-components';
-import Link from 'next/link';
-import { Button } from 'antd';
-import img8 from '../public/img8.jpg'
-// import { Card } from 'antd';
-// const { Meta } = Card;
-const Verticalcard:  React.FC = () => {
-    // const backgroundImageUrl = `${process.env.PUBLIC_URL}/img8.jpg`;
+import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
+
+type PostSchema = {
+    id:string;
+    title:string;
+    images:string[];
+    description:string;
+    created_at:Date,
+    university_name:string
+}
+
+type Props = {
+    post:PostSchema
+}
+
+const Verticalcard = ({post}:Props) => {
+    
+    const router = useRouter();
+    console.log(post.description.length," ",post.description);
     return (
         <>
-            <ProCard split="horizontal" bordered={true}>
-                        <ProCard colSpan="50%">
-                            <img src={img8.src} style={{height:'100%',width:'100%'}} />
-                        </ProCard>
-                        <ProCard headerBordered>
-                            <h3>Title of the card</h3>
-                            <div>Ut veniam cillum minim eu dolore fugiat non sit consequat nisi ad nisi. Tempor consequat cillum adipisicing ea cillum commodo.</div>
-                            <Button type="primary" block >
-                                <Link href={"/university"}>Read complete Article</Link>
-                            </Button>
-                        </ProCard>
-            </ProCard>
-            {/* <Card
-                hoverable
-                style={{width: '100%'}}
-                cover={<img alt="example" src={backgroundImageUrl} style={{height:'60%',width:'60%'}} />}
-            >
-                <Meta title="Europe Street beat" description="www.instagram.com" />
-            </Card> */}
+            <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <a href="#">
+                    <img className="rounded-t-lg w-full" src="https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286" alt="" />
+                </a>
+                <div className="p-5">
+                    <a href="#">
+                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{post.title}</h5>
+                    </a>
+                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{post.description.length>200?post.description.substring(0,200) + "......":post.description}</p>
+                    <Button className='w-full' onClick={()=>router.push(`/dashboard/post/${post.id}`)}>Read More</Button>
+                </div>
+            </div>
         </>
     )
 }

@@ -14,12 +14,12 @@ model Mentor {
   id           String          @id @default(uuid())
   name         String
   email        String          @unique
-  password     String
   description  String
   country      String
   university   String
   image        String
   gender       String
+  rate         Int       
   rating       Float
   bookings     Booking[]
   feedbacks    Feedback[]
@@ -30,7 +30,6 @@ model Student {
   id          String     @id @default(uuid())
   name        String
   email       String     @unique
-  password    String
   description String
   country     String
   image       String
@@ -49,13 +48,19 @@ model Booking {
   duration   Int
   start_time String
   end_time   String
+  amount     Int
+  mentorFeedbackFlag Boolean
+  mentorFeedback String
+  menteeFeedbackFlag Boolean
+  menteeFeedbackRating Int
+  menteeFeedback  String
 }
 
 model MentorBooking {
   id         String @id @default(uuid())
   date       String
   mentor     Mentor @relation(fields: [mentor_id], references: [id])
-  mentor_id  String
+  mentor_id  String 
   duration   Int
   start_time String
   end_time   String
@@ -63,11 +68,11 @@ model MentorBooking {
 
 model Feedback {
   id         String  @id @default(uuid())
+  type       String
   student    Student @relation(fields: [student_id], references: [id])
   student_id String
   mentor     Mentor  @relation(fields: [mentor_id], references: [id])
   mentor_id  String
-
   date        String
   rating      Float
   description String
@@ -78,7 +83,6 @@ model University {
   id               String   @id @default(uuid())
   name             String
   email            String
-  password         String
   description      String
   images           String[]
   bachelor_courses String[]
@@ -94,6 +98,7 @@ model Post {
   images        String[]
   description   String
   created_at    DateTime   @default(now())
+  university_name String
   university    University @relation(fields: [university_id], references: [id])
   university_id String
 }

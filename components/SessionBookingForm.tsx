@@ -1,115 +1,108 @@
 'use client'
 import * as React from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import Card from '@mui/joy/Card';
-import Button from "@mui/joy/Button";
-// import { CardContent } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import Typography from '@mui/joy/Typography';
-import CardContent from '@mui/joy/CardContent';
-import CardOverflow from '@mui/joy/CardOverflow';
 import { Select } from 'antd';
-import Option from '@mui/joy/Option';
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { Row,Col } from 'antd';
-import { useAppSelector } from '@/redux/hooks';
-import Script from 'next/script'
+import { Calendar } from "@/components/ui/calendar"
+import {useSearchParams } from 'next/navigation';
+import getStipePromise from '@/lib/stripe';
+import { Button } from './ui/button';
+import { useUser } from '@clerk/nextjs';
+import {Card,CardContent } from './ui/card';
+import Loading from './Loading';
 
 
-const SessionBookingForm:  React.FC = () =>  {
-  const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
+type DetailsInterface = {
+  id: string;
+  country: string;
+  description: string;
+  email: string;
+  gender: string;
+  image: string;
+  name: string;
+  university: string;
+  rating: number,
+  rate: number
+};
+
+type SlotInterface = {
+  id:string,
+  date:string,
+  start_time:string,
+  end_time:string,
+  duration:Number,
+  mentor_id:string
+}
+
+type Props = {
+  mentorDetails:DetailsInterface,
+  slots:SlotInterface[]
+}
+
+type DurationInterface = {
+  value:Number,
+  label:String
+}
+
+type SlotOptionInterface = {
+  value:string, 
+  label:string
+}
+
+const SessionBookingForm = ({mentorDetails,slots}:Props) =>  {
+  const searchParams = useSearchParams();
+  // console.log("searchparams are: ",searchParams);
+  const [date, setDate] = React.useState<Date>();
+  const [loading2,setLoading2] = React.useState<Boolean>(false);
   const [duration,setduration] = React.useState<number | null>(null);
   const [slot,setSlot] = React.useState<String | null> (null);  
-  const currstate = useAppSelector((state)=>state);
-  
-  
+  const [doptions,setDoptions] = React.useState<DurationInterface[]>([
+                                                                    {
+                                                                      value: 1,
+                                                                      label: '60 mins',
+                                                                    },
+                                                                    {
+                                                                      value: 2,
+                                                                      label: '120 mins',
+                                                                    }
+                                                                  ]);
+  const [soptions,setSoptions] = React.useState<SlotOptionInterface[][]>([[],[]]);
+  const user = useUser();
+
   const makePayment = async() => {
     
     console.log(duration)
     console.log(slot);
-    console.log(value);
-    console.log(currstate);
-    let hrduration = 0;
-    if(duration)hrduration = duration/60;
-    const key = process.env.key_id;
-    console.log(key);
+    console.log(date?.toDateString());
+    const slots = slot?.split('-');
+    const stripe = await getStipePromise();
 
-    const data = await fetch("http://localhost:3000/api/razorpay",{
+    const response = await fetch("/api/payment",{
                   method:'POST',
-                      body:JSON.stringify({
-                        amount: hrduration*700,
-                        currency: 'INR',
-                        slot:slot,
-                        date: value,
-                        payeeName: currstate.authReducer.credentials?.username,
-                        payeeEmail: currstate.authReducer.credentials?.email,
-                        payeeId: currstate.authReducer.credentials?.id
-                      }),
-                      headers: {
-                          'Content-Type': 'application/json',
-                        }
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body:JSON.stringify([{
+                    name:'session',
+                    id:mentorDetails.id,
+                    duration:duration,
+                    amount: (duration?duration:1)*mentorDetails.rate,
+                    start_time:slots?slots[0]:'21',
+                    end_time:slots?slots[1]:'23',
+                    date: date?.toDateString(),
+                    mentorEmail: mentorDetails.email
+                  }])
         });
-    const {order} = await data.json();
-    console.log(order);
-    const options = {
-        key: "rzp_test_qeUsKBb8MbtMkc",
-        name: "Uni Connect Session",
-        currency: 'INR',
-        amount: order.amount,
-        order_id: order.id,
-        description: "Understanding RazorPay Integration",
-        // image: logoBase64,
+    const data = await response.json();
+    console.log('frontend payment route response is : ',data);
+    if (data.session) {
+      stripe?.redirectToCheckout({ sessionId: data.session.id });
+    }
 
-        handler: async function (response:any) {
-          //       // if (response.length==0) return <Loading/>;
-                console.log(response);
-        
-                const data = await  fetch("http://localhost:3000/api/razorpay/verify", {
-                  method: "POST",
-                  // headers: {
-                  //   // Authorization: 'YOUR_AUTH_HERE'
-                  // },
-                  body: JSON.stringify({
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_signature: response.razorpay_signature,
-                  }),
-                });
-        
-                const res = await data.json();
-                console.log("response verify==",res)
-        
-                if(res?.message=="success"){
-                  console.log("redirected.......")
-                  // router.push("/paymentsuccess?paymentid="+response.razorpay_payment_id)
-                }
-        
-                // Validate payment at server - using webhooks is a better idea.
-                // alert(response.razorpay_payment_id);
-                // alert(response.razorpay_order_id);
-                // alert(response.razorpay_signature);
-        },
-        
-        prefill: {
-          name: "Chirag Jindal",
-          email: "chirag@gmail.com",
-        },
-        callback_url:  `http://localhost:3000/mentee/${currstate.authReducer.credentials?.id}`
-      };
-
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-      paymentObject.on("payment.failed", function (response:any) {
-        alert("Payment failed. Please try again. Contact support for help");
-      });
-
-        return "";
   }
 
   const onChange = (value: number) => {
+    setLoading2(true);
     setduration(value);
+    setLoading2(false);
     console.log(`selected ${value}`);
   };
 
@@ -117,108 +110,121 @@ const SessionBookingForm:  React.FC = () =>  {
     setSlot(value);
     console.log(`selected ${value}`);
   }
+
+  const onChange3 = (value:any) => {
+    
+    let newduration:DurationInterface[] = [];
+    let slotsbydate:SlotOptionInterface[][] = [[],[]];
+    if(!value){
+      setDate(value);
+      setDoptions(newduration);
+      setSoptions(slotsbydate);
+      return;
+    }
+
+    console.log('current date selected is ',value);
+    setDate(value);
+    setLoading2(true);
+    const filteredslots = slots.filter((s)=>(s.date == value.toDateString()));
+    let a = false,b = false;
+    console.log("filtered slots are : ",filteredslots);
+    
+    for(let i=0;i<filteredslots.length;i++){
+      let x = `${filteredslots[i].start_time}-${filteredslots[i].end_time}`;
+      let y = `${filteredslots[i].start_time}-${filteredslots[i].end_time} IST`;
+      if(filteredslots[i].duration == 1){
+        a = true;
+        slotsbydate[0].push({
+          value:x,
+          label:y
+        })
+      }
+      else if(filteredslots[i].duration == 2){
+        b = true;
+        slotsbydate[1].push({
+          value:x,
+          label:y
+        })
+      }
+    }
+
+    if(a)newduration.push({value:1,label:'60 mins'});
+    if(b)newduration.push({value:2,label:'120 mins'});
+
+    console.log("finally selected slots are : ",slotsbydate);
+    console.log("finally available durations are : ",newduration);
+
+    setDoptions(newduration);
+    setSoptions(slotsbydate);
+    setduration(null);
+    setSlot(null);
+
+    setLoading2(false);
+
+    console.log(date);
+  }
+
+  // 30 mins 12 -12:30
+//   backend 
+// ḍatabase
+
+// 120 12-14
+// set <start_time>
+
+
     return (
         <>
-            <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-            <Card
-                sx={{
-                    width: '90%',
-                    // maxWidth: '100%',
-                    boxShadow: 'lg',
-                }}
-                >
-                <CardContent sx={{ alignItems: 'center', textAlign: 'center' }}>
-                    <Typography level="title-md">Pick a date</Typography>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DateCalendar value={value} onChange={(newValue) => setValue(newValue)} />
-                    </LocalizationProvider>
-                    <Typography level="title-md">Pick a time</Typography>
-                    {/* <Row>
-                      <Col> */}
-                          <Select
-                              showSearch
-                              placeholder="Select duration"
-                              optionFilterProp="children"
-                              onChange={onChange}
-                              // onSearch={onSearch}
-                              // filterOption={filterOption}
-                              options={[
-                                {
-                                  value: 30,
-                                  label: '30 mins',
-                                },
-                                {
-                                  value: 60,
-                                  label: '60 mins',
-                                },
-                                {
-                                  value: 90,
-                                  label: '90 mins',
-                                },
-                                {
-                                  value: 120,
-                                  label: '120 mins',
-                                }
-                              ]}
-                              style={{width:180}}
-                            />
-                          
-                      {/* </Col>
-                      <Col> */}
-
-                        <Select
-                              showSearch
-                              placeholder="Pick a Slot  "
-                              optionFilterProp="children"
-                              onChange={onChange2}
-                              // onSearch={onSearch}
-                              // filterOption={filterOption}
-                              options={[
-                                {
-                                  value: '9-11',
-                                  label: '9-11 IST',
-                                },
-                                {
-                                  value: '12-14',
-                                  label: '12-14 IST',
-                                },
-                                {
-                                  value: '15-17',
-                                  label: '15-17 IST',
-                                },
-                                {
-                                  value: '18-20',
-                                  label: '18-20 IST',
-                                },
-                                {
-                                  value:'21-23',
-                                  label:'21-23 IST'                                  
-                                }
-                              ]}
-                              style={{width:180}}
-                            />
-
-                      {/* </Col>
-                    </Row> */}
+            <Card className='w-9/10 shadow-lg'>
+                <CardContent className='flex flex-col items-center text-center'>
+                  <h4 className="scroll-m-20 text-xl font-semibold tracking-tight m-4">Pick a date</h4>
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={onChange3}
+                            className="rounded-md border shadow"
+                          />
+                  {/* date : [ {2,"12:30-14"},{1,"12-13"},{4,"14-18"}] */}
+                  <h4 className="scroll-m-20 text-xl font-semibold tracking-tight m-4">Pick a time</h4>
+                  {loading2 == true && <Loading />}
+                  {loading2 == false && doptions.length>0 && <Select
+                                          showSearch
+                                          placeholder="Select duration"
+                                          optionFilterProp="children"
+                                          onChange={onChange}
+                                          options={doptions}
+                                          style={{width:180,margin:'10px'}}
+                                        />}   
+                  {loading2 == false && doptions.length>0 && <Select
+                                          showSearch
+                                          placeholder="Pick a Slot  "
+                                          optionFilterProp="children"
+                                          onChange={onChange2}
+                                          options={duration?soptions[duration-1]:[]}
+                                          style={{width:180}}
+                                        />}
+                  {doptions.length==0 && <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 wfull ring-inset ring-blue-700/10">Sorry ! No Slots available for the mentioned date</span>}
+                </CardContent>
+                
+                <CardContent className='flex flex-col items-center text-center'>
+                    <Button
+                    disabled={slot==null || duration==null || date==undefined} 
+                    onClick={() => makePayment()}
+                    >Pay now !</Button>
+                        
+                        <Card className='mt-2 w-full'>
+                          <CardContent className='flex flex-row pt-4 p-4'>
+                              <div className='w-4/5 flex items-center justify-start'>
+                                  <p><strong>This is a rare find.</strong> Josephine's time<br></br>
+                                  on Uni-Connect is usually booked.</p>
+                              </div>
+                              <div className='w-1/5 flex items-center justify-end'>
+                                  <img src="https://topmate.io/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon-service-diamond.79e0878f.svg&w=48&q=75"/>
+                              </div>
+                          </CardContent>
+                        </Card>
 
                 </CardContent>
 
-                <Button onClick={makePayment}>Pay now !</Button>
-                
-                <CardOverflow variant="soft" sx={{backgroundColor:'white'}}>
-                    {/* <Divider inset="context" /> */}
-                    <Card sx={{marginBottom:'35px'}}>
-                      <CardContent orientation="horizontal">
-                          <div style={{width:'82%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <Typography><strong>This is a rare find.</strong> Josephine's time<br></br>
-                              on Uni-Connect is usually booked.</Typography>
-                          </div>
-                          <div style={{width:'18%', display:'flex', alignItems:'center', justifyContent:'center'}}>
-                              <img src="https://topmate.io/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ficon-service-diamond.79e0878f.svg&w=48&q=75"/>
-                          </div>
-                      </CardContent>
-                    </Card>
-                </CardOverflow>
             </Card>
         </>
     )

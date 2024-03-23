@@ -1,29 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
   Space,
-  Card,
-  ConfigProvider,
-  Dropdown,
-  Input,
-  Popover,
-  theme,
   Descriptions,
-  Flex,
-  Avatar,
   Image,
   Carousel,
+  Divider,
 } from "antd";
-import {
-  PageContainer,
-  ProCard,
-  ProConfigProvider,
-  ProLayout,
-  SettingDrawer,
-  StatisticCard,
-} from "@ant-design/pro-components";
 import {
   RotateLeftOutlined,
   RotateRightOutlined,
@@ -31,269 +16,252 @@ import {
   ZoomInOutlined,
   ZoomOutOutlined,
 } from "@ant-design/icons";
-import RcResizeObserver from "rc-resize-observer";
 import Link from "next/link";
-import {
-  Divider,
-  Stack,
-  Paper,
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  Menu,
-  Container,
-  Button,
-  Tooltip,
-  MenuItem,
-} from "@mui/material";
-import Feedbacks from "@/components/Feedbacks";
-// import Bookings from "../subcomponents/Bookings";
-// import Feedbacks from "../subcomponents/Feedbacks";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import Loading from "@/components/Loading";
+import { Button } from "@/components/ui/button";
+import UniversityPosts from "@/components/UniversityPosts";
+import { useToast } from "@/components/ui/use-toast";
+import QueueAnim from "rc-queue-anim";
 
-const { Statistic } = StatisticCard;
-const settings = ["Go to Profile", "Dashboard", "Logout"];
-const items = [
-  {
-    key: "1",
-    label: "Name",
-    children: "Cloud Database",
-    span: 3,
-  },
-  {
-    key: "2",
-    label: "Email",
-    children: "Prepaid",
-    span: 3,
-  },
-  {
-    key: "3",
-    label: "Country",
-    children: "YES",
-    span: 3,
-  },
-  {
-    key: "4",
-    label: "University",
-    children: "2018-04-24 18:00:00",
-    span: 3,
-  },
-  {
-    key: "5",
-    label: "Gender",
-    children: "2019-04-24 18:00:00",
-    span: 3,
-  },
-];
 const contentStyle: React.CSSProperties = {
-  height: "260px",
-  color: "#fff",
-  lineHeight: "260px",
-  textAlign: "center",
-  background: "#364d79",
+  backgroundSize:"cover",
+  backgroundRepeat:"no-repeat",
+  width:'80%',
+  height:'200px !important'
 };
 
-const UnivProfile: React.FC = async () => {
-  const [responsive, setResponsive] = useState(false);
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const handleOpenNavMenu = (event: any) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: any) => {
-    setAnchorElUser(event.currentTarget);
-  };
+type UniversityObj = {
+  id: string;
+  description: string;
+  email: string;
+  images: string[];
+  name: string;
+  bachelor_courses:string[];
+  masters_courses:string[];
+  address:string;
+  website:string;
+};
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+type PostSchema = {
+  id:string;
+    title:string;
+    images:string[];
+    description:string;
+    created_at:Date,
+    university_name:string
+}
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-  return (
-    <>
-      <AppBar position="static" color="transparent">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              sx={{
-                mr: 2,
-                display: { md: "flex" },
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              UnivConnect
-            </Typography>
 
-            <Box
-              sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
-            ></Box>
+const UnivProfile = ({ params }: { params: { id: string } }) => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [university,setUniversity] = useState<UniversityObj>({
+    id: "abcd",
+    description: "",
+    email: "",
+    images:[],
+    name: "",
+    bachelor_courses:[],
+    masters_courses:[],
+    address:"",
+    website:""
+  })
+  const [posts,setPosts] = useState<PostSchema[]>([]);
+  const {toast} = useToast();
+  const getdetails = async() => {
+    console.log("hehehhe");
+    const data = await axios.get("/api/university/"+params.id);
+    console.log(data.data.data);
+    setUniversity(data.data.data);
+    console.log("University details ",university);
+    getPosts(data.data.data.email);
+  }
 
-            <Box
-              sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
-            ></Box>
+  const getPosts = async(email:string) => {
+    const res = await fetch('/api/getPosts',{
+      method:"POST",
+      body: JSON.stringify({
+        uEmail:email
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const data = await res.json();
+    console.log(data);
+    setPosts(data.data);
+  }
 
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg"
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
+  useEffect(()=>{
+    getdetails();
+    setIsLoading(false);
+  },[]);
 
-      <div
-        style={{
-          background: "#F5F7FA",
-        }}
-      >
-        <PageContainer>
-          <Row gutter={[48, 48]}>
-            <Col xs={{ span: 24 }} lg={{ span: 10 }}>
-              <div
-                style={{
-                  backgroundColor: "white",
-                  padding: "20px",
-                  height: "inherit",
-                }}
-              >
-                <Image
-                  src="https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg"
-                  preview={{
-                    toolbarRender: (
-                      _,
-                      {
-                        transform: { scale },
-                        actions: {
-                          onFlipY,
-                          onFlipX,
-                          onRotateLeft,
-                          onRotateRight,
-                          onZoomOut,
-                          onZoomIn,
-                        },
-                      }
-                    ) => (
-                      <Space size={12} className="toolbar-wrapper">
-                        <SwapOutlined rotate={90} onClick={onFlipY} />
-                        <SwapOutlined onClick={onFlipX} />
-                        <RotateLeftOutlined onClick={onRotateLeft} />
-                        <RotateRightOutlined onClick={onRotateRight} />
-                        <ZoomOutOutlined
-                          disabled={scale === 1}
-                          onClick={onZoomOut}
-                        />
-                        <ZoomInOutlined
-                          disabled={scale === 50}
-                          onClick={onZoomIn}
-                        />
-                      </Space>
-                    ),
-                  }}
-                />
-                <h2>Chirag Jindal</h2>
-                <p>
-                  {" "}
-                  excepteur. Nostrud ea occaecat ad dolore commodo tempor ut
-                  pariatur. Veniam Lorem Lorem adipisicing sit occaecat nostrud
-                  occaecat ex adipisicing deserunt id anim duis. Eiusmod aliqua
-                  minim veniam id ea amet nulla exercitation cupidatat do enim
-                  adipisicing incididunt.
-                </p>
-                <Divider>
-                  <h2>Personal Information</h2>
-                </Divider>
-                <Descriptions bordered items={items} />
-                <Divider>
-                  <h2>Edit Info</h2>
-                </Divider>
-                <Stack spacing={2} direction="column">
-                  <Button variant="contained">Edit Personal Information</Button>
-                  <Button variant="contained">
-                    <Link href={`/university/createPost`}>
-                      {" "}
-                      Create New Post{" "}
-                    </Link>
-                  </Button>
-                </Stack>
-              </div>
-            </Col>
-
-            <Col xs={{ span: 24 }} lg={{ span: 14 }}>
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <Divider>
-                    <h2>Explore Campus</h2>
-                  </Divider>
-                  <Carousel autoplay>
-                    <div>
-                      <h3 style={contentStyle}>1</h3>
+  if(isLoading){
+    return (<Loading />)
+  }else{
+      return (
+        <>
+          <div style={{background: "#F5F7FA",}}>
+            <div className="p-8">
+              <QueueAnim type={'bottom'} delay={700} duration={1200} className="demo-content">
+              <Row gutter={[48, 48]} key={'r1'}>
+                <Col xs={{ span: 24 }} lg={{ span: 10 }}>
+                  <div
+                    style={{
+                      backgroundColor: "white",
+                      padding: "20px",
+                      height: "inherit",
+                    }}
+                  >
+                    <Image
+                      src={university.images[university.images.length-1]}
+                      preview={{
+                        toolbarRender: (
+                          _,
+                          {
+                            transform: { scale },
+                            actions: {
+                              onFlipY,
+                              onFlipX,
+                              onRotateLeft,
+                              onRotateRight,
+                              onZoomOut,
+                              onZoomIn,
+                            },
+                          }
+                        ) => (
+                          <Space size={12} className="toolbar-wrapper">
+                            <SwapOutlined rotate={90} onClick={onFlipY} />
+                            <SwapOutlined onClick={onFlipX} />
+                            <RotateLeftOutlined onClick={onRotateLeft} />
+                            <RotateRightOutlined onClick={onRotateRight} />
+                            <ZoomOutOutlined
+                              disabled={scale === 1}
+                              onClick={onZoomOut}
+                            />
+                            <ZoomInOutlined
+                              disabled={scale === 50}
+                              onClick={onZoomIn}
+                            />
+                          </Space>
+                        ),
+                      }}
+                    />
+                    <h2 className="scroll-m-20 py-2 text-3xl text-center font-semibold tracking-tight first:mt-4">{university.name}</h2>
+                    <p className="text-center">
+                      {university.description}
+                    </p>
+                    <Divider><h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Personal Information</h3></Divider>
+                    <Descriptions bordered items={
+                        [
+                          {
+                            key: "1",
+                            label: "Name",
+                            children: university.name,
+                            span: 3,
+                          },
+                          {
+                            key: "2",
+                            label: "Email",
+                            children: university.email,
+                            span: 3,
+                          },
+                          {
+                            key: "3",
+                            label: "Website",
+                            children: university.website,
+                            span: 3,
+                          },
+                          {
+                            key: "4",
+                            label: "Address",
+                            children: university.address,
+                            span: 3,
+                          },
+                          {
+                            key: "5",
+                            label: "Courses",
+                            children: university.bachelor_courses,
+                            span: 3,
+                          },
+                        ]
+                    } />
+                    <Divider>
+                      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Edit Info</h3>
+                    </Divider>
+                    <div className="flex flex-col space-y-3">
+                          <Button className="w-full" onClick={()=>toast({
+                                                  title: "Coming soon !",
+                                                  description: "Will be added for next version !",
+                                          })}>Edit Personal Information</Button>
+                          <Link href={`/university/${university.id}/createPost`}>
+                            <Button className="w-full">Create New Post</Button>
+                          </Link>
                     </div>
-                    <div>
-                      <h3 style={contentStyle}>2</h3>
-                    </div>
-                    <div>
-                      <h3 style={contentStyle}>3</h3>
-                    </div>
-                    <div>
-                      <h3 style={contentStyle}>4</h3>
-                    </div>
-                  </Carousel>
+                  </div>
+                </Col>
+
+                <Col xs={{ span: 24 }} lg={{ span: 14 }}>
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <Divider>
+                        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Explore Campus</h3>
+                      </Divider>
+                      <Carousel autoplay>
+                        {university.images.map((img)=>(
+                        <div key={img} style={contentStyle}>
+                          <img src={img} alt="" style={{height:'400px',width:'100%'}}></img>
+                        </div>
+                        ))}
+                      </Carousel>
+                    </Col>
+                  </Row>
+
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <Divider>
+                        <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight m-4">Posts</h3>
+                      </Divider>
+                      { posts.length>0 && <UniversityPosts posts={posts} />}
+                      {posts.length ==0 && 
+                      <>
+                        <div id="alert-additional-content-1" className="p-4 mb-4 text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
+                              <div className="flex items-center">
+                                <svg className="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                                </svg>
+                                <span className="sr-only">Info</span>
+                                <h3 className="text-lg font-medium">No Posts to show !</h3>
+                              </div>
+                              <div className="mt-2 mb-4 text-sm">
+                                Hey there ! 
+                                You havent't posted in a while ! Try posting more for student engagemenet. 
+                              </div>
+                              <div className="flex">
+                                <Link href={`/university/${university.id}/createPost`}>
+                                  <button type="button" className="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    <svg className="me-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+                                      <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                                    </svg>
+                                    Create Post
+                                  </button>
+                                </Link>
+                              </div>
+                        </div>
+                      </>}
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
-
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <Divider>
-                    <h2>Posts</h2>
-                  </Divider>
-                  {/* <Feedbacks /> */}
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </PageContainer>
-      </div>
-    </>
-  );
+              </QueueAnim>
+            </div>
+          </div>
+        </>
+      );
+  }
 };
 
 export default UnivProfile;

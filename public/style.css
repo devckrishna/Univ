@@ -1,0 +1,6 @@
+.editor{
+    background-color: white !important;
+    min-height: 50px;
+    height: 100px !important;
+    overflow: auto;
+}

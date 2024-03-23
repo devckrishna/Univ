@@ -1,25 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import {
-  AutoComplete,
-  Button,
-  Cascader,
-  Checkbox,
   Col,
   Form,
   Input,
   InputNumber,
   Row,
   Select,
-  Upload,
-  message,
 } from "antd";
-import {
-  UploadOutlined,
-  PlusOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { Button } from "./ui/button";
+import { country_list } from "./Names";
 // import { useNavigate } from "react-router-dom";
 // import { useSelector, useDispatch } from 'react-redux'
 
@@ -70,13 +62,14 @@ const inivals: FormState = {
   gender: "",
 };
 
-function SRegister() {
+const SRegister = () => {
   const [formstate, setformstate] = useState<FormState>(inivals);
   const [fileList, setFileList] = useState<any[]>([]);
   //   const navigate = useNavigate();
   //   const dispatch = useDispatch();
   const router = useRouter();
   const [form] = Form.useForm();
+  const {user} = useUser();
 
   const onGenderChange = (value: string) => {
     switch (value) {
@@ -105,28 +98,30 @@ function SRegister() {
     reader.readAsDataURL(img);
   }
 
-  const handleSubmit = async () => {
-    // e.preventDefault();
-    // const res = await fetch('/api/v1/univ/register',{
-    //     method:'POST',
-    //     body:JSON.stringify({
-    //         name:formstate.name,
-    //         email:formstate.email,
-    //         password:formstate.password,
-    //         images:formstate.images,
-    //         description:formstate.description,
-    //         bachelor_courses:formstate.bachelor_courses,
-    //         masters_courses:formstate.masters_courses,
-    //         address:formstate.address,
-    //         website:formstate.website
-    //     }),
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //       }
-    // });
-    // const data = await res.json();
+  const handleSubmit = async (values:any) => {
+    
+        const email = user?.emailAddresses[0].emailAddress;
+        console.log(email);
+        if(user) console.log(user.imageUrl);
+        console.log("here",values);
+        const res = await fetch("/api/student", {
+          method:'POST',
+          body:JSON.stringify({
+              name:values.name,
+              email:email,
+              image: user?.imageUrl,
+              description:values.description,
+              gender: values.gender,
+              country: values.country,
+          }),
+          headers: {
+              'Content-Type': 'application/json',
+            }
+        });
+        const data = await res.json();
+        console.log("data got is :", data);
     // dispatch(setuniversityvalue({email:formstate.email,university_name:formstate.name}));
-    router.push("/dashboard");
+        router.push(`/mentee/${data.data.id}`);
   };
 
   const handleChange = (evt: any) => {
@@ -137,196 +132,94 @@ function SRegister() {
   const onFinish = (values: FormState) => {
     console.log("Received values of form: ", values);
     setformstate(values);
-    handleSubmit();
+    handleSubmit(values);
   };
 
   return (
     <>
       <Form
-        {...formItemLayout}
-        form={form}
-        name="register"
-        onFinish={onFinish}
-        style={{
-          width: "100%",
-        }}
-        scrollToFirstError
-      >
-        <Row style={{ width: "100%" }}>
-          <Col span={12}>
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the Name!",
-                  whitespace: true,
-                },
-              ]}
-            >
-              <Input name="name" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="E-mail"
-              rules={[
-                {
-                  type: "email",
-                  message: "The input is not valid E-mail!",
-                },
-                {
-                  required: true,
-                  message: "Please input your E-mail!",
-                },
-              ]}
-            >
-              <Input name="email" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
-              hasFeedback
-            >
-              <Input.Password name="password" onChange={handleChange} />
-            </Form.Item>
-            <Form.Item
-              name="confirm"
-              label="Confirm Password"
-              dependencies={["password"]}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "The new password that you entered do not match!"
-                      )
-                    );
+          {...formItemLayout}
+          form={form}
+          name="register"
+          onFinish={onFinish}
+          style={{
+            width: "100%",
+          }}
+          scrollToFirstError
+          layout="vertical"
+        >
+              <Form.Item
+                name="name"
+                label="Name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the Name!",
+                    whitespace: true,
                   },
-                }),
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
-              name="gender"
-              label="Gender"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Select
-                placeholder="Select a option and change input text above"
-                onChange={onGenderChange}
-                allowClear
+                ]}
               >
-                <Option value="Male">Male</Option>
-                <Option value="Female">Female</Option>
-                <Option value="Other">Other</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="country"
-              label="Country"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select your Country!",
-                },
-              ]}
-            >
-              <Input name="country" onChange={handleChange} />
-            </Form.Item>
-            {/* {window.innerWidth < 992 && <Form.Item
-              name="description"
-              label="Description"
-              rules={[
-                {
-                  message: 'Please input Intro',
-                },
-              ]}
-            >
-              <Input.TextArea name="description" onChange={handleChange} showCount maxLength={300} />
-            </Form.Item>
-            } */}
-            {/* {window.innerWidth < 992 && <Form.Item name="image" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
-              <Upload
-                action={null}
-                beforeUpload={() => { return false; }}
-                listType="picture"
-                fileList={fileList}
-                maxCount={1}
+                <Input name="name" onChange={handleChange} />
+              </Form.Item>
+              
+              <Form.Item
+                name="gender"
+                label="Gender"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
               >
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              </Upload>
-            </Form.Item>
-            }
-            {window.innerWidth < 992 && <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">Register</Button>
-            </Form.Item>
-            } */}
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[
-                {
-                  message: "Please input Intro",
-                },
-              ]}
-            >
-              <Input.TextArea
+                <Select
+                  placeholder="Select a option and change input text above"
+                  onChange={onGenderChange}
+                  allowClear
+                >
+                  <Option value="Male">Male</Option>
+                  <Option value="Female">Female</Option>
+                  <Option value="Other">Other</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="country"
+                label="Country"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select your Country!",
+                  },
+                ]}
+              >
+                <Select
+                      placeholder="Select a option"
+                      // onChange={onGenderChange}
+                      allowClear
+                    >
+                      {country_list.map((c)=><Option value={c.toString()}>{c}</Option>)}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
                 name="description"
-                onChange={handleChange}
-                showCount
-                maxLength={300}
-              />
-            </Form.Item>
-            <Form.Item
-              name="image"
-              label="Upload"
-              valuePropName="fileList"
-              getValueFromEvent={normFile}
-            >
-              <Upload
-                // action={null}
-                beforeUpload={() => {
-                  return false;
-                }}
-                listType="picture"
-                fileList={fileList}
-                maxCount={3}
+                label="Description"
+                rules={[
+                  {
+                    message: "Please input Intro",
+                  },
+                ]}
               >
-                <Button icon={<UploadOutlined />}>Upload </Button>
-              </Upload>
-            </Form.Item>
-            <Form.Item {...tailFormItemLayout}>
-              <Button type="primary" htmlType="submit">
-                Register
-              </Button>
-            </Form.Item>
-          </Col>
-        </Row>
+                  <Input.TextArea
+                    name="description"
+                    onChange={handleChange}
+                    showCount
+                    maxLength={500}
+                  />
+              </Form.Item>
+              
+              <Form.Item {...tailFormItemLayout}>
+                <Button>Register</Button>
+              </Form.Item>
       </Form>
     </>
   );

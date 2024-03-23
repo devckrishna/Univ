@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
+import { ClerkProvider } from '@clerk/nextjs'
 import { Providers } from '@/redux/provider'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,14 +20,16 @@ export default function RootLayout({
 }) {
   return (
     <>
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          {children}
-        </Providers>
-      </body>
-    </html>
-    <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+      <ClerkProvider>
+        <html lang="en">
+          <body className={inter.className}>
+            <Providers>
+              {children}
+              <Toaster />
+            </Providers>
+          </body>
+        </html>
+      </ClerkProvider>
     </>
   )
 }
