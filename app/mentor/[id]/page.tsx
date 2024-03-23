@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import QueueAnim from "rc-queue-anim";
 
 type MentorObj = {
   id: string;
@@ -164,89 +165,88 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
         }else{
         return (
             <>
-                <div
-                    style={{
-                      background: '#F5F7FA',
-                    }}
-                  >
+                <div style={{background: '#F5F7FA',}}>
+
                       <div className="p-8" >
-                            <Row gutter={[48,48]}>
-                              
-                                <Col xs={{span:24}} lg={{span:10}}>
-                                  <div style={{backgroundColor:'white',padding:"20px",height:'inherit'}}>
-                                  <Image 
-                                      src={mentorDetails.image}
-                                      preview={{
-                                          toolbarRender: (
-                                            _,
-                                            {
-                                              transform: { scale },
-                                              actions: { onFlipY, onFlipX, onRotateLeft, onRotateRight, onZoomOut, onZoomIn },
-                                            },
-                                          ) => (
-                                            <Space size={10} className="toolbar-wrapper">
-                                              <SwapOutlined rotate={90} onClick={onFlipY} />
-                                              <SwapOutlined onClick={onFlipX} />
-                                              <RotateLeftOutlined onClick={onRotateLeft} />
-                                              <RotateRightOutlined onClick={onRotateRight} />
-                                              <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
-                                              <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
-                                            </Space>
-                                          ),
-                                        }}
-                                      />
-                                      <h2 className="scroll-m-20 pb-2 text-3xl text-center font-semibold tracking-tight first:mt-4">{mentorDetails.name}</h2>
-                                      <p className="text-center">{mentorDetails.description}</p>
-                                      <Divider>
-                                          <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Personal Information</h3>
-                                      </Divider>
-                                      <Descriptions bordered items={[
-                                                  {
-                                                    key: '1',
-                                                    label: 'Email',
-                                                    children: mentorDetails.email,
-                                                    span:3
-                                                  },
-                                                  {
-                                                    key: '2',
-                                                    label: 'Country',
-                                                    children: mentorDetails.country,
-                                                    span:3
-                                                  },
-                                                  {
-                                                    key: '3',
-                                                    label: 'Gender',
-                                                    children: mentorDetails.gender,
-                                                    span:3
-                                                  },
-                                                  {
-                                                    key: '4',
-                                                    label: 'University',
-                                                    children: mentorDetails.university,
-                                                    span:3
-                                                  },
-                                                  {
-                                                    key: '5',
-                                                    label: 'Rate',
-                                                    children: `Rs ${mentorDetails.rate}`,
-                                                    span: 3,
-                                                  }
-                                                ]} />
-                                      <Divider>
-                                          <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Edit Info</h3>
-                                      </Divider>
-                                      <div className="flex flex-col space-y-3">
-                                          <Button className="w-full" onClick={()=>toast({
-                                                  title: "Coming soon !",
-                                                  description: "Will be added for next version !",
-                                          })}>Edit Personal Information</Button>  
-                                          <Link href={`/mentor/${mentorDetails.id}/updateSlots`}>
-                                            <Button className="w-full">Update Mentorship Slots</Button>
-                                          </Link>
-                                      </div>
-                                    
-                                  </div>
-                                </Col>
+                            <QueueAnim type={'bottom'} delay={700} duration={1200} className="demo-content">
+                            <Row gutter={[48,48]} key={'r1'}>
+                                    {/* <QueueAnim type={'left'} delay={700} duration={1200} className="demo-content"> */}
+                                        <Col xs={{span:24}} lg={{span:10}}>
+                                          <div style={{backgroundColor:'white',padding:"20px",height:'inherit'}}>
+                                          <Image 
+                                              src={mentorDetails.image}
+                                              preview={{
+                                                  toolbarRender: (
+                                                    _,
+                                                    {
+                                                      transform: { scale },
+                                                      actions: { onFlipY, onFlipX, onRotateLeft, onRotateRight, onZoomOut, onZoomIn },
+                                                    },
+                                                  ) => (
+                                                    <Space size={10} className="toolbar-wrapper">
+                                                      <SwapOutlined rotate={90} onClick={onFlipY} />
+                                                      <SwapOutlined onClick={onFlipX} />
+                                                      <RotateLeftOutlined onClick={onRotateLeft} />
+                                                      <RotateRightOutlined onClick={onRotateRight} />
+                                                      <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
+                                                      <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
+                                                    </Space>
+                                                  ),
+                                                }}
+                                              />
+                                              <h2 className="scroll-m-20 pb-2 text-3xl text-center font-semibold tracking-tight first:mt-4">{mentorDetails.name}</h2>
+                                              <p className="text-center">{mentorDetails.description}</p>
+                                              <Divider>
+                                                  <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Personal Information</h3>
+                                              </Divider>
+                                              <Descriptions bordered items={[
+                                                          {
+                                                            key: '1',
+                                                            label: 'Email',
+                                                            children: mentorDetails.email,
+                                                            span:3
+                                                          },
+                                                          {
+                                                            key: '2',
+                                                            label: 'Country',
+                                                            children: mentorDetails.country,
+                                                            span:3
+                                                          },
+                                                          {
+                                                            key: '3',
+                                                            label: 'Gender',
+                                                            children: mentorDetails.gender,
+                                                            span:3
+                                                          },
+                                                          {
+                                                            key: '4',
+                                                            label: 'University',
+                                                            children: mentorDetails.university,
+                                                            span:3
+                                                          },
+                                                          {
+                                                            key: '5',
+                                                            label: 'Rate',
+                                                            children: `Rs ${mentorDetails.rate}`,
+                                                            span: 3,
+                                                          }
+                                                        ]} />
+                                              <Divider>
+                                                  <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Edit Info</h3>
+                                              </Divider>
+                                              <div className="flex flex-col space-y-3">
+                                                  <Button className="w-full" onClick={()=>toast({
+                                                          title: "Coming soon !",
+                                                          description: "Will be added for next version !",
+                                                  })}>Edit Personal Information</Button>  
+                                                  <Link href={`/mentor/${mentorDetails.id}/updateSlots`}>
+                                                    <Button className="w-full">Update Mentorship Slots</Button>
+                                                  </Link>
+                                              </div>
+                                            
+                                          </div>
+                                        </Col>
+                                {/* </QueueAnim> */}
                                 
                                 {/* Statistics */}
                                 <Col xs={{span:24}} lg={{span:14}}>
@@ -405,10 +405,10 @@ const MentorProfile = ({ params }: { params: { id: string } }) => {
                                           <Feedbacks bookings={bookings.filter((b)=>b.menteeFeedbackFlag)} type="Student"/>
                                       </Col>
                                     </Row>
-
                                 </Col>
+                                
                             </Row>
-
+                        </QueueAnim>
                       </div>
                 </div>
             </>

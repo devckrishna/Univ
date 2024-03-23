@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
+import QueueAnim from "rc-queue-anim";
 
 type MentorObj = {
   id: string;
@@ -201,7 +202,8 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
           <>
               <div style={{background: "#F5F7FA",}}>
                 <div className="p-8">
-                  <Row gutter={[48, 48]} align="middle" justify="center">
+                  <QueueAnim type={'right'} delay={700} duration={1200} className="demo-content">
+                  <Row gutter={[48, 48]} key={'r1'} align="middle" justify="center">
                     <div className="flex flex-col justify-center align-middle">
                         <Avatar
                           className="ml-10"
@@ -213,7 +215,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
                     </div>
                   </Row>
 
-                  <Row>
+                  <Row key={'r2'}>
                     <Col xs={{ span: 0 }} lg={{ span: 8 }}></Col>
                     <Col xs={{ span: 24 }} lg={{ span: 8 }}>
                         <>
@@ -299,7 +301,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
                     <Col xs={{ span: 0 }} lg={{ span: 8 }}></Col>
                   </Row>
 
-                  <Row align="middle" justify="center">
+                  <Row key={'r3'} align="middle" justify="center">
                     <Col xs={{ span: 0 }} lg={{ span: 6 }}></Col>
                     <Col xs={{ span: 24 }} lg={{ span: 12 }}>
                       <Divider>
@@ -324,6 +326,7 @@ const SlotUpdatePage = ({ params }: { params: { id: string } }) => {
                     </Col>
                     <Col xs={{ span: 0 }} lg={{ span: 6 }}></Col>
                   </Row>
+                  </QueueAnim >
                 </div>
               </div>
             </>

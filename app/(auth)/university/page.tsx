@@ -22,7 +22,7 @@ const UniversityAuth = () => {
                     <Row style={{height:'100%'}} justify="center" align="middle">
                         <Col xs={{span: 0}} lg={{span: 12}} style={backgroundStyle}>
                             <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
-                                <div className="absolute inset-0 bg-blue-800" />
+                                <div className="absolute inset-0 bg-blue-900" />
                                 <div className="relative z-20 flex items-center text-lg font-medium">
                                     <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -36,16 +36,15 @@ const UniversityAuth = () => {
                                     >
                                     <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
                                     </svg>
-                                    UnivConnect
+                                    ConVarse
                                 </div>
                                 <div className="relative z-20 mt-auto">
                                     <blockquote className="space-y-2">
                                     <p className="text-lg">
-                                        &ldquo;This library has saved me countless hours of work and
-                                        helped me deliver stunning designs to my clients faster than
-                                        ever before.&rdquo;
+                                        &ldquo;Universities should be safe havens where ruthless examination of realities will not be distorted by the aim to 
+                                        please or inhibited by the risk of displeasure.&rdquo;
                                     </p>
-                                    <footer className="text-sm">Sofia Davis</footer>
+                                    <footer className="text-sm">- Benjamin Elijah Mays</footer>
                                     </blockquote>
                                 </div>
                             </div>
@@ -73,7 +72,7 @@ const UniversityAuth = () => {
                                         <div>
                                             <button
                                                 type="submit"
-                                                className="flex w-full justify-center rounded-md bg-blue-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                className="flex w-full justify-center rounded-md bg-blue-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                             >
                                                 <Link href={"/sign-up"}>Sign Up </Link>
                                             </button>
@@ -82,7 +81,7 @@ const UniversityAuth = () => {
                                         <div>
                                             <button
                                                 type="submit"
-                                                className="flex w-full justify-center rounded-md bg-blue-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                className="flex w-full justify-center rounded-md bg-blue-900 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                             >
                                                <Link href={"/sign-in"}>Log In </Link>
                                             </button>

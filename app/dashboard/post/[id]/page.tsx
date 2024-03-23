@@ -19,7 +19,6 @@ type PostSchema = {
 }
 
 function Post({ params }: { params: { id: string } }){
-    const router = useRouter();
     const [loading,setLoading] = useState(true);
     const [post,setPost] = useState<PostSchema>({
         id:"",

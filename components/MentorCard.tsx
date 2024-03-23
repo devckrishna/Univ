@@ -27,7 +27,7 @@ const MentorCard = (props:Props) =>  {
                     
                     <div className="p-4 sm:p-10 lg:flex-auto">
                         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mt-0">{props.name}</h1>
-                        <p className="text-base leading-7 text-gray-600">{props.university}</p>
+                        <p className="text-xl font-medium leading-9 ml-1 text-gray-600">{props.university}</p>
                         <div className="mt-5 flex items-center gap-x-4">
                             <h3 className="flex-none text-sm font-semibold leading-6 text-indigo-600">What’s included</h3>
                             <div className="h-px flex-auto bg-gray-100"></div>
@@ -37,25 +37,25 @@ const MentorCard = (props:Props) =>  {
                             <svg className="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                             </svg>
-                            Private forum access
+                            Personalized Guidance Sessions
                             </li>
                             <li className="flex gap-x-3">
                             <svg className="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                             </svg>
-                            Member resources
+                            Strategic Planning & Goal Setting
                             </li>
                             <li className="flex gap-x-3">
                             <svg className="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                             </svg>
-                            Entry to annual conference
+                            Networking and Alumni Connections
                             </li>
                             <li className="flex gap-x-3">
                             <svg className="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                             </svg>
-                            Official member t-shirt
+                            Specialized Expertise and Industry Insights
                             </li>
                         </ul>
                         <div className="mt-5 flex items-center gap-x-4">

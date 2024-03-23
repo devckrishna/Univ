@@ -9,6 +9,7 @@ const PlatformLayout = async ({ children }: { children: React.ReactNode }) => {
     const isUserRegistered = async () => {
         const {userId} = auth();
         console.log('my user is id ',userId);
+        if(!userId)redirect("/");
         const user = clerkClient.users.getUser(userId ?? "");
         const email = (await user).emailAddresses[0].emailAddress;
         const dbUsermentor = await db.mentor.findFirst({

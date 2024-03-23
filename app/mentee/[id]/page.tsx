@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import QueueAnim from "rc-queue-anim";
 
 type MenteeObj = {
     id: string;
@@ -156,14 +157,10 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
     }else{
     return (
         <>
-            <div
-              style={{
-                background: '#F5F7FA',
-              }}
-            >
+            <div style={{background: '#F5F7FA',}}>
             <div className="p-8">
-                  <Row gutter={[48,48]}>
-                    
+                  <QueueAnim type={'bottom'} delay={700} duration={1200} className="demo-content" ease={['easeOutQuart', 'easeInOutQuart']}>
+                  <Row gutter={[48,48]} key={'r1'}>
                       <Col xs={{span:24}} lg={{span:10}}>
                         <div style={{backgroundColor:'white',padding:"20px",height:'inherit'}}>
                             <Image 
@@ -372,11 +369,9 @@ const StudentProfile = ({ params }: { params: { id: string } }) =>{
 
                       </Col>
                   </Row>
-
+              </QueueAnim>
             </div>
             </div>
-
-
         </>
     );
   }

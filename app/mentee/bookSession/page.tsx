@@ -6,6 +6,7 @@ import axios from "axios";
 import Loading from "@/components/Loading";
 // import Navbar from "@/components/Navbar";
 import { useUser } from "@clerk/nextjs";
+import QueueAnim from "rc-queue-anim";
 
 
 type MentorObj = {
@@ -58,14 +59,18 @@ const AllMentors = () => {
     }else{
             return (
                 <>
-                    {/* <Navbar profile="/"/> */}
-                    <div
-                        style={{
-                            background: '#F5F7FA',
-                        }}
-                        >
+                    <div style={{background: '#F5F7FA'}}>
                         <div className="p-8">
-                            {displayMentors.map((data)=> <MentorCard key={data.id} {...data} />)}
+                            <QueueAnim className="demo-content"
+                                key="demo"
+                                type={['right', 'left']}
+                                ease={['easeOutQuart', 'easeInOutQuart']}>
+                                {displayMentors.map((data)=> 
+                                    <div key={data.id}>
+                                        <MentorCard key={data.id} {...data} />
+                                    </div>
+                                )}
+                            </QueueAnim>
                             {mentors.length>5 && <Pagination defaultCurrent={1} defaultPageSize={5} current={currPage} onChange={onChange} total={mentors.length} />}
                         </div>
                     </div>

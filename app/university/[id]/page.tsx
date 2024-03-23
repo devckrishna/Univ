@@ -23,6 +23,7 @@ import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import UniversityPosts from "@/components/UniversityPosts";
 import { useToast } from "@/components/ui/use-toast";
+import QueueAnim from "rc-queue-anim";
 
 const contentStyle: React.CSSProperties = {
   backgroundSize:"cover",
@@ -103,13 +104,10 @@ const UnivProfile = ({ params }: { params: { id: string } }) => {
   }else{
       return (
         <>
-          <div
-            style={{
-              background: "#F5F7FA",
-            }}
-          >
+          <div style={{background: "#F5F7FA",}}>
             <div className="p-8">
-              <Row gutter={[48, 48]}>
+              <QueueAnim type={'bottom'} delay={700} duration={1200} className="demo-content">
+              <Row gutter={[48, 48]} key={'r1'}>
                 <Col xs={{ span: 24 }} lg={{ span: 10 }}>
                   <div
                     style={{
@@ -199,9 +197,9 @@ const UnivProfile = ({ params }: { params: { id: string } }) => {
                                                   title: "Coming soon !",
                                                   description: "Will be added for next version !",
                                           })}>Edit Personal Information</Button>
-                        <Link href={`/university/${university.id}/createPost`}>
-                          <Button className="w-full">Create New Post</Button>
-                        </Link>
+                          <Link href={`/university/${university.id}/createPost`}>
+                            <Button className="w-full">Create New Post</Button>
+                          </Link>
                     </div>
                   </div>
                 </Col>
@@ -258,6 +256,7 @@ const UnivProfile = ({ params }: { params: { id: string } }) => {
                   </Row>
                 </Col>
               </Row>
+              </QueueAnim>
             </div>
           </div>
         </>
